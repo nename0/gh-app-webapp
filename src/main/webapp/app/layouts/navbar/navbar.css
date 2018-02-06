@@ -1,0 +1,28 @@
+a mat-icon {
+    padding: 0px!important;
+}
+
+a .mat-line {
+    font-weight: 500;
+    font-size: 14px;
+    padding-left: 16px;
+}
+
+a.router-active {
+    background: rgba(0, 0, 0, 0.12);
+}
+
+a.router-active.mat-list-item-focus {
+    background: rgba(0, 0, 0, 0.12);
+}
+
+a.router-active:hover {
+    background: rgba(0, 0, 0, 0.16);
+}
+
+img.navbar-avatar {
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+    background-color: white;
+}

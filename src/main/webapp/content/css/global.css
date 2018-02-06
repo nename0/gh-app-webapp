@@ -1,0 +1,8 @@
+button.mat-icon-button{
+    width: 48px;
+    height: 48px
+}
+
+button.mat-icon-button mat-icon {
+    font-size: 20px;
+}

@@ -1,0 +1,26 @@
+.mat-column-play{
+    flex: 0 0 68px
+}
+
+mat-row {
+    height: 60px;
+    max-height: 60px;
+}
+
+mat-header-row, mat-row {
+    padding-left: 4px;
+    user-select: none;
+}
+
+mat-cell.mat-column-play mat-icon{
+    font-size: 25px
+}
+
+mat-cell.mat-column-name .mat-body-1{
+    color: rgba(0, 0, 0, 0.54);
+}
+
+mat-cell.mat-column-name{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

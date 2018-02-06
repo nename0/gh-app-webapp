@@ -1,0 +1,24 @@
+<form (ngSubmit)="login()">
+
+    <h2 mat-dialog-title>Sign in</h2>
+
+    <mat-dialog-content style="overflow: hidden" fxLayout="column">
+        <mat-input-container>
+            <mat-placeholder>Login</mat-placeholder>
+            <input matInput name="username" id="username" [(ngModel)]="username">
+        </mat-input-container>
+        <mat-input-container>
+            <mat-placeholder>Password</mat-placeholder>
+            <input matInput type="password" name="password" id="password" [(ngModel)]="password">
+        </mat-input-container>
+
+        <span class="mat-body-2" style="color: red" *ngIf="authenticationError">
+            <strong>Failed to sign in!</strong> Please check your credentials and try again.
+        </span>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions>
+        <button mat-raised-button type="submit" color="primary"><span>Sign in</span></button>
+    </mat-dialog-actions>
+</form>
