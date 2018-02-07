@@ -1,0 +1,46 @@
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { ReplaySubject } from "rxjs/ReplaySubject";
+import { combineLatest, pairwise, map } from "rxjs/operators";
+
+
+class ConnectivityClass {
+    private readonly navigatorOnline = new BehaviorSubject(true);
+    private readonly offlineHints = new BehaviorSubject(0);
+    public readonly isOnline = new BehaviorSubject(true);
+
+    constructor() {
+        const hasNavigatorOnline = typeof navigator.onLine === 'boolean';
+        if (hasNavigatorOnline) {
+            window.addEventListener('online', this.navigatorOnlineChange)
+            window.addEventListener('offline', this.navigatorOnlineChange)
+            this.navigatorOnlineChange();
+        }
+
+        this.navigatorOnline.pipe(combineLatest(this.offlineHints), pairwise(),
+            map(([[navigatorOnlineNew, hintsNew], [navigatorOnlineOld, hintsOld]]) => {
+                if (navigatorOnlineNew && !navigatorOnlineOld) {
+                    if (hintsNew !== 0) {
+                        this.offlineHints.next(0);
+                    }
+                    return true;
+                }
+                if (!navigatorOnlineNew && navigatorOnlineOld) {
+                    return false;
+                }
+                if (hintsNew > 1) {
+                    return false;
+                }
+            }))
+            .subscribe(this.isOnline)
+    }
+
+    private navigatorOnlineChange = () => {
+        this.navigatorOnline.next(navigator.onLine);
+    }
+
+    public hintOffline() {
+        this.offlineHints.next(this.offlineHints.getValue() + 1);
+    }
+}
+
+export const Connectivity = new ConnectivityClass();
