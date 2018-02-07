@@ -1,25 +1,16 @@
-import * as idbKeyVal from 'idb-keyval';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { filter, take } from 'rxjs/operators';
+import { take, pairwise } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/operators/combineLatest';
 import { Connectivity } from './connectivity';
-import { getRandomArbitrary } from '../shared/random';
+import { hasWebsocketSupport } from './websocket';
+import { distinctUntilChanged } from 'rxjs/operators/distinctUntilChanged';
+import { idbKeyVal } from '../shared/idbKeyVal';
+import { checkResponseStatus, getRandomArbitrary } from '../shared/util';
 
-const KEY_LAST_MODIFICATION_RECEIVED = 'lastModificationReveived';
-const KEY_LAST_MODIFICATION_FETCHED = 'lastModificationFetched';
-
-function checkStatus(res: Response) {
-    if (res.status >= 200 && res.status < 300) {
-        return res;
-    } else {
-        throw new Error(res.url + ' ' + res.statusText);
-    }
-}
+const KEY_LAST_MODIFICATION = 'lastModification';
 
 class ModificationCheckerClass {
-    private readonly lastModificationReveived = new ReplaySubject<Date>(1);
-    private readonly lastModificationFetched = new ReplaySubject<Date>(1);
-
+    public lastModification: Promise<Date>;
 
     constructor() {
         this.setup();
@@ -27,65 +18,79 @@ class ModificationCheckerClass {
 
     private async setup() {
         // fetch from storage
-        const [lMR, lMF] = await Promise.all([idbKeyVal.get(KEY_LAST_MODIFICATION_RECEIVED),
-        idbKeyVal.get(KEY_LAST_MODIFICATION_FETCHED)]);
-        let lMRDate = new Date(<string>lMR);
-        lMRDate = isNaN(+lMRDate) ? new Date(0) : lMRDate;
-        this.lastModificationReveived.next(lMRDate);
-        let lMFDate = new Date(<string>lMF);
-        lMFDate = isNaN(+lMFDate) ? new Date(0) : lMFDate;
-        this.lastModificationFetched.next(lMFDate);
-        // store on change
-        this.lastModificationReveived.pipe(filter((date) => date !== lMRDate))
-            .subscribe((date) => idbKeyVal.set(KEY_LAST_MODIFICATION_RECEIVED, date.toUTCString()));
-        this.lastModificationFetched.pipe(filter((date) => date !== lMFDate))
-            .subscribe((date) => idbKeyVal.set(KEY_LAST_MODIFICATION_FETCHED, date.toUTCString()));
-        
-        this.lastModificationReveived.pipe(combineLatest(this.lastModificationFetched)).subscribe(this.onModification);
-        
-        await this.checkModificationRequest();
-        if (!this.hasWebsocketSupport()) {
-            this.scheduleModificationCheck()
-            return;
-        }
-        setupWebsocket();
+        await this.syncKeyValue();
+
+        this.checkModification();
     }
 
-    private onModification = ([lastModificationReveived, lastModificationFetched]: [Date, Date]) => {
-
+    private syncKeyValue() {
+        const promise = (async () => {
+            while (true) {
+                const result = await idbKeyVal.get(KEY_LAST_MODIFICATION);
+                const date = new Date(<string>result);
+                if (!isNaN(+date)) {
+                    return date;
+                }
+                if (await idbKeyVal.cas(KEY_LAST_MODIFICATION, result, new Date(0).toUTCString())) {
+                    return new Date(0);
+                }
+            }
+        })();
+        this.lastModification = promise;
+        return promise;
     }
 
     private async checkModificationRequest() {
+        const res = await fetch(window.location.origin + '/api/v1/plans/getLatestModification', {
+            credentials: 'same-origin'
+        }).then(checkResponseStatus);
+        const lastModificationStr = res.headers.get('last-modified');
+        if (!lastModificationStr || isNaN(+new Date(lastModificationStr))) {
+            throw new Error('no last-modified header');
+        }
+        return this.gotModifiactionDate(new Date(lastModificationStr));
+    }
+
+    private checkModification = async () => {
         try {
-            const res = await fetch(window.location.origin + ' /api/v1/plans/getLatestModification', {
-                credentials: 'same-origin'
-            }).then(checkStatus);
-            const lastModificationStr = res.headers.get('last-modified');
-            if (!lastModificationStr) {
-                throw new Error('no last-modified header');
+            await this.checkModificationRequest();
+            Connectivity.hintOnline();
+            if (hasWebsocketSupport) {
+                //setupWebsocket();
+                return;
             }
-            const lastModificationRes = new Date(lastModificationStr);
-            const lastModificationFetched = await this.lastModificationFetched.pipe(take(1)).toPromise();
-            if (lastModificationFetched >= lastModificationRes) {
-                return lastModificationFetched;
-            }
-            this.lastModificationFetched.next(lastModificationRes);
-            return lastModificationRes;
+            setTimeout(() => {
+                this.checkModification();
+            }, getRandomArbitrary(8000, 10000));
+
         } catch (err) {
             console.log('Error in checkModificationRequest', err);
             Connectivity.hintOffline();
+            setTimeout(() => {
+                this.checkModification();
+            }, getRandomArbitrary(1000, 4000));
         }
     }
 
-    private scheduleModificationCheck(){
-        setTimeout(() => {
-            this.checkModificationRequest()
-            this.scheduleModificationCheck();
-        }, getRandomArbitrary(8000, 10000));
+    private async casModifiactionDate(date: Date) {
+        while (true) {
+            const expected = await this.lastModification;
+            if (expected >= date) {
+                return expected;
+            }
+            if (await idbKeyVal.cas(KEY_LAST_MODIFICATION, expected.toUTCString(), date.toUTCString())) {
+                return date;
+            }
+            this.syncKeyValue();
+        }
     }
 
-    private hasWebsocketSupport() {
-        return typeof WebSocket === 'function';
+    public async gotModifiactionDate(date: Date) {
+        this.onModification(await this.casModifiactionDate(date));
+    }
+
+    private onModification = async (lastModification: Date) => {
+        
     }
 }
 

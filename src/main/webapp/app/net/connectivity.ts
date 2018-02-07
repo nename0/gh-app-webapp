@@ -1,7 +1,6 @@
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { ReplaySubject } from "rxjs/ReplaySubject";
-import { combineLatest, pairwise, map } from "rxjs/operators";
-
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { combineLatest, pairwise, map } from 'rxjs/operators';
 
 class ConnectivityClass {
     private readonly navigatorOnline = new BehaviorSubject(true);
@@ -18,18 +17,14 @@ class ConnectivityClass {
 
         this.navigatorOnline.pipe(combineLatest(this.offlineHints), pairwise(),
             map(([[navigatorOnlineNew, hintsNew], [navigatorOnlineOld, hintsOld]]) => {
+                if (!navigatorOnlineNew) {
+                    return false;
+                }
                 if (navigatorOnlineNew && !navigatorOnlineOld) {
-                    if (hintsNew !== 0) {
-                        this.offlineHints.next(0);
-                    }
+                    this.offlineHints.next(0);
                     return true;
                 }
-                if (!navigatorOnlineNew && navigatorOnlineOld) {
-                    return false;
-                }
-                if (hintsNew > 1) {
-                    return false;
-                }
+                return hintsNew < 2;
             }))
             .subscribe(this.isOnline)
     }
@@ -40,6 +35,10 @@ class ConnectivityClass {
 
     public hintOffline() {
         this.offlineHints.next(this.offlineHints.getValue() + 1);
+    }
+
+    public hintOnline() {
+        this.offlineHints.next(0);
     }
 }
 

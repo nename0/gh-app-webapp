@@ -14,13 +14,10 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
         contentBase: './target/www',
         disableHostCheck: true,
         host: '0.0.0.0',
-        port: 9060,
+        port: 9000,
         proxy: {
-            "/couchdb": {
-                target: "http://raspi2"
-            },
-            "/tracks": {
-                target: "http://raspi2"
+            "/api": {
+                target: "http://localhost:3000"
             }
         }
     },

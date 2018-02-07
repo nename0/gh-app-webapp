@@ -8,6 +8,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 import { StateStorageService } from './state-storage.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { of as Observable_of } from 'rxjs/observable/of';
 
 @Injectable()
 export class AuthenticationProviderService {
@@ -47,20 +48,22 @@ export class AuthenticationProviderService {
     }
 
     hasAnyAuthority(authorities: string[]): Observable<boolean> {
-        return this.userSubject.pipe(map((userCtx) => {
-            if (!userCtx.name) {
-                return false;
-            }
-            if (!authorities.length) {
-                return true;
-            }
-            for (const role of authorities) {
-                if (userCtx.roles.includes(role)) {
-                    return true;
-                }
-            }
-            return false;
-        }));
+        return Observable_of(true);
+        //TODO
+        //return this.userSubject.pipe(map((userCtx) => {
+        //    if (!userCtx.name) {
+        //        return false;
+        //    }
+        //    if (!authorities.length) {
+        //        return true;
+        //    }
+        //    for (const role of authorities) {
+        //        if (userCtx.roles.includes(role)) {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}));
     }
 
 }

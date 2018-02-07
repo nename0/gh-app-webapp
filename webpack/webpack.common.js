@@ -95,16 +95,16 @@ module.exports = (options) => {
                 inject: 'body'
             }),
             new WebpackPwaManifest({
-                "name": "Musiccloud Webapp",
-                "short_name": "Musiccloud",
-                "icons": [
-                    {
-                        src: utils.root('src/main/webapp/content/images/android-icon-192x192.png'),
-                        sizes: [36, 72, 96, 192],
-                        "type": "image/png",
-                        destination: 'content/',
-                    }
-                ],
+                "name": "Vertretungsplan GH",
+                "short_name": "Vertretungsplan GH",
+                //"icons": [
+                //    {
+                //        src: utils.root('src/main/webapp/content/images/android-icon-192x192.png'),
+                //        sizes: [36, 72, 96, 192],
+                //        "type": "image/png",
+                //        destination: 'content/',
+                //    }
+                //],
                 "theme_color": "#303F9F",
                 "background_color": "#FFFFFF",
                 "start_url": "/",

@@ -12,7 +12,7 @@ export class PlanResolver implements Resolve<any> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         const data = {
             authorities: [],
-            pageTitle: getWeekDayDisplayStr(route.params.ws) + ' Vertretungsplan GH',
+            pageTitle: getWeekDayDisplayStr(route.params.wd) + ' Vertretungsplan GH',
         };
         route.data = data;
         return data;

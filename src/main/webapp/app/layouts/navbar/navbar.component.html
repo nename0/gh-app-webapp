@@ -1,7 +1,7 @@
 <div [ngSwitch]="(isAuthenticated | async)">
     <mat-toolbar class="navbar-toolbar mat-accent" style="height: auto">
         <div style="padding: 8px 0px" layout="column">
-            <img src="../../../content/images/android-icon-72x72.png" class="mat-elevation-z4 navbar-avatar"/>
+            <img src="../../../content/images/android-icon-36x36.png" class="mat-elevation-z4 navbar-avatar"/>
             <div class="mat-body-2">
                 <span *ngSwitchCase="false">Please login</span>
                 <span *ngSwitchCase="true">{{ (userCtx |async).name }}</span>
@@ -18,20 +18,19 @@
             <span matLine>Home</span>
         </a>
         <mat-divider></mat-divider>
-        <h3 mat-subheader>Tags</h3>
-        <mat-list-item *ngIf="(allTags | async).length == 0" style="pointer-events:none">No Tags found</mat-list-item>
-        <a mat-list-item routerLink="{{'tag/' + tag}}" routerLinkActive="router-active" (click)="closeSidnav.emit()" *ngFor="let tag of (allTags | async); trackBy: trackBy">
+        <h3 mat-subheader>Tage</h3>
+        <a mat-list-item routerLink="{{'plan/' + wd}}" routerLinkActive="router-active" (click)="closeSidnav.emit()" *ngFor="let wd of weekDays; trackBy: trackBy">
             <mat-icon mat-list-icon class="fa fa-fw fa-tag" aria-hidden="true"></mat-icon>
-            <span matLine>{{ tag }}</span>
+            <span matLine>{{ weekDayToDisplayString(wd) }}</span>
         </a>
         <mat-divider></mat-divider>
         <a *ngSwitchCase="true" mat-list-item (click)="closeSidnav.emit(); logout()">
             <mat-icon mat-list-icon class="fa fa-fw fa-sign-out" aria-hidden="true"></mat-icon>
-            <span matLine>Sign out</span>
+            <span matLine>Abmelden</span>
         </a>
         <a *ngSwitchCase="false" mat-list-item (click)="closeSidnav.emit(); login()">
             <mat-icon mat-list-icon class="fa fa-fw fa-sign-in" aria-hidden="true"></mat-icon>
-            <span matLine>Sign in</span>
+            <span matLine>Anmelden</span>
         </a>
     </mat-nav-list>
 </div>

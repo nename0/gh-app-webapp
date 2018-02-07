@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-
 import { LoginModalService, JhiLoginDialogComponent } from '../../shared';
 import { MatDialogRef } from '@angular/material';
 import { take } from 'rxjs/operators';
 import { cacheWhileSubscribed } from '../../shared/rxjs/cacheWhileSubscribed';
+import { WEEK_DAYS, getWeekDayDisplayStr } from '../../model/weekdays';
+import { Router } from '@angular/router';
+import { ModificationChecker } from '../../net/modification-checker';
 
 @Component({
     selector: 'app-home',
@@ -13,19 +15,24 @@ import { cacheWhileSubscribed } from '../../shared/rxjs/cacheWhileSubscribed';
     ]
 
 })
-export class HomeComponent implements OnInit {
-    account: Account;
-    dialogRef: MatDialogRef<JhiLoginDialogComponent>;
+export class HomeComponent {
+    readonly weekDays: string[];
+    readonly weekDayToDisplayString: (wd: string) => string;
 
     constructor(
-        private loginModalService: LoginModalService,
+        private router: Router
     ) {
+        this.weekDays = WEEK_DAYS;
+        this.weekDayToDisplayString = getWeekDayDisplayStr;
+
+        const x = ModificationChecker.lastModificationFetched;
     }
 
-    ngOnInit() {
+    trackBy(index, weekDay) {
+        return weekDay;
     }
 
-    login() {
-        this.dialogRef = this.loginModalService.open();
+    onclick(weekday: string) {
+        this.router.navigate(['/plan/' + weekday]);
     }
 }

@@ -41,7 +41,7 @@
         "member-access": false,
         "member-ordering": [
             true,
-            "static-before-instance",
+            "instance-before-static",
             "variables-before-functions"
         ],
         "no-arg": true,
@@ -117,10 +117,6 @@
             true
         ],
         "object-literal-shorthand": true,
-        "space-before-function-paren": [
-            true,
-            "never"
-        ],
         "directive-selector": [
             true,
             "attribute",

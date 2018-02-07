@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs/Observable';
-import PouchDB from 'pouchdb-browser';
 import { filter, map } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { MSG_GET_USER, MSG_LOGIN, MSG_LOGOUT } from '../rxjs/serviceworker-messages';
