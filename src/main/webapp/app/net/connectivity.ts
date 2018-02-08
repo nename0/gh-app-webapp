@@ -1,8 +1,10 @@
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { combineLatest, pairwise, map } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
 
-class ConnectivityClass {
+@Injectable()
+export class ConnectivityService {
     private readonly navigatorOnline = new BehaviorSubject(true);
     private readonly offlineHints = new BehaviorSubject(0);
     public readonly isOnline = new BehaviorSubject(true);
@@ -41,5 +43,3 @@ class ConnectivityClass {
         this.offlineHints.next(0);
     }
 }
-
-export const Connectivity = new ConnectivityClass();

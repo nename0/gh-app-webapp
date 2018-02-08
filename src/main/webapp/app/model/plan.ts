@@ -1,43 +1,73 @@
-import { onDayChange } from '../shared/util';
+import { getDateString, getDateTimeString, onDayChange } from '../shared/util';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
+import { map, combineLatest, distinctUntilChanged } from 'rxjs/operators';
+import { getWeekDayShortStr } from './weekdays';
 
 export class ParsedPlan {
     public weekDay: string;
     public planDate: Date;
     public modification: Date
-    public outdated: BehaviorSubject<boolean>;
+    public outdated: Observable<boolean>;
     public messages: string = '';
     public substitutes: Substitute[] = [];
 
-    constructor() {
-        this.outdated = new BehaviorSubject(false);
-        this.checkOutdated();
-        onDayChange.subscribe(() => this.checkOutdated());
+    constructor(obj: any) {
+        this.weekDay = obj.weekDay;
+        this.planDate = new Date(obj.planDate);
+        this.modification = new Date(obj.modification);
+        this.messages = obj.messages;
+        this.substitutes = obj.substitutes.map((substitute) => new Substitute(substitute));
+        this.outdated = onDayChange.pipe(map((date) =>
+            date.getTime() > new Date(this.planDate).setHours(23, 59, 59, 999)
+        ),
+            distinctUntilChanged());
     }
 
-    public checkOutdated() {
-        this.outdated.next(new Date(this.planDate).setUTCHours(23, 59, 59, 999) < Date.now());
+    getFirstLine(): Observable<string> {
+        return getDateString(this.planDate).pipe(combineLatest(this.outdated),
+            map(([dateStr, isOutdated]) => {
+                const start = getWeekDayShortStr(this.weekDay) + ': ';
+                if (isOutdated) {
+                    return start + 'Veraltet';
+                }
+                return start + dateStr;
+            }),
+            distinctUntilChanged());
     }
 
-    public static fromJSON(json: string): ParsedPlan {
-        const obj = JSON.parse(json);
-        ParsedPlan.apply(obj);
-        (<ParsedPlan>obj).substitutes.forEach((substitute) => {
-            Substitute.apply(substitute);
+    getSecondLine(): Observable<string> {
+        return getDateTimeString(this.modification).pipe(map((dateTimeStr) => {
+            return 'Stand: ' + dateTimeStr;
+        }));
+    }
+
+    getJSON(): string {
+        return JSON.stringify(this, function(key, value) {
+            if (['outdated'].includes(key)) {
+                return undefined;
+            }
+            return value;
         })
-        return <ParsedPlan>obj;
     }
 };
 
 export class Substitute {
+    public classText: string;
+    public lesson: string;
+    public substitute: string;
+    public teacher: string;
+    public insteadOf: string;
+    public room: string;
+    public extra: string;
 
-    constructor(
-        public classText: string,
-        public lesson: string,
-        public substitute: string,
-        public teacher: string,
-        public insteadOf: string,
-        public room: string,
-        public extra: string
-    ) { }
+    constructor(obj: any) {
+        this.classText = obj.classText;
+        this.lesson = obj.lesson;
+        this.substitute = obj.substitute;
+        this.teacher = obj.teacher;
+        this.insteadOf = obj.insteadOf;
+        this.room = obj.room;
+        this.extra = obj.extra;
+    }
 }

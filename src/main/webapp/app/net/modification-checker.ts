@@ -1,18 +1,28 @@
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { take, pairwise } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/operators/combineLatest';
-import { Connectivity } from './connectivity';
 import { hasWebsocketSupport } from './websocket';
 import { distinctUntilChanged } from 'rxjs/operators/distinctUntilChanged';
 import { idbKeyVal } from '../shared/idbKeyVal';
 import { checkResponseStatus, getRandomArbitrary } from '../shared/util';
+import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+import { ConnectivityService } from './connectivity';
+import { PlanFetcherService } from './plan-fetcher';
 
-const KEY_LAST_MODIFICATION = 'lastModification';
+const KEY_LAST_MODIFICATION_RECEIVED = 'lastModificationReceived';
+const KEY_LAST_MODIFICATION_FETCHED = 'lastModificationFetched';
+const KEY_LAST_UPDATE = 'lastUpdate';
 
-class ModificationCheckerClass {
-    public lastModification: Promise<Date>;
+@Injectable()
+export class ModificationCheckerService {
+    private lastModificationReceived: Promise<Date>;
+    private lastModificationFetched: Promise<Date>;
+    public lastUpdate = new ReplaySubject<Date>(1);
 
-    constructor() {
+    constructor(
+        private connectivityService: ConnectivityService,
+        private planFetcher: PlanFetcherService) {
         this.setup();
     }
 
@@ -24,20 +34,25 @@ class ModificationCheckerClass {
     }
 
     private syncKeyValue() {
-        const promise = (async () => {
-            while (true) {
-                const result = await idbKeyVal.get(KEY_LAST_MODIFICATION);
+        async function doSync(key: string) {
+            const result = await idbKeyVal.get(key);
+            const date = new Date(<string>result);
+            if (!isNaN(+date)) {
+                return date;
+            }
+            idbKeyVal.set(key, new Date(0).toUTCString());
+            return new Date(0);
+        }
+        this.lastModificationReceived = doSync(KEY_LAST_MODIFICATION_RECEIVED);
+        this.lastModificationFetched = doSync(KEY_LAST_MODIFICATION_FETCHED);
+        const promise = idbKeyVal.get(KEY_LAST_UPDATE)
+            .then((result) => {
                 const date = new Date(<string>result);
                 if (!isNaN(+date)) {
-                    return date;
+                    this.lastUpdate.next(date);
                 }
-                if (await idbKeyVal.cas(KEY_LAST_MODIFICATION, result, new Date(0).toUTCString())) {
-                    return new Date(0);
-                }
-            }
-        })();
-        this.lastModification = promise;
-        return promise;
+            });
+        return Promise.all([this.lastModificationReceived, this.lastModificationFetched, promise]);
     }
 
     private async checkModificationRequest() {
@@ -54,7 +69,7 @@ class ModificationCheckerClass {
     private checkModification = async () => {
         try {
             await this.checkModificationRequest();
-            Connectivity.hintOnline();
+            this.connectivityService.hintOnline();
             if (hasWebsocketSupport) {
                 //setupWebsocket();
                 return;
@@ -65,20 +80,20 @@ class ModificationCheckerClass {
 
         } catch (err) {
             console.log('Error in checkModificationRequest', err);
-            Connectivity.hintOffline();
+            this.connectivityService.hintOffline();
             setTimeout(() => {
                 this.checkModification();
             }, getRandomArbitrary(1000, 4000));
         }
     }
 
-    private async casModifiactionDate(date: Date) {
+    private async storeModifiactionReceived(date: Date) {
         while (true) {
-            const expected = await this.lastModification;
+            const expected = await this.lastModificationReceived;
             if (expected >= date) {
                 return expected;
             }
-            if (await idbKeyVal.cas(KEY_LAST_MODIFICATION, expected.toUTCString(), date.toUTCString())) {
+            if (await idbKeyVal.cas(KEY_LAST_MODIFICATION_RECEIVED, expected.toUTCString(), date.toUTCString())) {
                 return date;
             }
             this.syncKeyValue();
@@ -86,12 +101,23 @@ class ModificationCheckerClass {
     }
 
     public async gotModifiactionDate(date: Date) {
-        this.onModification(await this.casModifiactionDate(date));
+        this.onModification(await this.storeModifiactionReceived(date));
     }
 
-    private onModification = async (lastModification: Date) => {
-        
+    private onModification = async (lastModificationReceived: Date) => {
+        const now = new Date();
+        while (true) {
+            this.syncKeyValue();
+            const lastModificationFetched = await this.lastModificationFetched;
+            if (lastModificationFetched >= lastModificationReceived) {
+                break;
+            }
+            await this.planFetcher.fetchAll();
+            if (await idbKeyVal.cas(KEY_LAST_MODIFICATION_FETCHED, lastModificationFetched.toUTCString(), lastModificationReceived.toUTCString())) {
+                break;
+            }
+        }
+        idbKeyVal.set(KEY_LAST_UPDATE, now.toUTCString());
+        this.lastUpdate.next(now);
     }
 }
-
-export const ModificationChecker = new ModificationCheckerClass();

@@ -4,3 +4,7 @@ export const WEEK_DAY_DISPLAY = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag',
 export function getWeekDayDisplayStr(wd: string): string {
     return WEEK_DAY_DISPLAY[WEEK_DAYS.indexOf(wd)];
 }
+
+export function getWeekDayShortStr(wd: string): string {
+    return wd[0].toUpperCase() + wd[1];
+}

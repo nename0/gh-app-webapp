@@ -19,7 +19,7 @@ import { WEEK_DAYS, getWeekDayDisplayStr } from '../../model/weekdays';
 })
 export class NavbarComponent {
     @Output() closeSidnav: EventEmitter<any>;
-    readonly dialogRef: MatDialogRef<JhiLoginDialogComponent>;
+    dialogRef: MatDialogRef<JhiLoginDialogComponent>;
     readonly version: string;
     readonly weekDays: string[];
     readonly weekDayToDisplayString: (wd:  string) => string;

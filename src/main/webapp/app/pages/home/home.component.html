@@ -1,8 +1,9 @@
+<p >Letztes Update: {{ (lastUpdate | async) }}</p>
 <div class="row">
     <mat-nav-list>
-        <mat-list-item *ngFor="let wd of weekDays; trackBy: trackBy" (click)="onclick(wd)">
-            <h4 mat-line>{{ weekDayToDisplayString(wd) }}</h4>
-            <p mat-line> Subline </p>
+        <mat-list-item [ngClass]="(outdated[wd] | async)?'outdated': null " *ngFor="let wd of weekDays; trackBy: trackBy" (click)="onclick(wd)">
+            <h4 mat-line>{{ (firstLines[wd] | async) }}</h4>
+            <p mat-line>{{ (secondLines[wd] | async) }}</p>
         </mat-list-item>
     </mat-nav-list>
 </div>

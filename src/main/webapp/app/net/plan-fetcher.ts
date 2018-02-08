@@ -5,35 +5,41 @@ import { WEEK_DAYS } from '../model/weekdays';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { take } from 'rxjs/operators/take';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { filter } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { ConnectivityService } from './connectivity';
 
 function KEY_PLAN(wd: string) {
     return 'plan-' + wd;
 }
 
-class PlanFetcherClass {
-    private readonly plansCache: { [wd: string]: ReplaySubject<ParsedPlan> };
+@Injectable()
+export class PlanFetcherService {
+    private readonly plansCache: { [wd: string]: BehaviorSubject<ParsedPlan> };
 
-    constructor() {
+    constructor(private connectivityService: ConnectivityService) {
+        this.plansCache = {};
         for (const wd of WEEK_DAYS) {
-            this.plansCache[wd] = new ReplaySubject(1);
+            this.plansCache[wd] = new BehaviorSubject(undefined);
         }
         this.syncKeyValue();
     }
 
-    private syncKeyValue() {
+    private syncKeyValue(): Promise<ParsedPlan[]> {
         return Promise.all(
             WEEK_DAYS.map(async (wd) => {
                 const result = await idbKeyVal.get(KEY_PLAN(wd));
                 if (!result) {
-                    return;
+                    return undefined;
                 }
-                const plan = <ParsedPlan>JSON.parse(result);
+                const plan = new ParsedPlan(JSON.parse(result));
                 this.plansCache[wd].next(plan);
             })
         );
     }
 
-    private async fetchPlanRequest(weekDay: string) {
+    private async fetchPlanRequest(weekDay: string, inCache: Date) {
         const res = await fetch(window.location.origin + '/api/v1/plans/plan?wd=' + weekDay, {
             credentials: 'same-origin'
         }).then(checkResponseStatus);
@@ -42,8 +48,7 @@ class PlanFetcherClass {
             throw new Error('no last-modified header');
         }
         const lastModification = new Date(lastModificationStr);
-        const inCache = await this.plansCache[weekDay].pipe(take(1)).toPromise();
-        if (inCache.modification >= lastModification) {
+        if (inCache >= lastModification) {
             if (res.body.cancel) {
                 await res.body.cancel();
             }
@@ -56,34 +61,42 @@ class PlanFetcherClass {
     }
 
     private async fetchPlan(weekDay: string) {
-        const result = await this.fetchPlanRequest(weekDay);
+        await this.syncKeyValue();
+        let cacheValue = this.plansCache[weekDay].getValue();
+        let cacheModification = cacheValue ? cacheValue.modification : new Date(0);
+        const result = await this.fetchPlanRequest(weekDay, cacheModification);
+        this.connectivityService.hintOnline();
+        if (!result) {
+            // not modified
+            return cacheValue;
+        }
         while (true) {
-            const expected = await this.plansCache[weekDay].pipe(take(1)).toPromise();
-            if (expected.modification >= result.modification) {
-                return expected;
+            if (cacheModification >= result.modification) {
+                return cacheValue;
             }
-            if (await idbKeyVal.cas(KEY_PLAN(weekDay), JSON.stringify(expected), JSON.stringify(result))) {
-                const plan = ParsedPlan.fromJSON(result.body);
+            const plan = new ParsedPlan(result.body);
+            if (await idbKeyVal.cas(KEY_PLAN(weekDay), JSON.stringify(cacheValue), plan.getJSON())) {
                 this.plansCache[weekDay].next(plan);
                 return plan;
             }
             await this.syncKeyValue();
+            cacheValue = this.plansCache[weekDay].getValue();
+            cacheModification = cacheValue ? cacheValue.modification : new Date(0);
         }
     }
 
-    public async fetchAll() {
-        await Promise.all(
+    public fetchAll() {
+        return Promise.all(
             WEEK_DAYS.map((wd) =>
                 this.fetchPlan(wd)
             )
-        );
+        ).catch((err) => {
+            this.connectivityService.hintOffline();
+            console.log('error in fetchAll', err);
+        });
     }
-}
 
-export const PlanFetcher = new PlanFetcherClass();
-
-class PlanRequest {
-    constructor(
-        public promise: Promise<ParsedPlan>,
-        public modification: Date) { }
+    public getCacheValue(weekDay: string) {
+        return this.plansCache[weekDay].pipe(filter((value) => !!value));
+    }
 }

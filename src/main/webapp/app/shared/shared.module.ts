@@ -10,6 +10,7 @@ import { GHAppLayoutsModule } from '../layouts/layouts.module';
 import { AuthenticationProviderService } from './auth/auth-provider.service';
 import { StateStorageService } from './auth/state-storage.service';
 import { HasAnyAuthorityDirective } from './auth/has-any-authority.directive';
+import { setupUtil } from './util';
 
 @NgModule({
     imports: [
@@ -35,4 +36,8 @@ import { HasAnyAuthorityDirective } from './auth/has-any-authority.directive';
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 
 })
-export class GHAppSharedModule { }
+export class GHAppSharedModule {
+    constructor() {
+        setupUtil();
+    }
+ }

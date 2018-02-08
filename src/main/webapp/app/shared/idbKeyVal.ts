@@ -28,7 +28,7 @@ class IdbKeyValClass {
 
     private async withStore(type: IDBTransactionMode, callback: (store: IDBObjectStore) => void) {
         const db = await this.getDB();
-        return new Promise(function(resolve, reject) {
+        await new Promise(function(resolve, reject) {
             const transaction = db.transaction('keyval', type);
             transaction.oncomplete = function() {
                 resolve();
@@ -44,6 +44,12 @@ class IdbKeyValClass {
             req = store.get(key);
         })
         return req.result;
+    }
+
+    public set(key: string, value: string): Promise<void> {
+        return this.withStore('readwrite', function(store) {
+            store.put(value, key);
+        });
     }
 
     public async cas(key: string, expected: string, value: string): Promise<boolean> {

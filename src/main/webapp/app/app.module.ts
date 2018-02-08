@@ -9,11 +9,13 @@ import { RouterModule } from '@angular/router';
 import { MainComponent } from './layouts/main/main.component';
 import { GHAppPagesModule } from './pages/pages.module';
 import { GHAppLayoutsModule } from './layouts/layouts.module';
+import { GHAppNetModule } from './net/net.module';
 
 @NgModule({
     imports: [
         BrowserModule,
         GHAppSharedModule,
+        GHAppNetModule,
         GHAppLayoutsModule,
         GHAppPagesModule
     ],
