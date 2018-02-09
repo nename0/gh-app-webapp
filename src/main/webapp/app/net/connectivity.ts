@@ -2,12 +2,16 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { combineLatest, pairwise, map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ConnectivityService {
     private readonly navigatorOnline = new BehaviorSubject(true);
     private readonly offlineHints = new BehaviorSubject(0);
     public readonly isOnline = new BehaviorSubject(true);
+
+    public readonly loading: Observable<boolean>;
+    private readonly loadingTasks = new BehaviorSubject(0);
 
     constructor() {
         const hasNavigatorOnline = typeof navigator.onLine === 'boolean';
@@ -28,7 +32,9 @@ export class ConnectivityService {
                 }
                 return hintsNew < 2;
             }))
-            .subscribe(this.isOnline)
+            .subscribe(this.isOnline);
+
+        this.loading = this.loadingTasks.pipe(map((countTasks) => countTasks > 0));
     }
 
     private navigatorOnlineChange = () => {
@@ -41,5 +47,19 @@ export class ConnectivityService {
 
     public hintOnline() {
         this.offlineHints.next(0);
+    }
+
+    public async executeLoadingTask<A, R>(fun: (...args: A[]) => Promise<R>, thisObj: any, ...args: A[]): Promise<R> {
+        this.loadingTasks.next(this.loadingTasks.getValue() + 1);
+        try {
+            const result = await fun.apply(thisObj, args);
+            this.hintOnline();
+            return result;
+        } catch (err) {
+            this.hintOffline();
+            throw err;
+        } finally {
+            this.loadingTasks.next(this.loadingTasks.getValue() + - 1);
+        }
     }
 }

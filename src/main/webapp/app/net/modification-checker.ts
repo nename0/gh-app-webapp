@@ -68,11 +68,10 @@ export class ModificationCheckerService {
 
     private checkModification = async () => {
         try {
-            await this.checkModificationRequest();
-            this.connectivityService.hintOnline();
+            await this.connectivityService.executeLoadingTask(this.checkModificationRequest, this);
             if (hasWebsocketSupport) {
                 //setupWebsocket();
-                return;
+                //return;
             }
             setTimeout(() => {
                 this.checkModification();
@@ -80,7 +79,6 @@ export class ModificationCheckerService {
 
         } catch (err) {
             console.log('Error in checkModificationRequest', err);
-            this.connectivityService.hintOffline();
             setTimeout(() => {
                 this.checkModification();
             }, getRandomArbitrary(1000, 4000));

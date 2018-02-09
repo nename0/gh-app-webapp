@@ -1,3 +1,22 @@
+mat-list-item.blink{
+    -webkit-animation-name: blink; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: .15s; /* Safari 4.0 - 8.0 */
+    animation-name: blink;
+    animation-duration: .15s;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes blink {
+    from {background-color: rgba(0, 0, 0, 0.2);}
+    to {background-color: rgba(0, 0, 0, 0.2);}
+}
+
+/* Standard syntax */
+@keyframes blink {
+    from {background-color: rgba(0, 0, 0, 0.2);}
+    to {background-color: rgba(0, 0, 0, 0.2);}
+}
+
 mat-list-item.outdated{
     color: rgba(0, 0, 0, 0.38);
 }

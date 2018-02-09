@@ -1,12 +1,12 @@
 import { checkResponseStatus } from '../shared/util';
 import { ParsedPlan } from '../model/plan';
 import { idbKeyVal } from '../shared/idbKeyVal';
-import { WEEK_DAYS } from '../model/weekdays';
+import { WEEK_DAYS, getWeekDayIndex } from '../model/weekdays';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { take } from 'rxjs/operators/take';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { filter } from 'rxjs/operators';
+import { filter, distinctUntilChanged } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { ConnectivityService } from './connectivity';
 
@@ -26,12 +26,16 @@ export class PlanFetcherService {
         this.syncKeyValue();
     }
 
-    private syncKeyValue(): Promise<ParsedPlan[]> {
+    private syncKeyValue() {
         return Promise.all(
             WEEK_DAYS.map(async (wd) => {
                 const result = await idbKeyVal.get(KEY_PLAN(wd));
                 if (!result) {
-                    return undefined;
+                    return;
+                }
+                const cacheValue = this.plansCache[wd].getValue();
+                if (cacheValue && result === cacheValue.getJSON()) {
+                    return;
                 }
                 const plan = new ParsedPlan(JSON.parse(result));
                 this.plansCache[wd].next(plan);
@@ -65,13 +69,9 @@ export class PlanFetcherService {
         let cacheValue = this.plansCache[weekDay].getValue();
         let cacheModification = cacheValue ? cacheValue.modification : new Date(0);
         const result = await this.fetchPlanRequest(weekDay, cacheModification);
-        this.connectivityService.hintOnline();
-        if (!result) {
-            // not modified
-            return cacheValue;
-        }
         while (true) {
-            if (cacheModification >= result.modification) {
+            if (!result || cacheModification >= result.modification) {
+                this.plansCache[weekDay].next(cacheValue);
                 return cacheValue;
             }
             const plan = new ParsedPlan(result.body);
@@ -86,14 +86,15 @@ export class PlanFetcherService {
     }
 
     public fetchAll() {
-        return Promise.all(
-            WEEK_DAYS.map((wd) =>
-                this.fetchPlan(wd)
-            )
-        ).catch((err) => {
-            this.connectivityService.hintOffline();
-            console.log('error in fetchAll', err);
-        });
+        const promises = new Array<Promise<ParsedPlan>>(WEEK_DAYS.length);
+        let index = getWeekDayIndex(new Date());
+        for (; !promises[index]; index = (index + 1) % WEEK_DAYS.length) {
+            const wd = WEEK_DAYS[index]
+            promises[index] = this.connectivityService.executeLoadingTask(this.fetchPlan, this, wd);
+        }
+        return Promise.all(promises)
+            .catch((err) =>
+                console.log('error in fetchAll', err));
     }
 
     public getCacheValue(weekDay: string) {
