@@ -1,22 +1,10 @@
-<!--
-<div>
-    <router-outlet name="navbar"></router-outlet>
-</div>
-<div class="container-fluid">
-    <div class="card jh-card">
-        <router-outlet></router-outlet>
-        <router-outlet name="popup"></router-outlet>
-    </div>
-    <app-footer></app-footer>
-</div> 
--->
 <mat-sidenav-container fullscreen>
     <mat-sidenav id="my-sidenav" class="mat-elevation-z16" #sidenav>
         <app-navbar (closeSidnav)="closeSidenav()"></app-navbar>
     </mat-sidenav>
 
-    <div fxLayout="column" style="overflow:hidden;height:100%">
-        <div #scrollpane fxFlex="grow" style="overflow-y:auto;overflow-x:hidden">
+    <div style="overflow:hidden;height: calc(100% + 1px);display:flex">
+        <div #scrollpane style="overflow-y:auto;overflow-x:hidden;flex: 1 1 100%">
             <mat-toolbar color="primary" class="mat-elevation-z4" 
                 style="z-index:2" 
                 [style.top]="(toolbarOffset | async) + 'px'" 
@@ -28,9 +16,6 @@
                 <span>{{ (titleObs |async) }}</span>
             </mat-toolbar>
             <router-outlet></router-outlet>
-        </div>
-        <div fxFlex="0 0 64px">
-            <app-player-bottom-bar></app-player-bottom-bar>
         </div>
     </div>
     <router-outlet name="popup"></router-outlet>

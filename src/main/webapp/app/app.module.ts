@@ -39,5 +39,4 @@ if ('serviceWorker' in navigator) {
     });
 } else {
     console.log('serviceWorker not supported')
-    window.location.href = 'https://jakearchibald.github.io/isserviceworkerready/demos/postMessage/';
 }

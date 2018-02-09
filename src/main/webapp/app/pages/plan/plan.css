@@ -1,0 +1,47 @@
+table {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-size: 9pt;
+    font-weight:600;
+}
+
+.TitelTabelleMitteilung {
+    text-decoration: underline;
+}
+.TabelleMitteilung {
+    border-collapse: collapse;
+    border: lightgrey solid 2px;
+    margin: auto;
+    max-width: 95%;
+    white-space: pre-wrap;
+}
+
+.WrapperTabelleVertretungen{
+    margin: auto;
+    max-width: 95%;
+    display: flex;
+    flex: 1 0;
+    overflow-x: auto;
+}
+            
+.TabelleVertretungen {
+    border-collapse: collapse;
+    border: lightgrey solid 2px;
+    width: 100%;
+}
+
+.TitelZeileTabelleVertretungen{
+    height: 2em; 
+    background-color:#8585AD; 
+}
+
+.ZeileTabelleVertretungen:nth-child(even) {
+    background-color:#D0D0DF;
+}
+.ZeileTabelleVertretungen:nth-child(odd) {
+    background-color:#F4F4d4;
+}
+
+.ZelleTabelleVertretungen {
+    padding: 2px;
+    border: 1pt solid;
+}
