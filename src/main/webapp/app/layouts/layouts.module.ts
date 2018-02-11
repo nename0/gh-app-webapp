@@ -2,6 +2,7 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { MainComponent } from './main/main.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { GHAppSharedModule } from '../shared/shared.module';
+import { AppBarService } from './main/appbar.service';
 
 @NgModule({
     imports: [
@@ -12,6 +13,7 @@ import { GHAppSharedModule } from '../shared/shared.module';
         NavbarComponent,
     ],
     providers: [
+        AppBarService
     ],
     exports: [
         MainComponent,

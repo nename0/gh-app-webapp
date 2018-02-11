@@ -22,12 +22,14 @@ export class ConnectivityService {
         }
 
         this.navigatorOnline.pipe(combineLatest(this.offlineHints), pairwise(),
-            map(([[navigatorOnlineNew, hintsNew], [navigatorOnlineOld, hintsOld]]) => {
+            map(([[navigatorOnlineOld, hintsOld], [navigatorOnlineNew, hintsNew]]) => {
                 if (!navigatorOnlineNew) {
                     return false;
                 }
                 if (navigatorOnlineNew && !navigatorOnlineOld) {
-                    this.offlineHints.next(0);
+                    if (this.offlineHints.getValue() > 0) {
+                        this.offlineHints.next(0);
+                    }
                     return true;
                 }
                 return hintsNew < 2;

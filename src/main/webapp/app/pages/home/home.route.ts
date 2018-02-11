@@ -7,7 +7,8 @@ export const HOME_ROUTE: Route = {
     component: HomeComponent,
     data: {
         authorities: [],
-        pageTitle: 'Vertretungsplan GH'
+        pageTitle: 'Vertretungsplan GH',
+        dontSetSubtitle: true
     },
     canActivate: [UserRouteAccessService]
 };

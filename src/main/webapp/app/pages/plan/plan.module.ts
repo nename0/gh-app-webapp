@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 
 import { GHAppSharedModule } from '../../shared';
 import { GHAppLayoutsModule } from '../../layouts/layouts.module';
-import { PLAN_ROUTE, PlanResolver } from './plan.route';
+import { PLAN_ROUTE } from './plan.route';
 import { PlanComponent } from './plan.component';
 
 @NgModule({
@@ -17,7 +17,9 @@ import { PlanComponent } from './plan.component';
     ],
     entryComponents: [
     ],
-    providers: [PlanResolver],
+    providers: [
+
+    ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class GHAppPlanModule {}

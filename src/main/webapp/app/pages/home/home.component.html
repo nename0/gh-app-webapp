@@ -1,6 +1,4 @@
-<p>Online: {{ (isOnline | async) }}</p>
 <p>Ladevorgang: {{ (loading | async) }}</p>
-<p>Letztes Update: {{ (lastUpdate | async) }}</p>
 <div class="row">
     <mat-nav-list>
         <mat-list-item [ngClass]="{'blink': (blink[wd] | async), 'outdated': (outdated[wd] | async)}"  *ngFor="let wd of weekDays; trackBy: trackBy" (click)="onclick(wd)">

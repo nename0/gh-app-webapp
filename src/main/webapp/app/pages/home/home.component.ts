@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { LoginModalService, JhiLoginDialogComponent } from '../../shared';
 import { MatDialogRef } from '@angular/material';
 import { switchMap, map, delay, concat, skip } from 'rxjs/operators';
-import { defer as Observable_defer } from 'rxjs/observable/defer';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 import { of as Observable_of } from 'rxjs/observable/of';
 import { WEEK_DAYS, getWeekDayDisplayStr } from '../../model/weekdays';
 import { Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { PlanFetcherService } from '../../net/plan-fetcher';
 import { ModificationCheckerService } from '../../net/modification-checker';
 import { getDateTimeString } from '../../shared/util';
 import { ConnectivityService } from '../../net/connectivity';
+import { AppBarService } from '../../layouts/main/appbar.service';
 
 @Component({
     selector: 'app-home',
@@ -29,16 +30,15 @@ export class HomeComponent {
     readonly outdated: { [wd: string]: Observable<boolean> } = {};
     readonly blink: { [wd: string]: Observable<boolean> } = {};
 
-    readonly isOnline: Observable<boolean>;
     readonly loading: Observable<boolean>;
-    readonly lastUpdate: Observable<string>;
 
     constructor(
         private router: Router,
         private changeDetectorRef: ChangeDetectorRef,
         private planFetcher: PlanFetcherService,
         private modificationChecker: ModificationCheckerService,
-        private connectivityService: ConnectivityService
+        private connectivityService: ConnectivityService,
+        private appBarService: AppBarService
     ) {
         this.weekDays = WEEK_DAYS;
 
@@ -52,10 +52,17 @@ export class HomeComponent {
                 return Observable_of(true).pipe(concat(delayed));
             }));
         }
-        this.isOnline = this.connectivityService.isOnline;
         this.loading = this.connectivityService.loading;
-        this.lastUpdate = modificationChecker.lastUpdate
+        const lastUpdate = this.modificationChecker.lastUpdate
             .pipe(switchMap((date) => getDateTimeString(date)));
+        const subtitleObs = combineLatest(this.connectivityService.isOnline, lastUpdate)
+            .pipe(map(([isOnline, lastUpdateStr]) => {
+                if (isOnline) {
+                    return undefined;
+                }
+                return 'Offline - Letzte Verbindung: ' + lastUpdateStr;
+            }));
+        this.appBarService.setSubTitle(subtitleObs);
     }
 
     trackBy(index, weekDay) {

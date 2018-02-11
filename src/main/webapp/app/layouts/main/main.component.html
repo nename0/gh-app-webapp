@@ -5,15 +5,15 @@
 
     <div style="overflow:hidden;height: calc(100% + 1px);display:flex">
         <div #scrollpane style="overflow-y:auto;overflow-x:hidden;flex: 1 1 100%">
-            <mat-toolbar color="primary" class="mat-elevation-z4" 
-                style="z-index:2" 
-                [style.top]="(toolbarOffset | async) + 'px'" 
-                [style.position]="(overSmallBreakpoint | async) ? 'static' : 'sticky'"
+            <mat-toolbar color="primary" class="mat-elevation-z4" style="z-index:2" [style.top]="(toolbarOffset | async) + 'px'" [style.position]="(overSmallBreakpoint | async) ? 'static' : 'sticky'"
                 [style.visibility]="(toolbarVisible | async) ? '' : 'hidden'">
                 <button mat-icon-button style="margin-left: -12px; margin-right: 20px" (click)="sidenav.open()" *ngIf="(overSmallBreakpoint | async) ? false : true">
                     <mat-icon class="fa fa-fw fa-bars" aria-label="Navigation"></mat-icon>
                 </button>
-                <span>{{ (titleObs |async) }}</span>
+                <div>
+                    <div style="margin-bottom: -3px;">{{ (titleObs |async) }}</div>
+                    <div *ngIf="(hasSubtitleObs | async)"class="mat-subheading-1" style="margin: 0">{{ (subtitleObs |async) }}</div>
+                </div>
             </mat-toolbar>
             <router-outlet></router-outlet>
         </div>

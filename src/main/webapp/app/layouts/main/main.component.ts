@@ -1,9 +1,10 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router, ActivatedRouteSnapshot, NavigationEnd, RoutesRecognized, ResolveEnd } from '@angular/router';
+import { Router, ActivatedRouteSnapshot, NavigationEnd } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 import { from as Observable_from } from 'rxjs/observable/from';
+import { of as Observable_of } from 'rxjs/observable/of';
 import { ObservableMedia, MediaChange } from '@angular/flex-layout';
 import { MatSidenav } from '@angular/material/sidenav';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -11,6 +12,7 @@ import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/operators/combineLatest';
 import { Subject } from 'rxjs/Subject';
 import { observable } from 'rxjs/symbol/observable';
+import { AppBarService } from './appbar.service';
 
 export let stickyHeaderOffset: BehaviorSubject<number>;
 
@@ -31,22 +33,34 @@ export class MainComponent implements OnInit {
     overSmallBreakpoint: BehaviorSubject<boolean>;
     toolbarOffset: BehaviorSubject<number>;
     toolbarVisible: BehaviorSubject<boolean>;
-    titleObs: BehaviorSubject<string>;
+    titleObs: Observable<string>;
+    subtitleObs: Observable<string>;
+    hasSubtitleObs: Observable<boolean>;
 
     constructor(
         private router: Router,
-        private titleService: Title,
-        public media: ObservableMedia
+        public media: ObservableMedia,
+        private appBarService: AppBarService
     ) {
-        this.media[observable] = function() { return this; }
+        // hack to make rxjs belive its an real Observabke
+        this.media[observable] = function () { return this; }
+
+        this.titleObs = this.appBarService.titleObs;
+        this.subtitleObs = this.appBarService.subtitleObs;
+        this.hasSubtitleObs = this.subtitleObs.pipe(map((title) => !!title));
     }
 
-    private getPageTitle(routeSnapshot: ActivatedRouteSnapshot) {
-        let title: string = (routeSnapshot.data && routeSnapshot.data['pageTitle']) ? routeSnapshot.data['pageTitle'] : 'Vertretungsplan GH';
-        if (routeSnapshot.firstChild) {
-            title = this.getPageTitle(routeSnapshot.firstChild) || title;
+    private getPageTitleOpts(routeSnapshot: ActivatedRouteSnapshot): { title: string, dontSetSubtitle: boolean } {
+        let opts; if (routeSnapshot.data && routeSnapshot.data['pageTitle']) {
+            opts = {
+                title: routeSnapshot.data && routeSnapshot.data['pageTitle'],
+                dontSetSubtitle: routeSnapshot.data && routeSnapshot.data['dontSetSubtitle']
+            };
         }
-        return title;
+        if (routeSnapshot.firstChild) {
+            return this.getPageTitleOpts(routeSnapshot.firstChild) || opts;
+        }
+        return opts;
     }
 
     ngOnInit() {
@@ -66,12 +80,15 @@ export class MainComponent implements OnInit {
             this.updateSidenav();
         });
 
-        this.titleObs = new BehaviorSubject(this.getPageTitle(this.router.routerState.snapshot.root));
         this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
-                const title = this.getPageTitle(this.router.routerState.snapshot.root);
-                this.titleService.setTitle(title);
-                this.titleObs.next(title);
+                const titleOpts = this.getPageTitleOpts(this.router.routerState.snapshot.root);
+                if (titleOpts) {
+                    this.appBarService.setTitle(Observable_of(titleOpts.title));
+                    if (!titleOpts.dontSetSubtitle) {
+                        this.appBarService.setSubTitle(Observable_of(undefined));
+                    }
+                }
             }
         });
 
