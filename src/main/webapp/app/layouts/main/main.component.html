@@ -7,13 +7,20 @@
         <div #scrollpane style="overflow-y:auto;overflow-x:hidden;flex: 1 1 100%">
             <mat-toolbar color="primary" class="mat-elevation-z4" style="z-index:2" [style.top]="(toolbarOffset | async) + 'px'" [style.position]="(overSmallBreakpoint | async) ? 'static' : 'sticky'"
                 [style.visibility]="(toolbarVisible | async) ? '' : 'hidden'">
-                <button mat-icon-button style="margin-left: -12px; margin-right: 20px" (click)="sidenav.open()" *ngIf="(overSmallBreakpoint | async) ? false : true">
+                <button mat-icon-button style="margin-left:-12px;margin-right:20px" (click)="sidenav.open()" *ngIf="(overSmallBreakpoint | async) ? false : true">
                     <mat-icon class="fa fa-fw fa-bars" aria-label="Navigation"></mat-icon>
                 </button>
                 <div>
                     <div style="margin-bottom: -3px;">{{ (titleObs |async) }}</div>
-                    <div *ngIf="(hasSubtitleObs | async)"class="mat-subheading-1" style="margin: 0">{{ (subtitleObs |async) }}</div>
+                    <div *ngIf="(hasSubtitleObs | async)" class="mat-subheading-1" style="margin: 0">{{ (subtitleObs |async) }}</div>
                 </div>
+                <button mat-icon-button  style="right: 4px; position: absolute" [matMenuTriggerFor]="appMenu">
+                    <mat-icon class="fa fa-fw fa-ellipsis-v" aria-label="Navigation"></mat-icon>
+                </button>
+                <mat-menu #appMenu="matMenu">
+                    <a routerLink="settings"  mat-menu-item>Filter & Einstellungen</a>
+                    <button mat-menu-item>Über</button>
+                  </mat-menu>
             </mat-toolbar>
             <router-outlet></router-outlet>
         </div>
