@@ -17,7 +17,8 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
         port: 9000,
         proxy: {
             "/api": {
-                target: "http://localhost:3000"
+                target: "http://localhost:3000",
+                ws: true
             }
         }
     },

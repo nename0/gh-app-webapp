@@ -10,8 +10,8 @@ import { PushService } from './push';
         PlanFetcherService,
         ModificationCheckerService,
         ConnectivityService,
-        WebsocketHandlerService,
-        PushService
+        PushService,
+        WebsocketHandlerService
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

@@ -51,6 +51,14 @@ export class ConnectivityService {
         this.offlineHints.next(0);
     }
 
+    public startLoadingTask() {
+        this.loadingTasks.next(this.loadingTasks.getValue() + 1);
+    }
+
+    public endLoadingTask() {
+        this.loadingTasks.next(this.loadingTasks.getValue() - 1);
+    }
+
     public async executeLoadingTask<A, R>(fun: (...args: A[]) => Promise<R>, thisObj: any, ...args: A[]): Promise<R> {
         this.loadingTasks.next(this.loadingTasks.getValue() + 1);
         try {
@@ -61,7 +69,7 @@ export class ConnectivityService {
             this.hintOffline();
             throw err;
         } finally {
-            this.loadingTasks.next(this.loadingTasks.getValue() + - 1);
+            this.loadingTasks.next(this.loadingTasks.getValue() - 1);
         }
     }
 }

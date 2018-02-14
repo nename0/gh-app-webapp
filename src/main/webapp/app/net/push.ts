@@ -2,6 +2,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Injectable, NgZone } from '@angular/core';
 import { idbKeyVal } from '../shared/idbKeyVal';
 import { checkResponseStatus } from '../shared/util';
+import { hasWebsocketSupport } from './websocket';
 
 declare const navigator: Navigator;
 
@@ -20,7 +21,7 @@ function urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 
-const pushAvailable = 'serviceWorker' in navigator && 'PushManager' in window;
+const pushAvailable = 'serviceWorker' in navigator && 'PushManager' in window && hasWebsocketSupport;
 const publicKey = 'BFnMFwGNZpptuw48WlgK1ae8k-t09c26C_Ssf04jmHKJfnMM26SLprWmnRr_z03MbYenDHlmsjsj_-0_T-O4U6M';
 const KEY_LAST_PUSH_SUBSCRIPTION_VALUE = 'lastPushSubscriptionValue';
 const KEY_LAST_PUSH_SUBSCRIPTION_DATE = 'lastPushSubscriptionDate';
