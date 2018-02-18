@@ -9,10 +9,13 @@
                 <span *ngSwitchCase="PushStatus.DENIED">Benachrichtigungen blockiert</span>
             </button>
             <div style="padding-top: 4px">
-                <span *ngSwitchCase="PushStatus.NOT_AVALABLE">Ihr Browser unterstützt Benachrichtigungen nicht.
-                    <a href="https://caniuse.com/#feat=push-api">Alternativen...</a>
+                <span class="settings-warn-text" *ngSwitchCase="PushStatus.DISABLED">
+                    <ng-container *ngIf="(pushHasErrored | async)">Fehler beim Verbinden mit dem Server</ng-container>
                 </span>
-                <span *ngSwitchCase="PushStatus.DENIED">
+                <span class="settings-warn-text" *ngSwitchCase="PushStatus.NOT_AVALABLE">Ihr Browser unterstützt Benachrichtigungen nicht.
+                    <a target="_blank" href="https://caniuse.com/#feat=push-api">Alternativen...</a>
+                </span>
+                <span class="settings-warn-text" *ngSwitchCase="PushStatus.DENIED">
                     Um Benachrichtigungen zu aktivieren, in der Addresszeile die Website-Einstellungen öffnen und Benachrichtigungen erlauben
                 </span>
             </div>

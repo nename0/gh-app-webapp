@@ -18,9 +18,11 @@ export class SettingsComponent {
     readonly pushButtonLoading: BehaviorSubject<boolean>;
     readonly pushButtonDisable: Observable<boolean>;
     readonly pushStatusObs: BehaviorSubject<PushStatus>;
+    readonly pushHasErrored: BehaviorSubject<boolean>;
 
     constructor(public pushService: PushService) {
         this.pushStatusObs = this.pushService.pushStatus;
+        this.pushHasErrored = this.pushService.hasErrored;
 
         this.pushButtonLoading = new BehaviorSubject(false);
         this.pushButtonDisable = combineLatest(this.pushButtonLoading, this.pushStatusObs)

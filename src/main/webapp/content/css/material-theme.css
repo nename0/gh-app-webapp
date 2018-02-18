@@ -1454,3 +1454,6 @@ mat-nav-list > a.router-active .mat-line {
 
 .navbar-toolbar.mat-accent {
   background: white; }
+
+span.settings-warn-text {
+  color: #f44336; }

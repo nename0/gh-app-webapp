@@ -40,7 +40,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
     const urlPath = new URL(event.request.url).pathname;
-    if (urlPath.startsWith('/couchdb/')) {
+    if (urlPath.startsWith('/api/')) {
         return event.respondWith(fetch(event.request));
     }
     event.respondWith(
@@ -48,4 +48,35 @@ self.addEventListener('fetch', (event) => {
             return response || fetch(event.request);
         })
     );
+});
+
+self.addEventListener('push', function(event) {
+    console.log('Received a push message', event);
+
+    if ((<any>Notification).permission === 'denied') {
+        return;
+    }
+
+    let data = {};
+    if (event.data) {
+        data = event.data.json();
+    }
+    const title = data['title'] || 'Something Has Happened';
+    const message = data['message'] || 'Here\'s something you might want to check out.';
+    const icon = 'images/new-notification.png';
+
+    event.waitUntil(
+        self.registration.showNotification(title, <any>{
+            body: message,
+            icon,
+            tag: 'simple-push-demo-notification',
+            data
+        })
+    );
+});
+
+self.addEventListener('notificationclick', function(event) {
+    console.log('On notification click: ', event);
+
+    event.waitUntil(self.clients.openWindow(location.origin));
 });

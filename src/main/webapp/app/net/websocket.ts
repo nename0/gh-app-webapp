@@ -1,33 +1,43 @@
 import { Injectable, Injector } from '@angular/core';
 import { ConnectivityService } from './connectivity';
-import { getRandomArbitrary } from '../shared/util';
-import { WSMESSAGE_LAST_MODIFICATION_QUERY, WSMESSAGE_LAST_MODIFICATION_UPDATE } from './websocket-mesages';
+import { getRandomArbitrary, browserFingerprint } from '../shared/util';
+import { WSMESSAGE_LAST_MODIFICATION_QUERY, WSMESSAGE_LAST_MODIFICATION_UPDATE, WSMESSAGE_PUSH_SUBSCRIPTION } from './websocket-mesages';
 import { ModificationCheckerService } from './modification-checker';
+import { filter, take } from 'rxjs/operators';
 
 export const hasWebsocketSupport = typeof WebSocket === 'function';
 
 @Injectable()
 export class WebsocketHandlerService {
-    private readonly url: string;
+    private readonly url: Promise<string>;
 
     private websocket: WebSocket;
     private lastReceiveTime: number;
     private pingCheckTimeout: number;
 
     private startedLoadingTask = false;
+    private pushSubscriptionToSend: string;
 
-    private get modificationChecker() {
-        return this.injector.get(ModificationCheckerService);
+    // lazy getter
+    private get modificationChecker(): ModificationCheckerService {
+        Object.defineProperty(this, 'modificationChecker', { value: this.injector.get(ModificationCheckerService), writable: false, configurable: true })
+        return this.modificationChecker;
     }
 
     constructor(private injector: Injector,
         private connectivityService: ConnectivityService) {
         if (hasWebsocketSupport) {
-            this.url = location.origin.replace(/^http/, 'ws') + '/api/v1/websocket';
+            this.url = browserFingerprint.then((fingerprint) =>
+                location.origin.replace(/^http/, 'ws') + '/api/v1/websocket?fingerprint=' + fingerprint);
         }
     }
 
-    public connect = () => {
+    // returns true when connecting
+    public connect = async () => {
+        const url = await this.url;
+        if (this.websocket && this.websocket.readyState <= WebSocket.OPEN) {
+            return this.websocket.readyState === WebSocket.CONNECTING;
+        }
         if (this.websocket) {
             if (this.pingCheckTimeout) {
                 clearTimeout(this.pingCheckTimeout);
@@ -40,11 +50,12 @@ export class WebsocketHandlerService {
             this.startedLoadingTask = true;
             this.connectivityService.startLoadingTask();
         }
-        this.websocket = new WebSocket(this.url);
+        this.websocket = new WebSocket(url);
         this.websocket.onopen = this.onopen;
         this.websocket.onmessage = this.onmessage;
         this.websocket.onerror = this.onerror;
         this.websocket.onclose = this.onclose;
+        return true;
     }
 
     private onopen = (event: Event) => {
@@ -52,6 +63,7 @@ export class WebsocketHandlerService {
             return;
         }
         this.networkPositive();
+        this.trySendPushSubscription()
         this.forceUpdate();
     }
 
@@ -85,7 +97,7 @@ export class WebsocketHandlerService {
             return;
         }
         this.networkNegative();
-        setTimeout(this.connect, getRandomArbitrary(1000, 3000));
+        this.connectivityService.scheduleRetryTask(this.connect);
     }
 
     private networkPositive() {
@@ -133,5 +145,31 @@ export class WebsocketHandlerService {
         if (this.websocket.readyState === WebSocket.OPEN) {
             this.websocket.send(WSMESSAGE_LAST_MODIFICATION_QUERY + date.toUTCString());
         }
+    }
+
+    public async sendPushSubscription(value: string) {
+        this.pushSubscriptionToSend = value;
+        await this.trySendPushSubscription();
+        do {
+            await this.connectivityService.loading.pipe(filter((isLoading) => !isLoading), take(1)).toPromise();
+            if (this.websocket && this.websocket.readyState === WebSocket.CLOSED) {
+                throw new Error('sendPushSubscription: websocket connection error');
+            }
+        } while (this.pushSubscriptionToSend);
+    }
+
+    private async trySendPushSubscription() {
+        if (!this.pushSubscriptionToSend) {
+            return;
+        }
+        if (await this.connect()) {
+            return; // waiting for onopen
+        }
+        if (!this.startedLoadingTask) {
+            this.startedLoadingTask = true;
+            this.connectivityService.startLoadingTask();
+        }
+        this.websocket.send(WSMESSAGE_PUSH_SUBSCRIPTION + this.pushSubscriptionToSend);
+        this.pushSubscriptionToSend = null;
     }
 }

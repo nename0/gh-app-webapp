@@ -10,6 +10,10 @@ import { StateStorageService } from './state-storage.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { of as Observable_of } from 'rxjs/observable/of';
 
+export const RENEW_PERIOD_WEEKS = 6;  // For client
+export const EXPIRE_PERIOD_WEEKS = 8; // For server
+export const RENEW_PERIOD_MILLIS = RENEW_PERIOD_WEEKS * 7 * 24 * 3600 * 1000;
+
 @Injectable()
 export class AuthenticationProviderService {
     public readonly userSubject: ReplaySubject<UserContext>;

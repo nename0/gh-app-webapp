@@ -28,9 +28,18 @@ import { GHAppNetModule } from './net/net.module';
     ],
     bootstrap: [MainComponent]
 })
-export class GHAppModule { }
+export class GHAppModule {
+    constructor(
+        private modificationChecker: ModificationCheckerService,
+        private pushService: PushService
+    ) {
+        // to load services
+    }
+}
 
 import runtime from 'serviceworker-webpack-plugin/lib/runtime';
+import { PushService } from './net/push';
+import { ModificationCheckerService } from './net/modification-checker';
 
 if ('serviceWorker' in navigator) {
     runtime.register().catch(function(err) {

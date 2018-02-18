@@ -38,5 +38,9 @@ mat-nav-list > a.router-active .mat-line{
     background: mat-color($my-theme-accent, "lighter");
 }
 
+span.settings-warn-text {
+    color: mat-color(map-get($my-theme, warn), "default");
+}
+
 // Command to compile: 
 // .\node_modules\.bin\node-sass .\src\main\webapp\content\css\material-theme.scss --include-path .\node_modules\ .\src\main\webapp\content\css\material-theme.css

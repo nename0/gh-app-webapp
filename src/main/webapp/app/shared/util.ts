@@ -3,6 +3,9 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { delay, distinctUntilChanged, concatMap, map } from 'rxjs/operators';
 import { of as Observable_of } from 'rxjs/observable/of';
+import { idbKeyVal } from '../shared/idbKeyVal';
+
+const KEY_BROWSER_FINGERPRINT = 'browserFingerprint';
 
 /**
  * Returns a random number between min (inclusive) and max (exclusive)
@@ -59,6 +62,8 @@ export function checkResponseStatus(res: Response) {
 
 export const onDayChange = new BehaviorSubject(new Date());
 
+export let browserFingerprint: Promise<string>;
+
 // to get zone right
 export function setupUtil() {
     onDayChange.pipe(
@@ -71,4 +76,30 @@ export function setupUtil() {
                 map(() => new Date()));
         }))
         .subscribe(onDayChange);
+
+    browserFingerprint = (async () => {
+        function genFinerprint() {
+            const randomNumbers = Array(4).fill(0).map(() => Math.random());
+            const baseString = randomNumbers.toString() + navigator.userAgent;
+            const hashCodeNumbers = baseString.split('').reduce((array, char, index) => {
+                index = index % 4;
+                array[index] = ((array[index] * 31) + char.charCodeAt(0)) % Number.MAX_SAFE_INTEGER;
+                return array;
+            }, [0, 0, 0, 0]);
+            return hashCodeNumbers
+                .map((n) => ('0'.repeat(14) + n.toString(16)).slice(-14))  // pad each to 14 chars
+                .join('');
+        }
+        while (true) {
+            let fingerprint = await idbKeyVal.get(KEY_BROWSER_FINGERPRINT);
+            if (fingerprint) {
+                return fingerprint;
+            }
+            fingerprint = genFinerprint();
+            if (await idbKeyVal.cas(KEY_BROWSER_FINGERPRINT, undefined, fingerprint)) {
+                console.log('browser fingerprint set to', fingerprint);
+                return fingerprint;
+            }
+        }
+    })();
 }

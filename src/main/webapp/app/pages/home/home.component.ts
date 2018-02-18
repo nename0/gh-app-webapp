@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { LoginModalService, JhiLoginDialogComponent } from '../../shared';
 import { MatDialogRef } from '@angular/material';
-import { switchMap, map, delay, concat, skip } from 'rxjs/operators';
+import { switchMap, map, delay, concat, skip, startWith } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { of as Observable_of } from 'rxjs/observable/of';
 import { WEEK_DAYS, getWeekDayDisplayStr } from '../../model/weekdays';
@@ -54,7 +54,7 @@ export class HomeComponent {
         }
         this.loading = this.connectivityService.loading;
         const lastUpdate = this.modificationChecker.lastUpdate
-            .pipe(switchMap((date) => getDateTimeString(date)));
+            .pipe(switchMap((date) => getDateTimeString(date)), startWith('Keine'));
         const subtitleObs = combineLatest(this.connectivityService.isOnline, lastUpdate)
             .pipe(map(([isOnline, lastUpdateStr]) => {
                 if (isOnline) {

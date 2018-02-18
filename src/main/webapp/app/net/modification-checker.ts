@@ -20,6 +20,8 @@ export class ModificationCheckerService {
     private lastModificationFetched: Promise<Date>;
     public lastUpdate = new ReplaySubject<Date>(1);
 
+    private lastModificationFetching = new Date(-1);
+
     constructor(
         private connectivityService: ConnectivityService,
         private planFetcher: PlanFetcherService,
@@ -70,19 +72,16 @@ export class ModificationCheckerService {
     private checkModification = async () => {
         try {
             await this.connectivityService.executeLoadingTask(this.checkModificationRequest, this);
-            if (hasWebsocketSupport) {
-                this.websocketHandler.connect();
-                return;
-            }
             setTimeout(() => {
+                if (hasWebsocketSupport) {
+                    this.websocketHandler.connect();
+                    return;
+                }
                 this.checkModification();
             }, getRandomArbitrary(8000, 10000));
-
         } catch (err) {
             console.log('Error in checkModificationRequest', err);
-            setTimeout(() => {
-                this.checkModification();
-            }, getRandomArbitrary(1000, 4000));
+            this.connectivityService.scheduleRetryTask(this.checkModification);
         }
     }
 
@@ -102,19 +101,22 @@ export class ModificationCheckerService {
     public async gotModifiactionDate(date: Date) {
         const now = new Date();
         date = await this.storeModifiactionReceived(date);
-        await this.onModification(date);
+        await this.receivedModification(date);
         idbKeyVal.set(KEY_LAST_UPDATE, now.toUTCString());
         this.lastUpdate.next(now);
     }
 
-    private onModification = async (lastModificationReceived: Date) => {
+    private receivedModification = async (lastModificationReceived: Date) => {
         while (true) {
             this.syncKeyValue();
             const lastModificationFetched = await this.lastModificationFetched;
-            if (lastModificationFetched >= lastModificationReceived) {
+            if (lastModificationFetched >= lastModificationReceived ||
+                this.lastModificationFetching >= lastModificationReceived) {
                 return;
             }
+            this.lastModificationFetching = lastModificationReceived;
             await this.planFetcher.fetchAll();
+            this.lastModificationFetching = new Date(-1);
             if (await idbKeyVal.cas(KEY_LAST_MODIFICATION_FETCHED, lastModificationFetched.toUTCString(), lastModificationReceived.toUTCString())) {
                 return;
             }

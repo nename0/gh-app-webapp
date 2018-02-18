@@ -1,8 +1,10 @@
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { combineLatest, pairwise, map } from 'rxjs/operators';
+import { combineLatest, pairwise, map, take, filter } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { getRandomArbitrary } from '../shared/util';
+import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
 export class ConnectivityService {
@@ -71,5 +73,23 @@ export class ConnectivityService {
         } finally {
             this.loadingTasks.next(this.loadingTasks.getValue() - 1);
         }
+    }
+
+    public scheduleRetryTask(fun: (...args: any[]) => any) {
+        if (this.navigatorOnline.getValue()) {
+            setTimeout(fun, getRandomArbitrary(1000, 4000));
+            return;
+        }
+        let onOnline: Subscription;
+        const timeout = setTimeout(function() {
+            onOnline.unsubscribe();
+            fun();
+        }, getRandomArbitrary(59000, 61000));
+        onOnline = this.navigatorOnline
+            .pipe(filter((isOnline) => isOnline), take(1))
+            .subscribe(() => {
+                clearTimeout(timeout);
+                fun();
+            });
     }
 }
