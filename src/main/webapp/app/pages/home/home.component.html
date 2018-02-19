@@ -1,7 +1,11 @@
-<p>Ladevorgang: {{ (loading | async) }}</p>
+<mat-card>
+    Ladevorgang: {{ (loading | async) }}
+    <button mat-raised-button color="primary" [disabled]="(loading | async)" (click)="forceUpdate()">Update</button>
+</mat-card>
 <div class="row">
     <mat-nav-list>
-        <mat-list-item [ngClass]="{'blink': (blink[wd] | async), 'outdated': (outdated[wd] | async)}"  *ngFor="let wd of weekDays; trackBy: trackBy" (click)="onclick(wd)">
+        <mat-list-item [ngClass]="{'blink': (blink[wd] | async), 'outdated': (outdated[wd] | async)}" *ngFor="let wd of weekDays; trackBy: trackBy"
+            (click)="onclick(wd)">
             <h4 mat-line>{{ (firstLines[wd] | async) }}</h4>
             <p mat-line>{{ (secondLines[wd] | async) }}</p>
         </mat-list-item>

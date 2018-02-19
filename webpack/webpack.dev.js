@@ -17,7 +17,9 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
         port: 9000,
         proxy: {
             "/api": {
-                target: "http://localhost:3000",
+                target: "http://backend-gh-app.herokuapp.com/",
+                //target: "http://localhost:3000",
+                changeOrigin: true,
                 ws: true
             }
         }

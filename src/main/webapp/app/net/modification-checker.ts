@@ -20,6 +20,7 @@ export class ModificationCheckerService {
     private lastModificationFetched: Promise<Date>;
     public lastUpdate = new ReplaySubject<Date>(1);
 
+    private checkModificationTimeout: number;
     private lastModificationFetching = new Date(-1);
 
     constructor(
@@ -70,10 +71,13 @@ export class ModificationCheckerService {
         return this.gotModifiactionDate(new Date(lastModificationStr));
     }
 
-    private checkModification = async () => {
+    public checkModification = async () => {
         try {
             await this.connectivityService.executeLoadingTask(this.checkModificationRequest, this);
-            setTimeout(() => {
+            if (this.checkModificationTimeout) {
+                clearTimeout(this.checkModificationTimeout);
+            }
+            this.checkModificationTimeout = setTimeout(() => {
                 if (hasWebsocketSupport) {
                     this.websocketHandler.connect();
                     return;

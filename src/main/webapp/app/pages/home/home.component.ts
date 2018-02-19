@@ -13,6 +13,7 @@ import { ModificationCheckerService } from '../../net/modification-checker';
 import { getDateTimeString } from '../../shared/util';
 import { ConnectivityService } from '../../net/connectivity';
 import { AppBarService } from '../../layouts/main/appbar.service';
+import { hasWebsocketSupport, WebsocketHandlerService } from '../../net/websocket';
 
 @Component({
     selector: 'app-home',
@@ -37,6 +38,7 @@ export class HomeComponent {
         private changeDetectorRef: ChangeDetectorRef,
         private planFetcher: PlanFetcherService,
         private modificationChecker: ModificationCheckerService,
+        private websocketHandler: WebsocketHandlerService,
         private connectivityService: ConnectivityService,
         private appBarService: AppBarService
     ) {
@@ -67,6 +69,18 @@ export class HomeComponent {
 
     trackBy(index, weekDay) {
         return weekDay;
+    }
+
+    forceUpdate() {
+        if (hasWebsocketSupport) {
+            this.websocketHandler.connect().then((connecting) => {
+                if (!connecting) {
+                    this.websocketHandler.forceUpdate();
+                }
+            });
+        } else {
+            this.modificationChecker.checkModification();
+        }
     }
 
     onclick(weekday: string) {
