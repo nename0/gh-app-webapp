@@ -72,7 +72,7 @@ export class PlanFetcherService {
             }
             console.log('fetched ' + weekDay + ' changed');
             const plan = new ParsedPlan(result.body);
-            if (await idbKeyVal.cas(KEY_PLAN(weekDay), cacheValue.getJSON(), plan.getJSON())) {
+            if (await idbKeyVal.cas(KEY_PLAN(weekDay), cacheValue instanceof ParsedPlan ? cacheValue.getJSON() : JSON.stringify(cacheValue), plan.getJSON())) {
                 this.plansCache[weekDay].next(plan);
                 return plan;
             }
