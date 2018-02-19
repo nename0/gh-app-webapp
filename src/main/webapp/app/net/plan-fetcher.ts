@@ -52,12 +52,6 @@ export class PlanFetcherService {
             throw new Error('no last-modified header');
         }
         const lastModification = new Date(lastModificationStr);
-        if (inCache >= lastModification) {
-            if (res.body.cancel) {
-                await res.body.cancel();
-            }
-            return undefined;
-        }
         return {
             body: await res.json(),
             modification: lastModification
@@ -70,12 +64,15 @@ export class PlanFetcherService {
         let cacheModification = cacheValue ? cacheValue.modification : new Date(0);
         const result = await this.fetchPlanRequest(weekDay, cacheModification);
         while (true) {
-            if (!result || cacheModification >= result.modification) {
+            if (cacheModification >= result.modification) {
+                console.log('fetched ' + weekDay + ' unchanged');
+                // repush to indicate loading
                 this.plansCache[weekDay].next(cacheValue);
                 return cacheValue;
             }
+            console.log('fetched ' + weekDay + ' changed');
             const plan = new ParsedPlan(result.body);
-            if (await idbKeyVal.cas(KEY_PLAN(weekDay), JSON.stringify(cacheValue), plan.getJSON())) {
+            if (await idbKeyVal.cas(KEY_PLAN(weekDay), cacheValue.getJSON(), plan.getJSON())) {
                 this.plansCache[weekDay].next(plan);
                 return plan;
             }

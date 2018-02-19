@@ -28,7 +28,7 @@ export let overSmallBreakpoint: BehaviorSubject<boolean>;
 export class MainComponent implements OnInit {
 
     @ViewChild('sidenav') sidenav: MatSidenav;
-    @ViewChild('sidenavcontent') sideNavContent: MatSidenavContent;
+    @ViewChild('scrollpane') scrollpane: ElementRef;
 
     overSmallBreakpoint: BehaviorSubject<boolean>;
     toolbarOffset: BehaviorSubject<number>;
@@ -94,9 +94,8 @@ export class MainComponent implements OnInit {
 
         const scrollSubject = new Subject();
         let lastScrollPosition = 0;
-        (<any>this.sideNavContent)._content.nativeElement.addEventListener('scroll', (e) => {
+        this.scrollpane.nativeElement.addEventListener('scroll', (e) => {
             const curScroll: number = e.target.scrollTop;
-            console.log('scroll', curScroll);
             const diff = curScroll - lastScrollPosition;
             lastScrollPosition = curScroll;
             if (curScroll < 4 || this.overSmallBreakpoint.getValue()) {

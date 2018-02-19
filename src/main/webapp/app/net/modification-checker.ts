@@ -66,6 +66,7 @@ export class ModificationCheckerService {
         if (!lastModificationStr || isNaN(+new Date(lastModificationStr))) {
             throw new Error('no last-modified header');
         }
+        console.log('fetched modification date ' + lastModificationStr);
         return this.gotModifiactionDate(new Date(lastModificationStr));
     }
 
@@ -112,8 +113,10 @@ export class ModificationCheckerService {
             const lastModificationFetched = await this.lastModificationFetched;
             if (lastModificationFetched >= lastModificationReceived ||
                 this.lastModificationFetching >= lastModificationReceived) {
+                    console.log('lastModification unchanged ' + lastModificationReceived.toUTCString());
                 return;
             }
+            console.log('lastModification changed ' + lastModificationReceived.toUTCString() + ' fetching plans');
             this.lastModificationFetching = lastModificationReceived;
             await this.planFetcher.fetchAll();
             this.lastModificationFetching = new Date(-1);
