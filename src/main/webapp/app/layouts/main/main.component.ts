@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { from as Observable_from } from 'rxjs/observable/from';
 import { of as Observable_of } from 'rxjs/observable/of';
 import { ObservableMedia, MediaChange } from '@angular/flex-layout';
-import { MatSidenav } from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/operators/combineLatest';
@@ -28,7 +28,7 @@ export let overSmallBreakpoint: BehaviorSubject<boolean>;
 export class MainComponent implements OnInit {
 
     @ViewChild('sidenav') sidenav: MatSidenav;
-    @ViewChild('scrollpane') scrollpane: ElementRef;
+    @ViewChild('sidenavcontent') sideNavContent: MatSidenavContent;
 
     overSmallBreakpoint: BehaviorSubject<boolean>;
     toolbarOffset: BehaviorSubject<number>;
@@ -43,7 +43,7 @@ export class MainComponent implements OnInit {
         private appBarService: AppBarService
     ) {
         // hack to make rxjs belive its an real Observabke
-        this.media[observable] = function () { return this; }
+        this.media[observable] = function() { return this; }
 
         this.titleObs = this.appBarService.titleObs;
         this.subtitleObs = this.appBarService.subtitleObs;
@@ -94,33 +94,23 @@ export class MainComponent implements OnInit {
 
         const scrollSubject = new Subject();
         let lastScrollPosition = 0;
-        this.scrollpane.nativeElement.addEventListener('scroll', (e) => {
+        (<any>this.sideNavContent)._content.nativeElement.addEventListener('scroll', (e) => {
             const curScroll: number = e.target.scrollTop;
-            if (curScroll === lastScrollPosition) { return; }
-            scrollSubject.next(curScroll - lastScrollPosition);
+            console.log('scroll', curScroll);
+            const diff = curScroll - lastScrollPosition;
             lastScrollPosition = curScroll;
-            if (this.overSmallBreakpoint.getValue()) {
+            if (curScroll < 4 || this.overSmallBreakpoint.getValue()) {
                 this.toolbarOffset.next(0);
+                this.toolbarVisible.next(true);
                 return;
             }
-            let toolbarOffset = this.toolbarOffset.getValue();
-            if (curScroll > lastScrollPosition) {
-                // down scroll
-                if (toolbarOffset > -64) {
-                    toolbarOffset = Math.max(-64, toolbarOffset - (curScroll - lastScrollPosition))
-                    this.toolbarOffset.next(toolbarOffset);
-                }
-            } else if (curScroll < lastScrollPosition) {
-                // up scroll
-                if (toolbarOffset < 0) {
-                    toolbarOffset = Math.min(0, toolbarOffset + (lastScrollPosition - curScroll))
-                    this.toolbarOffset.next(toolbarOffset);
-                }
+            if (diff !== 0) {
+                scrollSubject.next(diff);
             }
         }, { passive: true });
         this.toolbarVisible = new BehaviorSubject(true);
         this.toolbarOffset = new BehaviorSubject(0);
-        stickyHeaderOffset = new BehaviorSubject(0);
+        //stickyHeaderOffset = new BehaviorSubject(0);
         const operator = combineLatest<number, MediaChange>(this.media);
         scrollSubject.pipe(operator)
             .subscribe(([scrollDiff, mediaChange]) => {
@@ -137,7 +127,7 @@ export class MainComponent implements OnInit {
                             this.toolbarOffset.next(toolbarOffset);
                         }
                         this.toolbarVisible.next(toolbarOffset > -56);
-                        stickyHeaderOffset.next(toolbarOffset + 56);
+                        //stickyHeaderOffset.next(toolbarOffset + 56);
                         break;
                     case 'sm':
                         if (scrollDiff > 0) {
@@ -150,10 +140,12 @@ export class MainComponent implements OnInit {
                             this.toolbarOffset.next(toolbarOffset);
                         }
                         this.toolbarVisible.next(toolbarOffset > -64);
-                        stickyHeaderOffset.next(toolbarOffset + 64);
+                        //stickyHeaderOffset.next(toolbarOffset + 64);
                         break;
                     default:
-                        stickyHeaderOffset.next(0);
+                        this.toolbarOffset.next(0);
+                        this.toolbarVisible.next(true);
+                    //stickyHeaderOffset.next(0);
                 }
             });
     }

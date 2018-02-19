@@ -10,3 +10,21 @@
     max-width: calc(100% - 56px);
 }
 }
+
+.appbar-text-div {
+    width: calc(100% - 96px);
+}
+
+.appbar-title {
+    margin-bottom: -3px;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.appbar-subtitle {
+    margin: 0;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
