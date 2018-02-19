@@ -76,11 +76,11 @@ export class WebsocketHandlerService {
         if (data === '') {
             return;
         }
+        console.log('ws from server', data);
         if (data.startsWith(WSMESSAGE_LAST_MODIFICATION_UPDATE)) {
             const date = new Date(data.slice(WSMESSAGE_LAST_MODIFICATION_UPDATE.length));
             this.modificationChecker.gotModifiactionDate(date);
         }
-        console.log('ws from server', data);
     }
 
     private onerror = (event: Event) => {
@@ -118,6 +118,14 @@ export class WebsocketHandlerService {
         this.connectivityService.hintOffline();
     }
 
+    private sendMessage(message: string) {
+        if (!this.startedLoadingTask) {
+            this.startedLoadingTask = true;
+            this.connectivityService.startLoadingTask();
+        }
+        this.websocket.send(message);
+    }
+
     private schedulePingCheck = () => {
         if (this.pingCheckTimeout) {
             clearTimeout(this.pingCheckTimeout);
@@ -143,7 +151,7 @@ export class WebsocketHandlerService {
     public async forceUpdate() {
         const date = await this.modificationChecker.lastModificationReceived;
         if (this.websocket.readyState === WebSocket.OPEN) {
-            this.websocket.send(WSMESSAGE_LAST_MODIFICATION_QUERY + date.toUTCString());
+            this.sendMessage(WSMESSAGE_LAST_MODIFICATION_QUERY + date.toUTCString());
         }
     }
 
@@ -165,11 +173,7 @@ export class WebsocketHandlerService {
         if (await this.connect()) {
             return; // waiting for onopen
         }
-        if (!this.startedLoadingTask) {
-            this.startedLoadingTask = true;
-            this.connectivityService.startLoadingTask();
-        }
-        this.websocket.send(WSMESSAGE_PUSH_SUBSCRIPTION + this.pushSubscriptionToSend);
+        this.sendMessage(WSMESSAGE_PUSH_SUBSCRIPTION + this.pushSubscriptionToSend);
         this.pushSubscriptionToSend = null;
     }
 }
