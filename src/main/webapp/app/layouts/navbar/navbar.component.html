@@ -1,26 +1,24 @@
 <div [ngSwitch]="(isAuthenticated | async)">
     <mat-toolbar class="navbar-toolbar mat-accent" style="height: auto">
         <div style="padding: 8px 0px" layout="column">
-            <img src="../../../content/images/android-icon-36x36.png" class="mat-elevation-z4 navbar-avatar"/>
-            <div class="mat-body-2">
-                <span *ngSwitchCase="false">Please login</span>
-                <span *ngSwitchCase="true">{{ (userCtx |async).name }}</span>
+            <div class="mat-elevation-z4 navbar-avatar-div">
+                <img class="navbar-avatar-img" src="../../../content/images/icon-64x64.png"/>
             </div>
-            <div class="mat-body-1">
-                <span *ngSwitchCase="true">Roles: {{ (userCtx |async).roles.join(', ') }}</span>
-                <span *ngSwitchCase="false">&nbsp;</span>
+            <div class="mat-body-2">
+                <span *ngSwitchCase="false">Bitte Anmelden</span>
+                <span *ngSwitchCase="true">{{ (userCtx |async).name }}</span>
             </div>
         </div>
     </mat-toolbar>
     <mat-nav-list>
         <a mat-list-item routerLink="/" routerLinkActive="router-active" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidnav.emit()">
             <mat-icon mat-list-icon class="fa fa-fw fa-home" aria-hidden="true"></mat-icon>
-            <span matLine>Home</span>
+            <span matLine>Übersicht</span>
         </a>
         <mat-divider></mat-divider>
         <h3 mat-subheader>Tage</h3>
         <a mat-list-item routerLink="{{'plan/' + wd}}" routerLinkActive="router-active" (click)="closeSidnav.emit()" *ngFor="let wd of weekDays; trackBy: trackBy">
-            <mat-icon mat-list-icon class="fa fa-fw fa-tag" aria-hidden="true"></mat-icon>
+            <mat-icon mat-list-icon class="fa fa-fw fa-calendar" aria-hidden="true"></mat-icon>
             <span matLine>{{ weekDayToDisplayString(wd) }}</span>
         </a>
         <mat-divider></mat-divider>

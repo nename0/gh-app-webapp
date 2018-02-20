@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { from as Observable_from } from 'rxjs/observable/from';
 import { of as Observable_of } from 'rxjs/observable/of';
 import { ObservableMedia, MediaChange } from '@angular/flex-layout';
-import { MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
+import { MatSidenav } from '@angular/material/sidenav';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/operators/combineLatest';

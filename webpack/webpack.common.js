@@ -38,7 +38,7 @@ module.exports = (options) => {
                         minifyJS: false,
                         minifyCSS: false
                     },
-                    exclude: ['./src/main/webapp/index.html']
+                    exclude: [/index\.html$/]
                 },
                 {
                     test: /\.(jpe?g|png|gif|svg|woff2?|ttf|eot)$/i,
@@ -46,8 +46,18 @@ module.exports = (options) => {
                     options: {
                         hash: 'sha512',
                         digest: 'hex',
-                        name: 'content/[hash].[ext]',
-                        publicPath: '../'
+                        name: function (file) {
+                            if (file.endsWith('notification-badge.png')) {
+                                return 'content/[hash].[ext]?notification-badge.png';
+                            }
+                            return 'content/[hash].[ext]';
+                        },
+                        publicPath: function (file) {
+                            if (file.endsWith('?notification-badge.png')) {
+                                return './' + file;
+                            }
+                            return '../' + file;
+                        },
                     }
                 }
             ]
@@ -76,7 +86,7 @@ module.exports = (options) => {
             new webpack.optimize.CommonsChunkPlugin({
                 name: ['manifest'],
                 minChunks: Infinity
-            }),    
+            }),
             /**
              * See: https://github.com/angular/angular/issues/11580
              */
@@ -95,16 +105,16 @@ module.exports = (options) => {
                 inject: 'body'
             }),
             new WebpackPwaManifest({
-                "name": "Vertretungsplan GH",
+                "name": "Vertretungsplan - Gymnasium Herzogenaurach",
                 "short_name": "Vertretungsplan GH",
-                //"icons": [
-                //    {
-                //        src: utils.root('src/main/webapp/content/images/android-icon-192x192.png'),
-                //        sizes: [36, 72, 96, 192],
-                //        "type": "image/png",
-                //        destination: 'content/',
-                //    }
-                //],
+                "icons": [
+                    {
+                        src: utils.root('src/main/webapp/content/images/icon-256x256.png'),
+                        sizes: [36, 72, 96, 192],
+                        "type": "image/png",
+                        destination: 'content/',
+                    }
+                ],
                 "theme_color": "#303F9F",
                 "background_color": "#FFFFFF",
                 "start_url": "/",
@@ -126,7 +136,7 @@ module.exports = (options) => {
                     "app/**",
                     "manifest.*.json"
                 ],
-                excludes: [ "app/*.sw.js"]
+                excludes: ["app/*.sw.js"]
             }),
         ]
     };

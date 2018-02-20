@@ -4,8 +4,8 @@ declare const serviceWorkerOption: {
 }
 declare const self: ServiceWorkerGlobalScope;
 
-import { startupSWMessaging } from './shared/rxjs/serviceworker-server';
-startupSWMessaging();
+//import { startupSWMessaging } from './shared/rxjs/serviceworker-server';
+//startupSWMessaging();
 
 export const sessionCacheName = 'sessionCache-v1';
 const staticCacheName = 'static-' + serviceWorkerOption.assetsHash;
@@ -53,23 +53,23 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', function(event) {
     console.log('Received a push message', event);
 
-    if ((<any>Notification).permission === 'denied') {
+    if ((<any>Notification).permission !== 'granted') {
+        console.log('push message: cannot display notification');
         return;
     }
 
+    let subtitle = 'No data';
     let data = {};
     if (event.data) {
+        subtitle = event.data.text();
         data = event.data.json();
     }
-    const title = data['title'] || 'Something Has Happened';
-    const message = data['message'] || 'Here\'s something you might want to check out.';
-    const icon = 'images/new-notification.png';
 
     event.waitUntil(
-        self.registration.showNotification(title, <any>{
-            body: message,
-            icon,
-            tag: 'simple-push-demo-notification',
+        self.registration.showNotification('Received push message', <NotificationOptions>{
+            body: subtitle,
+            tag: 'update-notification',
+            badge: require('../content/images/notification-badge.png'),
             data
         })
     );
