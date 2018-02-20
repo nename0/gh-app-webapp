@@ -91,5 +91,9 @@ export class ConnectivityService {
                 clearTimeout(timeout);
                 fun();
             });
+        return function () {
+            clearTimeout(timeout);
+            onOnline.unsubscribe();
+        }
     }
 }

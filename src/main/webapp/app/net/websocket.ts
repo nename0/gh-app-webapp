@@ -18,6 +18,8 @@ export class WebsocketHandlerService {
     private startedLoadingTask = false;
     private pushSubscriptionToSend: string;
 
+    private unscheduleConnect = () => null;
+
     // lazy getter
     private get modificationChecker(): ModificationCheckerService {
         Object.defineProperty(this, 'modificationChecker', { value: this.injector.get(ModificationCheckerService), writable: false, configurable: true })
@@ -97,7 +99,8 @@ export class WebsocketHandlerService {
             return;
         }
         this.networkNegative();
-        this.connectivityService.scheduleRetryTask(this.connect);
+        this.unscheduleConnect();
+        this.unscheduleConnect = this.connectivityService.scheduleRetryTask(this.connect);
     }
 
     private networkPositive() {

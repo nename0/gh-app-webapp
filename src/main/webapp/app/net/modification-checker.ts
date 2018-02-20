@@ -20,8 +20,8 @@ export class ModificationCheckerService {
     private lastModificationFetched: Promise<Date>;
     public lastUpdate = new ReplaySubject<Date>(1);
 
-    private checkModificationTimeout: number;
     private lastModificationFetching = new Date(-1);
+    private unscheduleCheckModification =  () => null;
 
     constructor(
         private connectivityService: ConnectivityService,
@@ -74,19 +74,19 @@ export class ModificationCheckerService {
     public checkModification = async () => {
         try {
             await this.connectivityService.executeLoadingTask(this.checkModificationRequest, this);
-            if (this.checkModificationTimeout) {
-                clearTimeout(this.checkModificationTimeout);
-            }
-            this.checkModificationTimeout = setTimeout(() => {
+                this.unscheduleCheckModification();
+            // reschedule
+            const handle = setTimeout(() => {
                 if (hasWebsocketSupport) {
                     this.websocketHandler.connect();
                     return;
                 }
                 this.checkModification();
             }, getRandomArbitrary(8000, 10000));
+            this.unscheduleCheckModification = () => clearTimeout(handle);
         } catch (err) {
             console.log('Error in checkModificationRequest', err);
-            this.connectivityService.scheduleRetryTask(this.checkModification);
+            this.unscheduleCheckModification = this.connectivityService.scheduleRetryTask(this.checkModification);
         }
     }
 
