@@ -77,8 +77,10 @@ export class ConnectivityService {
 
     public scheduleRetryTask(fun: (...args: any[]) => any) {
         if (this.navigatorOnline.getValue()) {
-            setTimeout(fun, getRandomArbitrary(1000, 4000));
-            return;
+            const handle = setTimeout(fun, getRandomArbitrary(1000, 4000));
+            return function() {
+                clearTimeout(handle);
+            }
         }
         let onOnline: Subscription;
         const timeout = setTimeout(function() {

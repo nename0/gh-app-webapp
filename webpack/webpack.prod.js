@@ -6,6 +6,7 @@ const AngularCompilerPlugin = require('@ngtools/webpack').AngularCompilerPlugin;
 const utils = require('./utils.js');
 const commonConfig = require('./webpack.common.js');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const AppCachePlugin = require('appcache-webpack-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 
 const ENV = 'production';
@@ -95,6 +96,17 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
         new webpack.LoaderOptionsPlugin({
             minimize: true,
             debug: false
+        }),
+        new AppCachePlugin({
+            cache: ['./'],
+            exclude: [
+                /index.html$/,
+                /favicon.ico$/,
+                /robots.txt$/,
+                /sw.js$/,
+                /manifest\..+\.json$/,
+                /content\/icon_.+\.png$/
+            ]
         }),
         new BrotliPlugin({
             asset: '[path].br[query]',
