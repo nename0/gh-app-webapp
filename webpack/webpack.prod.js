@@ -22,7 +22,8 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
     },
     output: {
         path: utils.root('target/www'),
-        filename: 'app/[name].[chunkHash].bundle.js'
+        filename: 'app/[name].[chunkHash].bundle.js',
+        publicPath: './'
     },
     recordsPath: utils.root('webpack/records.json'),
     module: {

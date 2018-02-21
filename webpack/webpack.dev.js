@@ -32,6 +32,7 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
     output: {
         path: utils.root('target/www'),
         filename: 'app/[name].bundle.js',
+        publicPath: './'
     },
     module: {
         rules: [{

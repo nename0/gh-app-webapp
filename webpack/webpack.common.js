@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MergeJsonWebpackPlugin = require("merge-jsons-webpack-plugin");
 
 const WebpackPwaManifest = require('webpack-pwa-manifest');
+const AppCachePlugin = require('appcache-webpack-plugin');
 const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 
 const rxPaths = require('rxjs/_esm5/path-mapping')();
@@ -46,18 +47,8 @@ module.exports = (options) => {
                     options: {
                         hash: 'sha512',
                         digest: 'hex',
-                        name: function (file) {
-                            if (file.endsWith('notification-badge.png')) {
-                                return 'content/[hash].[ext]?notification-badge.png';
-                            }
-                            return 'content/[hash].[ext]';
-                        },
-                        publicPath: function (file) {
-                            if (file.endsWith('?notification-badge.png')) {
-                                return './' + file;
-                            }
-                            return '../' + file;
-                        },
+                        name: 'content/[hash].[ext]',
+                        publicPath: '../'
                     }
                 }
             ]
@@ -117,9 +108,20 @@ module.exports = (options) => {
                 ],
                 "theme_color": "#303F9F",
                 "background_color": "#FFFFFF",
-                "start_url": "/",
+                "start_url": "./",
                 "display": "standalone",
                 "orientation": "any"
+            }),
+            new AppCachePlugin({
+                cache: ['./'],
+                exclude: [
+                    /index.html$/,
+                    /favicon.ico$/,
+                    /robots.txt$/,
+                    /sw.js$/,
+                    /manifest\..+\.json$/,
+                    /content\/icon_.+\.png$/
+                ]
             }),
             new ServiceWorkerWebpackPlugin({
                 entry: utils.root('src/main/webapp/app/swImpl.ts'),

@@ -69,7 +69,7 @@ self.addEventListener('push', function(event) {
         self.registration.showNotification('Received push message', <NotificationOptions>{
             body: subtitle,
             tag: 'update-notification',
-            badge: require('../content/images/notification-badge.png'),
+            badge: require('../content/images/notification-badge.png').substr(1),
             data
         })
     );
