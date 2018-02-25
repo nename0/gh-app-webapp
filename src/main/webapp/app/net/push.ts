@@ -76,6 +76,7 @@ export class PushService {
         return Promise.all([this.lastPushSubscriptionDate, this.lastPushSubscriptionValue]);
     }
 
+    // lazy getter
     private async getPushManager(): Promise<PushManager> {
         const swRegistration = await navigator.serviceWorker.ready;
         const pushManager = swRegistration.pushManager;
@@ -87,14 +88,15 @@ export class PushService {
         this.hasErrored.next(false);
         if ((<any>Notification).permission === 'denied') {
             this.pushStatus.next(PushStatus.DENIED);
-            await this.updateSubscriptionOnServer(null);
+            await this.updateSubscriptionOnServer(null, null);
             return;
         }
 
         const pushManager = await this.getPushManager();
         const subscription = await pushManager.getSubscription();
         try {
-            await this.updateSubscriptionOnServer(subscription);
+            //TODO set correct filter
+            await this.updateSubscriptionOnServer(subscription, ['Q12']);
         } catch (err) {
             this.hasErrored.next(true);
             console.log('error in updateSubscriptionOnServer', err);
@@ -142,8 +144,16 @@ export class PushService {
         }
     }
 
-    private async updateSubscriptionOnServer(subscription: PushSubscription) {
-        const value = subscription ? JSON.stringify(subscription) : JSON.stringify(null);
+    private async updateSubscriptionOnServer(subscription: PushSubscription, filter: string[]) {
+        let value;
+        if (!subscription) {
+            value = JSON.stringify(null);
+        } else {
+            // we cannot add a property on PushSubscription directly because it has a toJSON function
+            subscription = JSON.parse(JSON.stringify(subscription));
+            subscription['filter'] = filter;
+            value = JSON.stringify(subscription);
+        }
         const date = new Date();
         while (true) {
             this.syncKeyValue();

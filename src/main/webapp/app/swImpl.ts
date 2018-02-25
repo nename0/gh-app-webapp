@@ -77,6 +77,23 @@ self.addEventListener('push', function(event) {
 
 self.addEventListener('notificationclick', function(event) {
     console.log('On notification click: ', event);
+    event.notification.close();
 
-    event.waitUntil(self.clients.openWindow(location.origin));
+    event.waitUntil(openMainSite());
 });
+
+async function openMainSite() {
+    const clients = await self.clients.matchAll({
+        includeUncontrolled: true,
+        type: 'window'
+    });
+    if (clients.length) {
+        const client = (<WindowClient>clients[0]);
+        await client.navigate(location.origin);
+        if (!client.focused) {
+            await client.focus();
+        }
+        return;
+    }
+    await self.clients.openWindow(location.origin);
+}

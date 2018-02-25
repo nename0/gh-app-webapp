@@ -16,7 +16,7 @@ function KEY_PLAN(wd: string) {
 
 @Injectable()
 export class PlanFetcherService {
-    private readonly plansCache: { [wd: string]: BehaviorSubject<ParsedPlan> };
+    public readonly plansCache: { [wd: string]: BehaviorSubject<ParsedPlan> };
 
     constructor(private connectivityService: ConnectivityService) {
         this.plansCache = {};
@@ -36,62 +36,55 @@ export class PlanFetcherService {
                 const cacheValue = this.plansCache[wd].getValue();
                 if (cacheValue && result === cacheValue.getJSON()) {
                     return;
+                } try {
+                    const plan = new ParsedPlan(JSON.parse(result));
+                    this.plansCache[wd].next(plan);
+                } catch (err) {
+                    return idbKeyVal.set(KEY_PLAN(wd), undefined);
                 }
-                const plan = new ParsedPlan(JSON.parse(result));
-                this.plansCache[wd].next(plan);
             })
         );
     }
 
-    private async fetchPlanRequest(weekDay: string, inCache: Date) {
+    private async fetchPlanRequest(weekDay: string) {
         const res = await fetch(window.location.origin + '/api/v1/plans/plan?wd=' + weekDay, {
             credentials: 'same-origin'
         }).then(checkResponseStatus);
-        const lastModificationStr = res.headers.get('last-modified');
-        if (!lastModificationStr || isNaN(+new Date(lastModificationStr))) {
-            throw new Error('no last-modified header');
-        }
-        const lastModification = new Date(lastModificationStr);
-        return {
-            body: await res.json(),
-            modification: lastModification
-        };
+        return res.json();
     }
 
     private async fetchPlan(weekDay: string) {
-        await this.syncKeyValue();
-        let cacheValue = this.plansCache[weekDay].getValue();
-        let cacheModification = cacheValue ? cacheValue.modification : new Date(0);
-        const result = await this.fetchPlanRequest(weekDay, cacheModification);
+        const result = await this.fetchPlanRequest(weekDay);
         while (true) {
-            if (cacheModification >= result.modification) {
+            await this.syncKeyValue();
+            const cacheValue = this.plansCache[weekDay].getValue();
+            const cacheModification = cacheValue ? cacheValue.modification : new Date(0);
+            if (cacheModification >= new Date(result.modification)) {
                 console.log('fetched ' + weekDay + ' unchanged');
                 // repush to indicate loading
                 this.plansCache[weekDay].next(cacheValue);
-                return cacheValue;
+                return false;
             }
             console.log('fetched ' + weekDay + ' changed');
-            const plan = new ParsedPlan(result.body);
+            const plan = new ParsedPlan(result);
             if (await idbKeyVal.cas(KEY_PLAN(weekDay), cacheValue instanceof ParsedPlan ? cacheValue.getJSON() : JSON.stringify(cacheValue), plan.getJSON())) {
                 this.plansCache[weekDay].next(plan);
-                return plan;
+                return true;
             }
-            await this.syncKeyValue();
-            cacheValue = this.plansCache[weekDay].getValue();
-            cacheModification = cacheValue ? cacheValue.modification : new Date(0);
         }
     }
 
     public fetchAll() {
-        const promises = new Array<Promise<ParsedPlan>>(WEEK_DAYS.length);
+        const promises = new Array<Promise<boolean>>(WEEK_DAYS.length);
         let index = getWeekDayIndex(new Date());
         for (; !promises[index]; index = (index + 1) % WEEK_DAYS.length) {
             const wd = WEEK_DAYS[index]
             promises[index] = this.connectivityService.executeLoadingTask(this.fetchPlan, this, wd);
         }
         return Promise.all(promises)
-            .catch((err) =>
-                console.log('error in fetchAll', err));
+            .then((changedArray) => {
+                return changedArray.some((c) => c);
+            });
     }
 
     public getCacheValue(weekDay: string) {

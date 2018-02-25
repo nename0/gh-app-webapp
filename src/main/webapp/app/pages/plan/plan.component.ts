@@ -8,11 +8,12 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { PlanFetcherService } from '../../net/plan-fetcher';
-import { ParsedPlan } from '../../model/plan';
+import { ParsedPlan, Substitute } from '../../model/plan';
 import { getDateString, getDateTimeString } from '../../shared/util';
 import { getWeekDayShortStr } from '../../model/weekdays';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { AppBarService } from '../../layouts/main/appbar.service';
+import { UNKNOWN_FILTER, ALL_FILTER, COMMON_FILTER, SELECTABLE_FILTERS } from '../../model/filter';
 
 @Component({
     selector: 'app-plan-comp',
@@ -24,12 +25,27 @@ import { AppBarService } from '../../layouts/main/appbar.service';
 })
 export class PlanComponent {
     readonly planObs: Observable<ParsedPlan>;
+    readonly substitutesObs: Observable<Substitute[]>;
 
     constructor(
         private route: ActivatedRoute,
         private planFetcher: PlanFetcherService,
         private appBarService: AppBarService) {
+
+        const selectedFilters = ['Q12'];
+
         this.planObs = this.route.params.pipe(switchMap((params) => this.planFetcher.getCacheValue(params.wd)));
+        this.substitutesObs = this.planObs.pipe(map((plan) => {
+            const filteredSubstitutes = plan.filtered.filteredSubstitutes;
+            const filters = selectedFilters.filter((filter) => SELECTABLE_FILTERS.includes(filter));
+            if (filters.length) {
+                return filteredSubstitutes[UNKNOWN_FILTER]
+                    .concat(...filters.map((filter) => filteredSubstitutes[filter] || []))
+                    .concat(filteredSubstitutes[COMMON_FILTER]);
+            }
+            return filteredSubstitutes[ALL_FILTER]
+                .concat(filteredSubstitutes[COMMON_FILTER]);
+        }));
 
         const titleObs = combineLatest(
             this.route.params,

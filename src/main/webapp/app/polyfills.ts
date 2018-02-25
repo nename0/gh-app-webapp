@@ -16,6 +16,8 @@ import 'core-js/es6/map';
 import 'core-js/es6/weak-map';
 import 'core-js/es6/set';
 
+import 'core-js/fn/string/pad-start'
+
 import 'core-js/es6/reflect';
 import 'core-js/es7/reflect';
 import 'zone.js';

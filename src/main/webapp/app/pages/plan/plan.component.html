@@ -15,7 +15,7 @@
       <td class="TitelZelleTabelleVertretungen">Raum</td>
       <td class="TitelZelleTabelleVertretungen">Sonstiges</td>
     </tr>
-    <tr class="ZeileTabelleVertretungen" *ngFor="let substitute of (planObs | async)?.substitutes; trackBy: trackBy">
+    <tr class="ZeileTabelleVertretungen" *ngFor="let substitute of (substitutesObs | async); trackBy: trackBy">
       <td class="ZelleTabelleVertretungen">{{ substitute.classText }}</td>
       <td class="ZelleTabelleVertretungen">{{ substitute.lesson }}</td>
       <td class="ZelleTabelleVertretungen">{{ substitute.teacher }}</td>

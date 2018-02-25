@@ -10,14 +10,14 @@ export class ParsedPlan {
     public modification: Date
     public outdated: Observable<boolean>;
     public messages: string = '';
-    public substitutes: Substitute[] = [];
+    public filtered: FilteredPlan;
 
     constructor(obj: any) {
         this.weekDay = obj.weekDay;
         this.planDate = new Date(obj.planDate);
         this.modification = new Date(obj.modification);
         this.messages = obj.messages;
-        this.substitutes = obj.substitutes.map((substitute) => new Substitute(substitute));
+        this.filtered = new FilteredPlan(obj.filtered);
         this.outdated = onDayChange.pipe(map((date) =>
             date.getTime() > new Date(this.planDate).setHours(23, 59, 59, 999)
         ),
@@ -49,6 +49,23 @@ export class ParsedPlan {
             }
             return value;
         })
+    }
+};
+
+export class FilteredPlan {
+    public filterHashes: { [filter: string]: string };
+
+    public filteredSubstitutes: { [filter: string]: Substitute[] };
+
+    constructor(obj: any) {
+        this.filterHashes = obj.filterHashes;
+        this.filteredSubstitutes = {};
+        for (const filter in obj.filteredSubstitutes) {
+            if (obj.filteredSubstitutes.hasOwnProperty(filter)) {
+                this.filteredSubstitutes[filter] = obj.filteredSubstitutes[filter]
+                    .map((substitute) => new Substitute(substitute));
+            }
+        }
     }
 };
 

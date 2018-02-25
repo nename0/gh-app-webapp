@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { ConnectivityService } from './connectivity';
 import { getRandomArbitrary, browserFingerprint } from '../shared/util';
-import { WSMESSAGE_LAST_MODIFICATION_QUERY, WSMESSAGE_LAST_MODIFICATION_UPDATE, WSMESSAGE_PUSH_SUBSCRIPTION } from './websocket-mesages';
+import { WSMESSAGE_PUSH_SUBSCRIPTION, WSMESSAGE_MODIFICATION_HASH_QUERY, WSMESSAGE_MODIFICATION_HASH_QUERY, WSMESSAGE_MODIFICATION_HASH_UPDATE } from './websocket-mesages';
 import { ModificationCheckerService } from './modification-checker';
 import { filter, take } from 'rxjs/operators';
 
@@ -40,6 +40,7 @@ export class WebsocketHandlerService {
         if (this.websocket && this.websocket.readyState <= WebSocket.OPEN) {
             return this.websocket.readyState === WebSocket.CONNECTING;
         }
+        console.log('connecting websocket');
         if (this.websocket) {
             if (this.pingCheckTimeout) {
                 clearTimeout(this.pingCheckTimeout);
@@ -79,9 +80,9 @@ export class WebsocketHandlerService {
             return;
         }
         console.log('ws from server', data);
-        if (data.startsWith(WSMESSAGE_LAST_MODIFICATION_UPDATE)) {
-            const date = new Date(data.slice(WSMESSAGE_LAST_MODIFICATION_UPDATE.length));
-            this.modificationChecker.gotModifiactionDate(date);
+        if (data.startsWith(WSMESSAGE_MODIFICATION_HASH_UPDATE)) {
+            const hash = data.slice(WSMESSAGE_MODIFICATION_HASH_UPDATE.length);
+            this.modificationChecker.gotModifiactionHash(hash, new Date());
         }
     }
 
@@ -152,9 +153,9 @@ export class WebsocketHandlerService {
     }
 
     public async forceUpdate() {
-        const date = await this.modificationChecker.lastModificationReceived;
+        const hash = await this.modificationChecker.latestModificationHash;
         if (this.websocket.readyState === WebSocket.OPEN) {
-            this.sendMessage(WSMESSAGE_LAST_MODIFICATION_QUERY + date.toUTCString());
+            this.sendMessage(WSMESSAGE_MODIFICATION_HASH_QUERY + hash);
         }
     }
 
