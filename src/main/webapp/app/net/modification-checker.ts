@@ -78,7 +78,7 @@ export class ModificationCheckerService {
             }, getRandomArbitrary(8000, 10000));
             this.unscheduleCheckModification = () => clearTimeout(handle);
         } catch (err) {
-            console.log('Error in checkModificationRequest', err);
+            console.log('Error in checkModificationRequest' + err.toString());
             this.unscheduleCheckModification = this.connectivityService.scheduleRetryTask(this.checkModification);
         }
     }
@@ -126,7 +126,7 @@ export class ModificationCheckerService {
         }
         const hash = await this.calculateModificationHash(dates);
         if (latestModificationHash === hash) {
-            console.log('validateModificationHash unchanged', hash);
+            //console.log('validateModificationHash unchanged', hash);
             return;
         }
         console.log('validateModificationHash changed', hash);

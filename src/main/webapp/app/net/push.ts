@@ -4,6 +4,8 @@ import { checkResponseStatus } from '../shared/util';
 import { hasWebsocketSupport, WebsocketHandlerService } from './websocket';
 import { idbKeyVal } from '../shared/idbKeyVal';
 import { RENEW_PERIOD_MILLIS } from '../shared/auth/auth-provider.service';
+import { ConnectivityService } from './connectivity';
+import { filter as rxFilter } from 'rxjs/operators';
 
 declare const navigator: Navigator;
 
@@ -30,13 +32,16 @@ const KEY_LAST_PUSH_SUBSCRIPTION_DATE = 'lastPushSubscriptionDate';
 @Injectable()
 export class PushService {
     public readonly pushStatus: BehaviorSubject<PushStatus>;
-    public readonly hasErrored = new BehaviorSubject(false);
+    public readonly hasErrored = new BehaviorSubject(0);
 
     private lastPushSubscriptionDate: Promise<Date>;
     private lastPushSubscriptionValue: Promise<string>;
 
+    private updatePromise: Promise<void>;
+
     constructor(private ngZone: NgZone,
-        private websocketHandler: WebsocketHandlerService) {
+        private websocketHandler: WebsocketHandlerService,
+        private connectivityService: ConnectivityService) {
         if (!pushAvailable) {
             this.pushStatus = new BehaviorSubject(PushStatus.NOT_AVALABLE);
 
@@ -60,6 +65,7 @@ export class PushService {
         }
         await this.syncKeyValue();
         await this.update();
+        //this.connectivityService.loading.pipe(rxFilter((isLoading) => !isLoading)).subscribe(this.update);
     }
 
     private syncKeyValue() {
@@ -84,8 +90,19 @@ export class PushService {
         return this.getPushManager();
     }
 
-    private async update() {
-        this.hasErrored.next(false);
+    private update = async () => {
+        if (this.updatePromise) {
+            return this.updatePromise;
+        }
+        try {
+            this.updatePromise = this.doUpdate();
+            await this.updatePromise;
+        } finally {
+            this.updatePromise = null;
+        }
+    }
+
+    private async doUpdate() {
         if ((<any>Notification).permission === 'denied') {
             this.pushStatus.next(PushStatus.DENIED);
             await this.updateSubscriptionOnServer(null, null);
@@ -94,18 +111,23 @@ export class PushService {
 
         const pushManager = await this.getPushManager();
         const subscription = await pushManager.getSubscription();
+        if (!subscription) {
+            this.hasErrored.next(0);
+            this.pushStatus.next(PushStatus.DISABLED);
+        }
         try {
             //TODO set correct filter
             await this.updateSubscriptionOnServer(subscription, ['Q12']);
+            if (subscription) {
+                this.hasErrored.next(0);
+                this.pushStatus.next(PushStatus.ENABLED);
+            }
         } catch (err) {
-            this.hasErrored.next(true);
-            console.log('error in updateSubscriptionOnServer', err);
-            return;
-        }
-        if (subscription) {
-            this.pushStatus.next(PushStatus.ENABLED);
-        } else {
-            this.pushStatus.next(PushStatus.DISABLED);
+            if (subscription) {
+                this.hasErrored.next(1);
+            }
+            console.log('error in updateSubscriptionOnServer ' + err.toString());
+            this.connectivityService.scheduleRetryTask(this.update);
         }
     }
 
@@ -119,6 +141,8 @@ export class PushService {
             });
         } catch (err) {
             console.log('Failed to subscribe the user: ', err);
+            this.hasErrored.next(2);
+            return;
         }
         await this.update();
     }
@@ -130,8 +154,8 @@ export class PushService {
             if (subscription) {
                 await subscription.unsubscribe();
             }
-        } catch (error) {
-            console.log('Error unsubscribing', error);
+        } catch (err) {
+            console.log('Failed to unsubscribe the user: ', err);
         }
         await this.update();
     }

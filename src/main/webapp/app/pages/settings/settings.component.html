@@ -10,7 +10,10 @@
             </button>
             <div style="padding-top: 4px">
                 <span class="settings-warn-text" *ngSwitchCase="PushStatus.DISABLED">
-                    <ng-container *ngIf="(pushHasErrored | async)">Fehler beim Verbinden mit dem Server</ng-container>
+                    <ng-container *ngIf="(pushHasErrored | async) > 0" [ngSwitch]="(pushHasErrored | async)">
+                        <span *ngSwitchCase="1">Fehler beim Verbinden mit dem Server</span>
+                        <span *ngSwitchCase="2">Fehler vom Benachrichtigungsdienst. In einigen Mobilfunknetzen funktioniert das Aktivieren nicht. Versuch es mal mit WLAN</span>
+                    </ng-container>
                 </span>
                 <span class="settings-warn-text" *ngSwitchCase="PushStatus.NOT_AVALABLE">Ihr Browser unterstützt Benachrichtigungen nicht.
                     <a target="_blank" href="https://caniuse.com/#feat=push-api">Alternativen...</a>

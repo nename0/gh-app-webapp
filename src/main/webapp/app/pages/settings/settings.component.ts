@@ -18,7 +18,7 @@ export class SettingsComponent {
     readonly pushButtonLoading: BehaviorSubject<boolean>;
     readonly pushButtonDisable: Observable<boolean>;
     readonly pushStatusObs: BehaviorSubject<PushStatus>;
-    readonly pushHasErrored: BehaviorSubject<boolean>;
+    readonly pushHasErrored: BehaviorSubject<number>;
 
     constructor(public pushService: PushService) {
         this.pushStatusObs = this.pushService.pushStatus;
