@@ -56,8 +56,6 @@ export class PlanComponent {
             switchMap((plan) => getDateTimeString(plan.modification)),
             map((dateTimeStr) => 'Stand: ' + dateTimeStr));
         this.appBarService.setSubTitle(subtitleObs);
-
-        //TODO ModificationChecker not loaded when this comonent is first
     }
 
     trackBy(index, substitute) {
