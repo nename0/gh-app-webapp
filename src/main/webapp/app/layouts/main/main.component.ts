@@ -93,26 +93,25 @@ export class MainComponent implements OnInit {
         });
 
         const scrollSubject = new Subject();
-        let lastScrollPosition = 0;
         this.scrollpane.nativeElement.addEventListener('scroll', (e) => {
             const curScroll: number = e.target.scrollTop;
-            const diff = curScroll - lastScrollPosition;
-            lastScrollPosition = curScroll;
-            if (curScroll < 4 || this.overSmallBreakpoint.getValue()) {
-                this.toolbarOffset.next(0);
-                this.toolbarVisible.next(true);
-                return;
-            }
-            if (diff !== 0) {
-                scrollSubject.next(diff);
-            }
+            scrollSubject.next(curScroll);
         }, { passive: true });
         this.toolbarVisible = new BehaviorSubject(true);
         this.toolbarOffset = new BehaviorSubject(0);
         //stickyHeaderOffset = new BehaviorSubject(0);
+        let lastScrollPosition = 0;
         const operator = combineLatest<number, MediaChange>(this.media);
         scrollSubject.pipe(operator)
-            .subscribe(([scrollDiff, mediaChange]) => {
+            .subscribe(([scrollPos, mediaChange]) => {
+                const scrollDiff = scrollPos - lastScrollPosition;
+                lastScrollPosition = scrollPos;
+                if (scrollPos < 4 || (mediaChange.mqAlias !== 'xs' && mediaChange.mqAlias !== 'sm')) {
+                    this.toolbarOffset.next(0);
+                    this.toolbarVisible.next(true);
+                    //stickyHeaderOffset.next(0);
+                    return;
+                }
                 let toolbarOffset = this.toolbarOffset.getValue();
                 switch (mediaChange.mqAlias) {
                     case 'xs':
@@ -141,10 +140,6 @@ export class MainComponent implements OnInit {
                         this.toolbarVisible.next(toolbarOffset > -64);
                         //stickyHeaderOffset.next(toolbarOffset + 64);
                         break;
-                    default:
-                        this.toolbarOffset.next(0);
-                        this.toolbarVisible.next(true);
-                    //stickyHeaderOffset.next(0);
                 }
             });
     }

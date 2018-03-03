@@ -4,7 +4,7 @@
     </mat-sidenav>
 
     <div style="overflow:hidden;height: 100%;display:flex">
-        <div #scrollpane style="overflow-y:auto;overflow-x:hidden;flex: 1 1 100%">
+        <div #scrollpane style="overflow-y:auto;overflow-x:hidden;flex: 1 1 100%;background-color:white">
             <mat-toolbar color="primary" class="mat-elevation-z4" style="z-index:2" [style.top]="(toolbarOffset | async) + 'px'" [style.position]="(overSmallBreakpoint | async) ? 'static' : 'sticky'"
                 [style.visibility]="(toolbarVisible | async) ? '' : 'hidden'">
                 <button mat-icon-button style="margin-left:-12px;margin-right:20px" (click)="sidenav.open()" *ngIf="(overSmallBreakpoint | async) ? false : true">
