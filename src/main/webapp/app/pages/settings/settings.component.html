@@ -1,7 +1,8 @@
-<mat-list>
+<mat-list class="settings-list">
     <h3 matSubheader>Benachrichtigungen</h3>
-    <mat-list-item style="height: auto">
+    <mat-list-item>
         <div style="flex-direction: column" [ngSwitch]="(pushStatusObs | async)">
+            <div>Wenn aktiviert bekommst du Benachrichtigungen, wenn sich der Vertretungsplan bezüglich deiner Filter ändert.</div>
             <button mat-raised-button color="primary" [disabled]="(pushButtonDisable | async)" (click)="pushToggle()">
                 <span *ngSwitchCase="PushStatus.NOT_AVALABLE">Benachrichtigungen nicht verfügbar</span>
                 <span *ngSwitchCase="PushStatus.ENABLED">Benachrichtigungen deaktivieren</span>
@@ -12,10 +13,10 @@
                 <span class="settings-warn-text" *ngSwitchCase="PushStatus.DISABLED">
                     <ng-container *ngIf="(pushHasErrored | async) > 0" [ngSwitch]="(pushHasErrored | async)">
                         <span *ngSwitchCase="1">Fehler beim Verbinden mit dem Server</span>
-                        <span *ngSwitchCase="2">Fehler vom Benachrichtigungsdienst. In einigen Mobilfunknetzen funktioniert das Aktivieren nicht. Versuch es mal mit WLAN</span>
+                        <span *ngSwitchCase="2">Fehler vom Benachrichtigungsdienst</span>
                     </ng-container>
                 </span>
-                <span class="settings-warn-text" *ngSwitchCase="PushStatus.NOT_AVALABLE">Ihr Browser unterstützt Benachrichtigungen nicht.
+                <span class="settings-warn-text" *ngSwitchCase="PushStatus.NOT_AVALABLE">Dein Browser unterstützt Benachrichtigungen nicht.
                     <a target="_blank" href="https://caniuse.com/#feat=push-api">Alternativen...</a>
                 </span>
                 <span class="settings-warn-text" *ngSwitchCase="PushStatus.DENIED">
@@ -27,6 +28,36 @@
     <mat-divider></mat-divider>
     <h3 matSubheader>Filter</h3>
     <mat-list-item>
-        FooBAr
+        <div style="width: 100%">
+            <mat-list class="selected-filter-list">
+                <ng-container *ngIf="(selectedFilters | async).length === 0">
+                    <mat-list-item>
+                        Keine Filter gesetzt
+                    </mat-list-item>
+                    <mat-divider style="position: initial"></mat-divider>
+                </ng-container>
+                <ng-container *ngFor="let filter of (selectedFilters | async); trackBy: trackBy">
+                    <mat-list-item>
+                        <div style="flex:1 1">{{ filter }}</div>
+                        <button mat-icon-button style="flex:0 0 48px" (click)="removeFilter(filter)">
+                            <mat-icon class="fa fa-fw fa-times" aria-label="Entfernen"></mat-icon>
+                        </button>
+                    </mat-list-item>
+                    <mat-divider style="position: initial"></mat-divider>
+                </ng-container>
+            </mat-list>
+            <div style="text-align: center">
+                <mat-form-field style="margin-right: 8px">
+                    <mat-select #select placeholder="Filter auswählen...">
+                        <mat-option *ngFor="let filter of SELECTABLE_FILTERS; trackBy: trackBy" value="{{ filter }}" [disabled]="(selectedFilters | async).includes(filter)">
+                            {{ filter }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button mat-raised-button type="submit" color="primary" [disabled]="select.empty" (click)="addFilter(select.value); select.writeValue(null)">
+                    Filter hinzufügen
+                </button>
+            </div>
+        </div>
     </mat-list-item>
 </mat-list>

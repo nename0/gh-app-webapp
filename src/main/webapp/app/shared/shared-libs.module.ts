@@ -16,13 +16,14 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
     imports: [FlexLayoutModule, BrowserAnimationsModule, RouterModule,
         MatButtonModule, MatCheckboxModule, MatSidenavModule,
         MatToolbarModule, MatIconModule, MatDialogModule,
         MatCardModule, MatProgressSpinnerModule, MatListModule,
-        MatMenuModule, MatSnackBarModule,
+        MatMenuModule, MatSnackBarModule, MatSelectModule,
         MatInputModule
     ],
     exports: [
@@ -33,7 +34,7 @@ import { MatInputModule } from '@angular/material/input';
         MatButtonModule, MatCheckboxModule, MatSidenavModule,
         MatToolbarModule, MatIconModule, MatDialogModule,
         MatCardModule, MatProgressSpinnerModule, MatListModule,
-        MatMenuModule, MatSnackBarModule,
+        MatMenuModule, MatSnackBarModule, MatSelectModule,
         MatInputModule
     ],
     providers: [

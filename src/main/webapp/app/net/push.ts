@@ -6,6 +6,7 @@ import { idbKeyVal } from '../shared/idbKeyVal';
 import { RENEW_PERIOD_MILLIS } from '../shared/auth/auth-provider.service';
 import { ConnectivityService } from './connectivity';
 import { filter as rxFilter } from 'rxjs/operators';
+import { FilterService } from '../shared/filter.service';
 
 declare const navigator: Navigator;
 
@@ -41,7 +42,8 @@ export class PushService {
 
     constructor(private ngZone: NgZone,
         private websocketHandler: WebsocketHandlerService,
-        private connectivityService: ConnectivityService) {
+        private connectivityService: ConnectivityService,
+        private filterService: FilterService) {
         if (!pushAvailable) {
             this.pushStatus = new BehaviorSubject(PushStatus.NOT_AVALABLE);
 
@@ -65,7 +67,7 @@ export class PushService {
         }
         await this.syncKeyValue();
         await this.update();
-        //this.connectivityService.loading.pipe(rxFilter((isLoading) => !isLoading)).subscribe(this.update);
+        this.filterService.selectedFilters.subscribe(this.update);
     }
 
     private syncKeyValue() {
@@ -105,7 +107,7 @@ export class PushService {
     private async doUpdate() {
         if ((<any>Notification).permission === 'denied') {
             this.pushStatus.next(PushStatus.DENIED);
-            await this.updateSubscriptionOnServer(null, null);
+            await this.updateSubscriptionOnServer(null);
             return;
         }
 
@@ -117,7 +119,7 @@ export class PushService {
         }
         try {
             //TODO set correct filter
-            await this.updateSubscriptionOnServer(subscription, ['Q12']);
+            await this.updateSubscriptionOnServer(subscription);
             if (subscription) {
                 this.hasErrored.next(0);
                 this.pushStatus.next(PushStatus.ENABLED);
@@ -168,14 +170,15 @@ export class PushService {
         }
     }
 
-    private async updateSubscriptionOnServer(subscription: PushSubscription, filter: string[]) {
+    private async updateSubscriptionOnServer(subscription: PushSubscription) {
         let value;
         if (!subscription) {
             value = JSON.stringify(null);
         } else {
+            const filter = this.filterService.selectedFilters.getValue();
             // we cannot add a property on PushSubscription directly because it has a toJSON function
             subscription = JSON.parse(JSON.stringify(subscription));
-            subscription['filter'] = filter;
+            subscription['filter'] = filter.length ? filter : null;
             value = JSON.stringify(subscription);
         }
         const date = new Date();

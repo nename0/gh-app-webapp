@@ -1,23 +1,11 @@
-mat-list-item.blink{
-    -webkit-animation-name: blink; /* Safari 4.0 - 8.0 */
-    -webkit-animation-duration: .15s; /* Safari 4.0 - 8.0 */
-    animation-name: blink;
-    animation-duration: .15s;
+mat-list.settings-list > mat-list-item {
+    height: auto;
 }
 
-/* Safari 4.0 - 8.0 */
-@-webkit-keyframes blink {
-    from {background-color: rgba(0, 0, 0, 0.2);}
-    to {background-color: rgba(0, 0, 0, 0.2);}
-}
-
-/* Standard syntax */
-@keyframes blink {
-    from {background-color: rgba(0, 0, 0, 0.2);}
-    to {background-color: rgba(0, 0, 0, 0.2);}
-}
-
-mat-list-item.outdated{
-    color: rgba(0, 0, 0, 0.38);
+mat-list.selected-filter-list {
+    border-width: 1px 1px 0px 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.12);
+    padding-top: 0;
 }
 

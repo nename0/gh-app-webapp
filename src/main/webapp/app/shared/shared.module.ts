@@ -11,6 +11,7 @@ import { AuthenticationProviderService } from './auth/auth-provider.service';
 import { StateStorageService } from './auth/state-storage.service';
 import { HasAnyAuthorityDirective } from './auth/has-any-authority.directive';
 import { setupUtil } from './util';
+import { FilterService } from './filter.service';
 
 @NgModule({
     imports: [
@@ -24,7 +25,8 @@ import { setupUtil } from './util';
     providers: [
         LoginModalService,
         AuthenticationProviderService,
-        StateStorageService
+        StateStorageService,
+        FilterService
     ],
     entryComponents: [JhiLoginDialogComponent],
     exports: [

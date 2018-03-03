@@ -14,6 +14,7 @@ import { getWeekDayShortStr } from '../../model/weekdays';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { AppBarService } from '../../layouts/main/appbar.service';
 import { UNKNOWN_FILTER, ALL_FILTER, COMMON_FILTER, SELECTABLE_FILTERS } from '../../model/filter';
+import { FilterService } from '../../shared/filter.service';
 
 @Component({
     selector: 'app-plan-comp',
@@ -30,22 +31,21 @@ export class PlanComponent {
     constructor(
         private route: ActivatedRoute,
         private planFetcher: PlanFetcherService,
+        private filterService: FilterService,
         private appBarService: AppBarService) {
 
-        const selectedFilters = ['Q12'];
-
         this.planObs = this.route.params.pipe(switchMap((params) => this.planFetcher.getCacheValue(params.wd)));
-        this.substitutesObs = this.planObs.pipe(map((plan) => {
-            const filteredSubstitutes = plan.filtered.filteredSubstitutes;
-            const filters = selectedFilters.filter((filter) => SELECTABLE_FILTERS.includes(filter));
-            if (filters.length) {
-                return filteredSubstitutes[UNKNOWN_FILTER]
-                    .concat(...filters.map((filter) => filteredSubstitutes[filter] || []))
+        this.substitutesObs = combineLatest(this.planObs, this.filterService.selectedFilters).pipe(
+            map(([plan, selectedFilters]) => {
+                const filteredSubstitutes = plan.filtered.filteredSubstitutes;
+                if (selectedFilters.length) {
+                    return filteredSubstitutes[UNKNOWN_FILTER]
+                        .concat(...selectedFilters.map((filter) => filteredSubstitutes[filter] || []))
+                        .concat(filteredSubstitutes[COMMON_FILTER]);
+                }
+                return filteredSubstitutes[ALL_FILTER]
                     .concat(filteredSubstitutes[COMMON_FILTER]);
-            }
-            return filteredSubstitutes[ALL_FILTER]
-                .concat(filteredSubstitutes[COMMON_FILTER]);
-        }));
+            }));
 
         const titleObs = combineLatest(
             this.route.params,

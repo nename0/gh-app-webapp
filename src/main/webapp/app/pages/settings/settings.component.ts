@@ -4,6 +4,8 @@ import { PushService, PushStatus } from '../../net/push';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import { SELECTABLE_FILTERS } from '../../model/filter';
+import { FilterService } from '../../shared/filter.service';
 
 @Component({
     selector: 'app-settings',
@@ -20,7 +22,11 @@ export class SettingsComponent {
     readonly pushStatusObs: BehaviorSubject<PushStatus>;
     readonly pushHasErrored: BehaviorSubject<number>;
 
-    constructor(public pushService: PushService) {
+    readonly SELECTABLE_FILTERS = SELECTABLE_FILTERS;
+    readonly selectedFilters: BehaviorSubject<string[]>;
+
+    constructor(public pushService: PushService,
+        private filterService: FilterService) {
         this.pushStatusObs = this.pushService.pushStatus;
         this.pushHasErrored = this.pushService.hasErrored;
 
@@ -29,6 +35,12 @@ export class SettingsComponent {
             .pipe(map(([loading, status]) => {
                 return loading || status === PushStatus.DENIED || status === PushStatus.NOT_AVALABLE;
             }));
+
+        this.selectedFilters = this.filterService.selectedFilters;
+    }
+
+    trackBy(index, filter) {
+        return filter;
     }
 
     async pushToggle() {
@@ -39,5 +51,13 @@ export class SettingsComponent {
             console.log('error in pushService toogle', err);
         }
         this.pushButtonLoading.next(false);
+    }
+
+    addFilter(filter: string) {
+        this.filterService.addFilter(filter);
+    }
+
+    removeFilter(filter: string) {
+        this.filterService.removeFilter(filter);
     }
 }
