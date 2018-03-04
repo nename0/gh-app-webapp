@@ -2,7 +2,7 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { GHAppSharedModule } from '../../shared';
-import { HOME_ROUTE } from './home.route';
+import { HOME_ROUTE, HomeResolver } from './home.route';
 import { HomeComponent } from './home.component';
 
 @NgModule({
@@ -16,6 +16,7 @@ import { HomeComponent } from './home.component';
     entryComponents: [
     ],
     providers: [
+        HomeResolver
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

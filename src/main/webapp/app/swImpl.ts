@@ -1,3 +1,5 @@
+import { getWeekDayIndex, WEEK_DAYS } from './model/weekdays';
+
 declare const serviceWorkerOption: {
     assets: Array<string>,
     assetsHash: string
@@ -78,22 +80,32 @@ self.addEventListener('push', function(event) {
 self.addEventListener('notificationclick', function(event) {
     console.log('On notification click: ', event);
     event.notification.close();
-
-    event.waitUntil(openMainSite());
+    const data = event.notification['data'];
+    if (!data.days) {
+        return event.waitUntil(openUrl('/'));
+    }
+    const nowIndex = getWeekDayIndex(new Date());
+    for (let i = 0; i < WEEK_DAYS.length; i++) {
+        const index = (i + nowIndex) % WEEK_DAYS.length;
+        const wd = WEEK_DAYS[index];
+        if (data.days.includes(wd)) {
+            return event.waitUntil(openUrl('/#/?redirect_plan=' + wd));
+        }
+    }
+    event.waitUntil(openUrl('/'));
 });
 
-async function openMainSite() {
+async function openUrl(relativeUrl: string) {
+    const url = location.origin + relativeUrl;
     const clients = await self.clients.matchAll({
-        includeUncontrolled: true,
         type: 'window'
     });
     if (clients.length) {
         const client = (<WindowClient>clients[0]);
-        await client.navigate(location.origin);
         if (!client.focused) {
             await client.focus();
         }
-        return;
+        return client.navigate(url);
     }
-    await self.clients.openWindow(location.origin);
+    await self.clients.openWindow(url);
 }

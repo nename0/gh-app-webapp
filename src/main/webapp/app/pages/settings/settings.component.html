@@ -29,13 +29,7 @@
     <h3 matSubheader>Filter</h3>
     <mat-list-item>
         <div style="width: 100%">
-            <mat-list class="selected-filter-list">
-                <ng-container *ngIf="(selectedFilters | async).length === 0">
-                    <mat-list-item>
-                        Keine Filter gesetzt
-                    </mat-list-item>
-                    <mat-divider style="position: initial"></mat-divider>
-                </ng-container>
+            <mat-list class="selected-filter-list" *ngIf="(selectedFilters | async).length > 0">
                 <ng-container *ngFor="let filter of (selectedFilters | async); trackBy: trackBy">
                     <mat-list-item>
                         <div style="flex:1 1">{{ filter }}</div>

@@ -60,14 +60,15 @@ export function checkResponseStatus(res: Response) {
     }
 }
 
-export const onDayChange = new BehaviorSubject(new Date());
+const onDayChangeBehavior = new BehaviorSubject(new Date());
+export const onDayChange = onDayChangeBehavior.pipe(
+    distinctUntilChanged((a, b) => a.getDate() === b.getDate()))
 
 export let browserFingerprint: Promise<string>;
 
 // to get zone right
 export function setupUtil() {
     onDayChange.pipe(
-        distinctUntilChanged((a, b) => a.getDate() === b.getDate()),
         concatMap((date) => {
             const nextDay = new Date(date);
             nextDay.setHours(24, 0, 0, 0);
@@ -75,7 +76,10 @@ export function setupUtil() {
                 delay(nextDay),
                 map(() => new Date()));
         }))
-        .subscribe(onDayChange);
+        .subscribe(onDayChangeBehavior);
+    window.onfocus = () => {
+        onDayChangeBehavior.next(new Date());
+    }
 
     browserFingerprint = (async () => {
         function genFinerprint() {
