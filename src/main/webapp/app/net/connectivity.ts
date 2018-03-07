@@ -1,9 +1,8 @@
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { combineLatest, pairwise, map, take, filter } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { getRandomArbitrary } from '../shared/util';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
+import { combineLatest, pairwise, map, filter, take } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()

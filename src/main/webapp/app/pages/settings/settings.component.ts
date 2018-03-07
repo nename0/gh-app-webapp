@@ -5,7 +5,8 @@ import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { SELECTABLE_FILTERS } from '../../model/filter';
-import { FilterService } from '../../shared/filter.service';
+import { FilterService } from '../../shared/services/filter.service';
+import { MatSelect } from '@angular/material/select';
 
 @Component({
     selector: 'app-settings',
@@ -53,8 +54,12 @@ export class SettingsComponent {
         this.pushButtonLoading.next(false);
     }
 
-    addFilter(filter: string) {
-        this.filterService.addFilter(filter);
+    addFilter(select: MatSelect) {
+        if (select.empty) {
+            return;
+        }
+        this.filterService.addFilter(select.value);
+        select.writeValue(null);
     }
 
     removeFilter(filter: string) {

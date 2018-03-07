@@ -7,14 +7,15 @@ import { switchMap, map } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { PlanFetcherService } from '../../net/plan-fetcher';
-import { ParsedPlan, Substitute } from '../../model/plan';
+import { Substitute } from '../../model/plan';
 import { getDateString, getDateTimeString } from '../../shared/util';
 import { getWeekDayShortStr } from '../../model/weekdays';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { AppBarService } from '../../layouts/main/appbar.service';
 import { UNKNOWN_FILTER, ALL_FILTER, COMMON_FILTER, SELECTABLE_FILTERS } from '../../model/filter';
-import { FilterService } from '../../shared/filter.service';
+import { FilterService } from '../../shared/services/filter.service';
+import { PlanFetcherService } from '../../shared/services/plan-fetcher.service';
+import { RxParsedPlan } from '../../model/rx-plan';
 
 @Component({
     selector: 'app-plan-comp',
@@ -25,7 +26,7 @@ import { FilterService } from '../../shared/filter.service';
     changeDetection: ChangeDetectionStrategy.OnPush // Because we only use Observables
 })
 export class PlanComponent {
-    readonly planObs: Observable<ParsedPlan>;
+    readonly planObs: Observable<RxParsedPlan>;
     readonly substitutesObs: Observable<Substitute[]>;
 
     constructor(
@@ -34,7 +35,7 @@ export class PlanComponent {
         private filterService: FilterService,
         private appBarService: AppBarService) {
 
-        this.planObs = this.route.params.pipe(switchMap((params) => this.planFetcher.getCacheValue(params.wd)));
+        this.planObs = this.route.params.pipe(switchMap((params) => this.planFetcher.getPlanObservable(params.wd)));
         this.substitutesObs = combineLatest(this.planObs, this.filterService.selectedFilters).pipe(
             map(([plan, selectedFilters]) => {
                 const filteredSubstitutes = plan.filtered.filteredSubstitutes;
@@ -47,14 +48,11 @@ export class PlanComponent {
                     .concat(filteredSubstitutes[COMMON_FILTER]);
             }));
 
-        const titleObs = combineLatest(
-            this.route.params,
-            this.planObs.pipe(switchMap((plan) => getDateString(plan.planDate)))
-        ).pipe(map(([params, dateStr]) => getWeekDayShortStr(params.wd) + ', ' + dateStr));
+        const titleObs = this.planObs.pipe(
+            switchMap((plan) => plan.getTitle()));
         this.appBarService.setTitle(titleObs);
         const subtitleObs = this.planObs.pipe(
-            switchMap((plan) => getDateTimeString(plan.modification)),
-            map((dateTimeStr) => 'Stand: ' + dateTimeStr));
+            switchMap((plan) => plan.getSecondLine()));
         this.appBarService.setSubTitle(subtitleObs);
     }
 

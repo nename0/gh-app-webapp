@@ -1,4 +1,4 @@
-import { getWeekDayIndex, WEEK_DAYS } from './model/weekdays';
+import { handleNotificationClick, handlePushMessage } from './shared/sw-push';
 
 declare const serviceWorkerOption: {
     assets: Array<string>,
@@ -60,52 +60,12 @@ self.addEventListener('push', function(event) {
         return;
     }
 
-    let subtitle = 'No data';
-    let data = {};
-    if (event.data) {
-        subtitle = event.data.text();
-        data = event.data.json();
-    }
-
-    event.waitUntil(
-        self.registration.showNotification('Received push message', <NotificationOptions>{
-            body: subtitle,
-            tag: 'update-notification',
-            badge: require('../content/images/notification-badge.png').substr(1),
-            data
-        })
-    );
+    const data = event.data ? event.data.json() : null;
+    event.waitUntil(handlePushMessage(data || {}));
 });
 
 self.addEventListener('notificationclick', function(event) {
     console.log('On notification click: ', event);
     event.notification.close();
-    const data = event.notification['data'];
-    if (!data.days) {
-        return event.waitUntil(openUrl('/'));
-    }
-    const nowIndex = getWeekDayIndex(new Date());
-    for (let i = 0; i < WEEK_DAYS.length; i++) {
-        const index = (i + nowIndex) % WEEK_DAYS.length;
-        const wd = WEEK_DAYS[index];
-        if (data.days.includes(wd)) {
-            return event.waitUntil(openUrl('/#/?redirect_plan=' + wd));
-        }
-    }
-    event.waitUntil(openUrl('/'));
+    event.waitUntil(handleNotificationClick(event.notification['data']));
 });
-
-async function openUrl(relativeUrl: string) {
-    const url = location.origin + relativeUrl;
-    const clients = await self.clients.matchAll({
-        type: 'window'
-    });
-    if (clients.length) {
-        const client = (<WindowClient>clients[0]);
-        if (!client.focused) {
-            await client.focus();
-        }
-        return client.navigate(url);
-    }
-    await self.clients.openWindow(url);
-}

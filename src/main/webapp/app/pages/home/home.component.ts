@@ -8,12 +8,12 @@ import { WEEK_DAYS, getWeekDayDisplayStr } from '../../model/weekdays';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { ParsedPlan } from '../../model/plan';
-import { PlanFetcherService } from '../../net/plan-fetcher';
 import { ModificationCheckerService } from '../../net/modification-checker';
 import { getDateTimeString } from '../../shared/util';
 import { ConnectivityService } from '../../net/connectivity';
 import { AppBarService } from '../../layouts/main/appbar.service';
-import { hasWebsocketSupport, WebsocketHandlerService } from '../../net/websocket';
+import { WebsocketHandlerService } from '../../net/websocket';
+import { PlanFetcherService } from '../../shared/services/plan-fetcher.service';
 
 @Component({
     selector: 'app-home',
@@ -38,14 +38,13 @@ export class HomeComponent {
         private changeDetectorRef: ChangeDetectorRef,
         private planFetcher: PlanFetcherService,
         private modificationChecker: ModificationCheckerService,
-        private websocketHandler: WebsocketHandlerService,
         private connectivityService: ConnectivityService,
         private appBarService: AppBarService
     ) {
         this.weekDays = WEEK_DAYS;
 
         for (const wd of this.weekDays) {
-            const planObs = this.planFetcher.getCacheValue(wd);
+            const planObs = this.planFetcher.getPlanObservable(wd);
             this.firstLines[wd] = planObs.pipe(switchMap((plan) => plan.getFirstLine()));
             this.secondLines[wd] = planObs.pipe(switchMap((plan) => plan.getSecondLine()));
             this.outdated[wd] = planObs.pipe(switchMap((plan) => plan.outdated));
@@ -72,15 +71,7 @@ export class HomeComponent {
     }
 
     forceUpdate() {
-        if (hasWebsocketSupport) {
-            this.websocketHandler.connect().then((connecting) => {
-                if (!connecting) {
-                    this.websocketHandler.forceUpdate();
-                }
-            });
-        } else {
-            this.modificationChecker.checkModification();
-        }
+        this.modificationChecker.forceUpdate();
     }
 
     onclick(weekday: string) {

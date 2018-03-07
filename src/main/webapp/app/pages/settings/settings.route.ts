@@ -7,7 +7,7 @@ export const SETTINGS_ROUTE: Route = {
     component: SettingsComponent,
     data: {
         authorities: [],
-        pageTitle: 'Einstellungen - Vertretungsplan GH'
+        pageTitle: 'Einstellungen'
     },
     canActivate: [UserRouteAccessService]
 };

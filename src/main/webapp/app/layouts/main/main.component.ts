@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router, ActivatedRouteSnapshot, NavigationEnd } from '@angular/router';
+import {  } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 import { from as Observable_from } from 'rxjs/observable/from';
@@ -38,7 +38,6 @@ export class MainComponent implements OnInit {
     hasSubtitleObs: Observable<boolean>;
 
     constructor(
-        private router: Router,
         public media: ObservableMedia,
         private appBarService: AppBarService
     ) {
@@ -48,19 +47,6 @@ export class MainComponent implements OnInit {
         this.titleObs = this.appBarService.titleObs;
         this.subtitleObs = this.appBarService.subtitleObs;
         this.hasSubtitleObs = this.subtitleObs.pipe(map((title) => !!title));
-    }
-
-    private getPageTitleOpts(routeSnapshot: ActivatedRouteSnapshot): { title: string, dontSetSubtitle: boolean } {
-        let opts; if (routeSnapshot.data && routeSnapshot.data['pageTitle']) {
-            opts = {
-                title: routeSnapshot.data && routeSnapshot.data['pageTitle'],
-                dontSetSubtitle: routeSnapshot.data && routeSnapshot.data['dontSetSubtitle']
-            };
-        }
-        if (routeSnapshot.firstChild) {
-            return this.getPageTitleOpts(routeSnapshot.firstChild) || opts;
-        }
-        return opts;
     }
 
     ngOnInit() {
@@ -78,18 +64,6 @@ export class MainComponent implements OnInit {
                     this.overSmallBreakpoint.next(true);
             }
             this.updateSidenav();
-        });
-
-        this.router.events.subscribe((event) => {
-            if (event instanceof NavigationEnd) {
-                const titleOpts = this.getPageTitleOpts(this.router.routerState.snapshot.root);
-                if (titleOpts) {
-                    this.appBarService.setTitle(Observable_of(titleOpts.title));
-                    if (!titleOpts.dontSetSubtitle) {
-                        this.appBarService.setSubTitle(Observable_of(undefined));
-                    }
-                }
-            }
         });
 
         const scrollSubject = new Subject();

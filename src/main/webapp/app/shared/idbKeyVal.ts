@@ -14,6 +14,10 @@
 //See the License for the specific language governing permissions and
 //limitations under the License.
 
+export const KEY_LATEST_MODIFICATION_HASH = 'latestModificationHash';
+export const KEY_LAST_UPDATE = 'lastUpdate';
+export const KEY_SELECTED_FILTERS = 'selectedFilters';
+
 function handleErrror(req: IDBRequest | IDBTransaction, reject: (reason?: any) => void) {
     req.onerror = function() {
         reject(req.error);

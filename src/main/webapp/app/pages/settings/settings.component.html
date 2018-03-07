@@ -41,16 +41,13 @@
                 </ng-container>
             </mat-list>
             <div style="text-align: center">
-                <mat-form-field style="margin-right: 8px">
-                    <mat-select #select placeholder="Filter auswählen...">
+                <mat-form-field>
+                    <mat-select #select placeholder="Filter hinzufügen..." (selectionChange)="addFilter(select)">
                         <mat-option *ngFor="let filter of SELECTABLE_FILTERS; trackBy: trackBy" value="{{ filter }}" [disabled]="(selectedFilters | async).includes(filter)">
                             {{ filter }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <button mat-raised-button type="submit" color="primary" [disabled]="select.empty" (click)="addFilter(select.value); select.writeValue(null)">
-                    Filter hinzufügen
-                </button>
             </div>
         </div>
     </mat-list-item>

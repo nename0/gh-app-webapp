@@ -1,23 +1,16 @@
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { take, pairwise } from 'rxjs/operators';
-import { combineLatest } from 'rxjs/operators/combineLatest';
 import { hasWebsocketSupport, WebsocketHandlerService } from './websocket';
-import { distinctUntilChanged } from 'rxjs/operators/distinctUntilChanged';
-import { idbKeyVal } from '../shared/idbKeyVal';
+import { idbKeyVal, KEY_LATEST_MODIFICATION_HASH, KEY_LAST_UPDATE } from '../shared/idbKeyVal';
 import { checkResponseStatus, getRandomArbitrary } from '../shared/util';
-import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
 import { ConnectivityService } from './connectivity';
-import { PlanFetcherService } from './plan-fetcher';
 import { WEEK_DAYS } from '../model/weekdays';
-
-const KEY_LATEST_MODIFICATION_HASH = 'latestModificationHash';
-const KEY_LAST_UPDATE = 'lastUpdate';
+import { PlanFetcherService } from '../shared/services/plan-fetcher.service';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 @Injectable()
 export class ModificationCheckerService {
     public latestModificationHash: Promise<string>;
-    private modificationHashFetching: string;
+    private planFetchedDate: Date = new Date(0);
     public lastUpdate = new ReplaySubject<Date>(1);
 
     private unscheduleCheckModification = () => null;
@@ -31,7 +24,7 @@ export class ModificationCheckerService {
 
     private async setup() {
         // fetch from storage
-        await this.update();
+        await this.update(true);
         try {
             await this.checkModification();
         } finally {
@@ -39,9 +32,8 @@ export class ModificationCheckerService {
         }
     }
 
-    private update = () => {
+    private update = (skipValidate?: boolean) => {
         this.latestModificationHash = idbKeyVal.get(KEY_LATEST_MODIFICATION_HASH);
-        this.validateModificationHash();
         const promise = idbKeyVal.get(KEY_LAST_UPDATE)
             .then((result) => {
                 const date = new Date(<string>result);
@@ -49,6 +41,9 @@ export class ModificationCheckerService {
                     this.lastUpdate.next(date);
                 }
             });
+        if (!skipValidate) {
+            this.validateModificationHash();
+        }
         return Promise.all([this.latestModificationHash, promise]);
     }
 
@@ -64,10 +59,10 @@ export class ModificationCheckerService {
         return this.gotModifiactionHash(modificationHash);
     }
 
-    public checkModification = async () => {
+    private checkModification = async () => {
+        this.unscheduleCheckModification();
         try {
             await this.connectivityService.executeLoadingTask(this.checkModificationRequest, this);
-            this.unscheduleCheckModification();
             // reschedule
             const handle = setTimeout(() => {
                 if (hasWebsocketSupport) {
@@ -83,6 +78,18 @@ export class ModificationCheckerService {
         }
     }
 
+    public forceUpdate() {
+        if (hasWebsocketSupport) {
+            this.websocketHandler.connect().then((connecting) => {
+                if (!connecting) {
+                    this.websocketHandler.forceUpdate();
+                }
+            });
+        } else {
+            this.checkModification();
+        }
+    }
+
     public async gotModifiactionHash(hash: string) {
         const now = new Date();
         await this.storeModifiactionHash(hash);
@@ -93,6 +100,7 @@ export class ModificationCheckerService {
 
     private async storeModifiactionHash(hash: string) {
         while (true) {
+            this.latestModificationHash = idbKeyVal.get(KEY_LATEST_MODIFICATION_HASH);
             const expected = await this.latestModificationHash;
             if (expected === hash) {
                 return;
@@ -101,18 +109,18 @@ export class ModificationCheckerService {
                 this.latestModificationHash = Promise.resolve(hash);
                 return;
             }
-            this.latestModificationHash = idbKeyVal.get(KEY_LATEST_MODIFICATION_HASH);
         }
     }
 
     private async validateModificationHash() {
+        if (this.planFetchedDate.getTime() + 5 * 1000 > Date.now()) {
+            console.log('validateModificationHash other fetch not timed out');
+            return;
+        }
         const latestModificationHash = await this.latestModificationHash;
         if (!latestModificationHash) {
             console.log('validateModificationHash no hash set');
-            return;
-        }
-        if (this.modificationHashFetching === latestModificationHash) {
-            console.log('validateModificationHash other fetch ongoing');
+            this.forceUpdate();
             return;
         }
         const dates: Date[] = []
@@ -124,16 +132,16 @@ export class ModificationCheckerService {
             }
             dates[i] = cacheValue.modification;
         }
-        const hash = await this.calculateModificationHash(dates);
+        const hash = this.calculateModificationHash(dates);
         if (latestModificationHash === hash) {
             //console.log('validateModificationHash unchanged', hash);
             return;
         }
-        console.log('validateModificationHash changed', hash);
+        console.log('validateModificationHash changed', latestModificationHash);
         return this.doFetchPlans(latestModificationHash);
     }
 
-    private async calculateModificationHash(dates: Date[]) {
+    private calculateModificationHash(dates: Date[]) {
         const utcSeconds = dates.map((date) => date.getTime() / 1000);
         const hashNumbersCount = 2;
         const iterationsCount = 4;
@@ -154,14 +162,16 @@ export class ModificationCheckerService {
     }
 
     private async doFetchPlans(hash: string) {
+        const oldDate = this.planFetchedDate;
         try {
-            this.modificationHashFetching = hash;
+            this.planFetchedDate = new Date();
             const changed = await this.planFetcher.fetchAll();
             if (changed) {
                 this.update();
             }
-        } finally {
-            this.modificationHashFetching = null;
+        } catch (err) {
+            this.planFetchedDate = oldDate;
+            throw err;
         }
     }
 }

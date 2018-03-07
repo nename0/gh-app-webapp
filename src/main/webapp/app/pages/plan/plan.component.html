@@ -9,8 +9,8 @@
     <tr class="TitelZeileTabelleVertretungen">
       <td class="TitelZelleTabelleVertretungen">Klasse</td>
       <td class="TitelZelleTabelleVertretungen">Std</td>
-      <td class="TitelZelleTabelleVertretungen">Lehrer</td>
       <td class="TitelZelleTabelleVertretungen">Vertretung</td>
+      <td class="TitelZelleTabelleVertretungen">Lehrer</td>
       <td class="TitelZelleTabelleVertretungen">statt</td>
       <td class="TitelZelleTabelleVertretungen">Raum</td>
       <td class="TitelZelleTabelleVertretungen">Sonstiges</td>
@@ -18,8 +18,8 @@
     <tr class="ZeileTabelleVertretungen" *ngFor="let substitute of (substitutesObs | async); trackBy: trackBy">
       <td class="ZelleTabelleVertretungen">{{ substitute.classText }}</td>
       <td class="ZelleTabelleVertretungen">{{ substitute.lesson }}</td>
-      <td class="ZelleTabelleVertretungen">{{ substitute.teacher }}</td>
       <td class="ZelleTabelleVertretungen">{{ substitute.substitute }}</td>
+      <td class="ZelleTabelleVertretungen">{{ substitute.teacher }}</td>
       <td class="ZelleTabelleVertretungen">{{ substitute.insteadOf }}</td>
       <td class="ZelleTabelleVertretungen">{{ substitute.room }}</td>
       <td class="ZelleTabelleVertretungen">{{ substitute.extra }}</td>

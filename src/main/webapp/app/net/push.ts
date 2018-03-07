@@ -1,12 +1,11 @@
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Injectable, NgZone } from '@angular/core';
-import { checkResponseStatus } from '../shared/util';
 import { hasWebsocketSupport, WebsocketHandlerService } from './websocket';
 import { idbKeyVal } from '../shared/idbKeyVal';
 import { RENEW_PERIOD_MILLIS } from '../shared/auth/auth-provider.service';
 import { ConnectivityService } from './connectivity';
 import { filter as rxFilter } from 'rxjs/operators';
-import { FilterService } from '../shared/filter.service';
+import { FilterService } from '../shared/services/filter.service';
 
 declare const navigator: Navigator;
 

@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { idbKeyVal } from './idbKeyVal';
-import { SELECTABLE_FILTERS } from '../model/filter';
-
-const KEY_SELECTED_FILTERS = 'selectedFilters';
+import { idbKeyVal, KEY_SELECTED_FILTERS } from '../idbKeyVal';
+import { SELECTABLE_FILTERS } from '../../model/filter';
 
 @Injectable()
 export class FilterService {

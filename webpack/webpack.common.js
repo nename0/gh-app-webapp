@@ -123,10 +123,12 @@ module.exports = (options) => {
                 },
                 includes: ["content/*.png",
                     "content/*.woff2",
-                    "app/**",
-                    "manifest.*.json"
+                    "app/**"
                 ],
-                excludes: ["app/*.sw.js"]
+                excludes: [
+                    "app/*.sw.js",
+                    "content/icon_*.png"
+                ]
             }),
         ]
     };
