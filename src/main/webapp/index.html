@@ -13,7 +13,16 @@
     <link rel="apple-touch-icon" href="<%= require('./content/images/icon-64x64.png').substr(1) %>">
     <link rel="apple-touch-icon" sizes="180x180" href="<%= require('./content/images/icon-256x256.png').substr(1) %>">
     <link rel="shortcut icon" href="favicon.ico" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <script>
+        var cb = function() {
+        var l = document.createElement('link'); l.rel = 'stylesheet';
+        l.href = 'https://fonts.googleapis.com/css?family=Roboto:300,400,500';
+        document.getElementsByTagName('head')[0].appendChild(l); };
+        var raf = requestAnimationFrame || mozRequestAnimationFrame ||
+              webkitRequestAnimationFrame || msRequestAnimationFrame;
+        if (raf) raf(cb);
+        else window.addEventListener('load', cb);
+    </script>
 </head>
 <body>
     <app-main></app-main>

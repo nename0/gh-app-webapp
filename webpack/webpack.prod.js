@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const Visualizer = require('webpack-visualizer-plugin');
-const AngularCompilerPlugin = require('@ngtools/webpack').AngularCompilerPlugin;
 const utils = require('./utils.js');
 const commonConfig = require('./webpack.common.js');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
@@ -14,7 +13,7 @@ const extractCSS = new ExtractTextPlugin('app/[sha256:contenthash:hex:20].css');
 
 module.exports = webpackMerge(commonConfig({ env: ENV }), {
     // Enable source maps. Please note that this will slow down the build.
-    // You have to enable it in UglifyJSPlugin config below and in tsconfig-aot.json as well
+    // You have to enable it in UglifyJSPlugin config below and in tsconfig.json as well
     // devtool: 'source-map',
     entry: {
         polyfills: './src/main/webapp/app/polyfills',
@@ -29,15 +28,6 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
     recordsPath: utils.root('webpack/records.json'),
     module: {
         rules: [
-            {
-                test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
-                use: {
-                    loader: '@ngtools/webpack',
-                    options: {
-                        tsConfigPath: utils.root('tsconfig-aot.json'),
-                    },
-                },
-            },
             {
                 test: /\.css$/,
                 loaders: ['to-string-loader', 'css-loader'],
@@ -88,10 +78,6 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
                     indent_level: 2
                 }
              }
-        }),
-        new AngularCompilerPlugin({
-            tsConfigPath: utils.root('tsconfig-aot.json'),
-            mainPath: './src/main/webapp/app/app.main.ts'
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true,

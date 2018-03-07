@@ -8,17 +8,22 @@
         "experimentalDecorators": true,
         "removeComments": false,
         "noImplicitAny": false,
-        "skipLibCheck": true,
-        "allowSyntheticDefaultImports": true,
         "suppressImplicitAnyIndexErrors": true,
+        "skipLibCheck": true,
         "outDir": "target/www/app",
-        "lib": ["es6", "es2016.array.include", "es2017.string", "webworker", "dom"],
+        "lib": ["es7", "es2017.string", "webworker", "dom"],
         "typeRoots": [
             "node_modules/@types"
-        ]
+        ],
+        "baseUrl": "./",
+        "paths": {
+            "app/*": ["src/main/webapp/app/*"]
+        },
+        "importHelpers": true
     },
-    "include": [
-        "src/main/webapp/app",
-        "src/test/javascript/"
-    ]
+    "angularCompilerOptions": {
+        "genDir": "target/aot",
+        "skipMetadataEmit" : true,
+        "fullTemplateTypeCheck": true
+    }
 }

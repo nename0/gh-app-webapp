@@ -22,6 +22,9 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
                 changeOrigin: true,
                 ws: true
             }
+        },
+        watchOptions: {
+            ignored: /node_modules/
         }
     },
     entry: {
@@ -40,14 +43,6 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
             enforce: 'pre',
             loaders: 'tslint-loader',
             exclude: ['node_modules', new RegExp('reflect-metadata\\' + path.sep + 'Reflect\\.ts')]
-        },
-        {
-            test: /\.ts$/,
-            loaders: [
-                'angular2-template-loader',
-                'awesome-typescript-loader'
-            ],
-            exclude: ['node_modules/generator-jhipster']
         },
         {
             test: /\.css$/,
