@@ -1,3 +1,5 @@
+import './polyfills';
+
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { GHAppModule } from './app.module';
 import { enableProdMode } from '@angular/core';

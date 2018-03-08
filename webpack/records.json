@@ -1218,8 +1218,10 @@
     },
     "bySource": {},
     "usedIds": [
+      0,
       1,
-      2
+      2,
+      3
     ]
   },
   "serviceworker-plugin": [
