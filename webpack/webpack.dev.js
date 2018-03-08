@@ -55,11 +55,10 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
         }]
     },
     plugins: [
-        new webpack.NoEmitOnErrorsPlugin(),
-        new webpack.NamedModulesPlugin(),
         new writeFilePlugin(),
         new webpack.WatchIgnorePlugin([
             utils.root('src/test'),
         ])
-    ]
+    ],
+    mode: 'development'
 });

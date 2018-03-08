@@ -28,7 +28,7 @@ module.exports = (options) => ({
                 use: {
                     loader: '@ngtools/webpack',
                     options: {
-                        tsConfigPath: utils.root('tsconfig-aot.json'),
+                        tsConfigPath: utils.root('tsconfig.json'),
                     },
                 }
             },
@@ -70,23 +70,6 @@ module.exports = (options) => ({
                 VERSION: `'${utils.parseVersion()}'`,
                 DEBUG_INFO_ENABLED: options.env === 'development'
             }
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'polyfills',
-            chunks: ['polyfills']
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'vendor',
-            chunks: ['main'],
-            minChunks: module =>
-                utils.isExternalLib(module) || (module.resource && (/vendor\.css$/).test(module.resource))
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: ['polyfills', 'vendor'].reverse()
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: ['manifest'],
-            minChunks: Infinity
         }),
         new CopyWebpackPlugin([
             { from: './src/main/webapp/favicon.ico', to: 'favicon.ico' },
@@ -133,6 +116,6 @@ module.exports = (options) => ({
                 "app/*.sw.js",
                 "content/icon_*.png"
             ]
-        }),
+        })
     ]
 });

@@ -44,7 +44,7 @@ import { ModificationCheckerService } from './net/modification-checker';
 if ('serviceWorker' in navigator) {
     runtime.register().catch(function(err) {
         console.log('service worker registering error', err);
-        alert('service worker registering Error: ' + err.toString());
+        //alert('service worker registering Error: ' + err.toString());
     });
 } else {
     console.log('serviceWorker not supported')

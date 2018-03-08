@@ -41,6 +41,29 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
                 })
             }]
     },
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+            maxInitialRequests: 10,
+            name: true,
+            cacheGroups: {
+                polyfills: {
+                    name: 'polyfills',
+                    test: function(module) {
+                        return module.getChunks().filter((chunk) => chunk.name === 'polyfills').length;
+                    },
+                    priority: 10
+                },
+                angular: {
+                    test: function(module) {
+                        return /(\/|\\)node_modules(\/|\\)@angular(\/|\\)/.test(module.userRequest);
+                    },
+                    reuseExistingChunk: true,
+                    priority: 10
+                }
+            }
+        }
+    },
     plugins: [
         extractCSS,
         new webpack.HashedModuleIdsPlugin(),
@@ -91,7 +114,8 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
                 /robots.txt$/,
                 /sw.js$/,
                 /manifest\..+\.json$/,
-                /content\/icon_.+\.png$/
+                /content\/icon_.+\.png$/,
+                /content\/.+\.(?!png$|woff$)/
             ]
         }),
         new BrotliPlugin({
@@ -100,5 +124,6 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
             threshold: 10240,
             minRatio: 0.8
         })
-    ]
+    ],
+    mode: 'production'
 });
