@@ -46,7 +46,7 @@ export abstract class PlanFetcher {
         const res = await fetch(location.origin + '/api/v1/plans/plan?wd=' + weekDay, {
             credentials: 'same-origin'
         });
-        if (res.status < 200 || res.status <= 300) {
+        if (res.status < 200 || res.status >= 300) {
             throw new Error(res.url + ' ' + res.statusText);
         }
         return res.json();

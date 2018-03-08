@@ -73,7 +73,7 @@ export class ModificationCheckerService {
             }, getRandomArbitrary(8000, 10000));
             this.unscheduleCheckModification = () => clearTimeout(handle);
         } catch (err) {
-            console.log('Error in checkModificationRequest' + err.toString());
+            console.log('Error in checkModificationRequest ' + err.toString());
             this.unscheduleCheckModification = this.connectivityService.scheduleRetryTask(this.checkModification);
         }
     }
