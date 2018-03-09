@@ -1,0 +1,23 @@
+@import '@angular/material/theming'; 
+
+@function my-theme-primary() {
+    @return mat-palette($mat-indigo);
+}
+
+@function my-theme-accent() {
+    @return mat-palette($mat-grey, 50, A100, 100);
+}
+
+@function my-theme() {
+    // Define the palettes for your theme using the Material Design palettes available in palette.scss
+    // (imported above). For each palette, you can optionally specify a default, lighter, and darker
+    // hue.
+    $my-theme-primary: my-theme-primary();
+    $my-theme-accent: my-theme-accent();
+
+    // create theme (use mat-dark-theme for themes with dark backgrounds)
+    @return mat-light-theme(
+    $my-theme-primary,
+    $my-theme-accent
+    );
+}

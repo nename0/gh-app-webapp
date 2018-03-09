@@ -3,7 +3,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { DataSource } from '@angular/cdk/table';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { MatSort, Sort } from '@angular/material';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, distinctUntilChanged, pluck, publishReplay, refCount, take } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -16,6 +16,7 @@ import { UNKNOWN_FILTER, ALL_FILTER, COMMON_FILTER, SELECTABLE_FILTERS } from '.
 import { FilterService } from '../../shared/services/filter.service';
 import { PlanFetcherService } from '../../shared/services/plan-fetcher.service';
 import { RxParsedPlan } from '../../model/rx-plan';
+import { ChangeIndicatorService } from 'app/shared/services/change-indicator.service';
 
 @Component({
     selector: 'app-plan-comp',
@@ -33,11 +34,20 @@ export class PlanComponent {
         private route: ActivatedRoute,
         private planFetcher: PlanFetcherService,
         private filterService: FilterService,
-        private appBarService: AppBarService) {
+        private appBarService: AppBarService,
+        private changeIndicatorService: ChangeIndicatorService) {
 
-        this.planObs = this.route.params.pipe(switchMap((params) => this.planFetcher.getPlanObservable(params.wd)));
+        this.planObs = this.route.params.pipe(switchMap((params) => {
+            // remove changeIndicator
+            const obs = this.planFetcher.getPlanObservable(params.wd);
+            obs.pipe(take(1)).toPromise().then((plan) => {
+                this.changeIndicatorService.openedPlan(plan);
+            });
+            return obs;
+        }), publishReplay(1), refCount());
         this.substitutesObs = combineLatest(this.planObs, this.filterService.selectedFilters).pipe(
             map(([plan, selectedFilters]) => {
+                // filter substitites
                 const filteredSubstitutes = plan.filtered.filteredSubstitutes;
                 if (selectedFilters.length) {
                     return filteredSubstitutes[UNKNOWN_FILTER]

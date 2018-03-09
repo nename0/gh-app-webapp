@@ -4,8 +4,9 @@
 </mat-card>
 <div class="row">
     <mat-nav-list>
-        <mat-list-item [ngClass]="{'blink': (blink[wd] | async), 'outdated': (outdated[wd] | async)}" *ngFor="let wd of weekDays; trackBy: trackBy"
-            (click)="onclick(wd)">
+        <mat-list-item [ngClass]="{'blink': (blink[wd] | async), 'outdated': (outdated[wd] | async), 'changed-indicator': (changed[wd] | async)}"
+            *ngFor="let wd of weekDays; trackBy: trackBy" (click)="onclick(wd)">
+            <div class="changed-indicator-dot"></div>
             <h4 mat-line>{{ (firstLines[wd] | async) }}</h4>
             <p mat-line>{{ (secondLines[wd] | async) }}</p>
         </mat-list-item>

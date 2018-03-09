@@ -21,3 +21,16 @@ mat-list-item.outdated{
     color: rgba(0, 0, 0, 0.38);
 }
 
+mat-list-item.changed-indicator:not(.outdated) div.changed-indicator-dot{
+    position: relative;
+    top: -15px;
+    right: 8px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+}
+/* color gets set in material-extra.scss*/
+mat-list-item.changed-indicator:not(.outdated) .mat-line{
+    font-weight: 500;
+}
+

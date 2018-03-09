@@ -13,6 +13,7 @@ import { HasAnyAuthorityDirective } from './auth/has-any-authority.directive';
 import { setupUtil } from './util';
 import { FilterService } from './services/filter.service';
 import { PlanFetcherService } from './services/plan-fetcher.service';
+import { ChangeIndicatorService } from 'app/shared/services/change-indicator.service';
 
 @NgModule({
     imports: [
@@ -28,7 +29,8 @@ import { PlanFetcherService } from './services/plan-fetcher.service';
         AuthenticationProviderService,
         StateStorageService,
         FilterService,
-        PlanFetcherService
+        PlanFetcherService,
+        ChangeIndicatorService
     ],
     entryComponents: [JhiLoginDialogComponent],
     exports: [

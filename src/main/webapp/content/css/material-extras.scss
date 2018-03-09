@@ -1,0 +1,37 @@
+@import '@angular/material/theming'; 
+
+@import './material-theme';
+$my-theme-primary: my-theme-primary();
+$my-theme-accent: my-theme-accent();
+$my-theme: my-theme();
+
+mat-nav-list > a:not(.router-active) mat-icon {
+    color: rgba(0,0,0,.54);
+}
+
+mat-nav-list > a.router-active mat-icon{
+    color: mat-color(map-get($my-theme, primary), "default");
+}
+
+mat-nav-list > a.router-active .mat-line{
+    color: mat-color(map-get($my-theme, primary), "default");
+}
+
+.navbar-toolbar.mat-accent {
+    background: mat-color($my-theme-accent, "lighter");
+}
+
+span.settings-warn-text {
+    color: mat-color(map-get($my-theme, warn), "default");
+}
+
+mat-list-item.changed-indicator:not(.outdated) {
+    color: mat-color(map-get($my-theme, primary), "default");
+}
+
+div.changed-indicator-dot {
+    background-color: mat-color(map-get($my-theme, primary), "default");
+}
+
+// Command to compile: 
+// .\node_modules\.bin\node-sass .\src\main\webapp\content\css\ --include-path .\node_modules\ -o .\src\main\webapp\content\css

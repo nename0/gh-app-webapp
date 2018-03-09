@@ -1,3 +1,5 @@
+@import './material-extras.css';
+
 button.mat-icon-button{
     width: 48px;
     height: 48px

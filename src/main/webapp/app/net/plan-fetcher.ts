@@ -32,7 +32,8 @@ export abstract class PlanFetcher {
                 const cacheValue = this.getCacheValue(wd);
                 if (cacheValue && result === cacheValue.getJSON()) {
                     return;
-                } try {
+                }
+                try {
                     const plan = this.createParsedPlan(JSON.parse(result));
                     this.setCacheValue(wd, plan);
                 } catch (err) {
@@ -56,18 +57,19 @@ export abstract class PlanFetcher {
         const result = await this.fetchPlanRequest(weekDay);
         while (true) {
             await this.syncKeyValue();
-            const cacheValue = this.getCacheValue(weekDay);
-            const cacheModification = cacheValue ? cacheValue.modification : new Date(0);
-            if (cacheModification >= new Date(result.modification)) {
+            const expected = this.getCacheValue(weekDay);
+            const expectedStr = expected instanceof ParsedPlan ? expected.getJSON() : JSON.stringify(expected);
+            const newValue = this.createParsedPlan(result);
+            const newStr = newValue.getJSON();
+            if (expectedStr === newStr) {
                 console.log('fetched ' + weekDay + ' unchanged');
                 // repush to indicate loading
-                this.setCacheValue(weekDay, cacheValue);
+                this.setCacheValue(weekDay, expected);
                 return false;
             }
             console.log('fetched ' + weekDay + ' changed');
-            const plan = this.createParsedPlan(result);
-            if (await idbKeyVal.cas(KEY_PLAN(weekDay), cacheValue instanceof ParsedPlan ? cacheValue.getJSON() : JSON.stringify(cacheValue), plan.getJSON())) {
-                this.setCacheValue(weekDay, plan);
+            if (await idbKeyVal.cas(KEY_PLAN(weekDay), expectedStr, newStr)) {
+                this.setCacheValue(weekDay, newValue);
                 return true;
             }
         }
