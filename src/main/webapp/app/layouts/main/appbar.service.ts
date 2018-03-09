@@ -4,7 +4,7 @@ import { of as Observable_of } from 'rxjs/observable/of';
 import { Observable } from 'rxjs/Observable';
 import { switchAll } from 'rxjs/operators';
 import { Title } from '@angular/platform-browser';
-import { Router, NavigationEnd, ActivatedRouteSnapshot } from '@angular/router';
+import { Router, ActivatedRouteSnapshot } from '@angular/router';
 
 @Injectable()
 export class AppBarService {
@@ -19,18 +19,6 @@ export class AppBarService {
         this.titleObs = this.titleSubject.pipe(switchAll());
         this.subtitleSubject = new BehaviorSubject(Observable_of(undefined));
         this.subtitleObs = this.subtitleSubject.pipe(switchAll());
-
-        this.router.events.subscribe((event) => {
-            if (event instanceof NavigationEnd) {
-                const titleOpts = this.getPageTitleOpts(this.router.routerState.snapshot.root);
-                if (titleOpts) {
-                    this.setTitle(Observable_of(titleOpts.title));
-                    if (!titleOpts.dontSetSubtitle) {
-                        this.setSubTitle(Observable_of(undefined));
-                    }
-                }
-            }
-        });
 
         this.titleObs.subscribe((title) => {
             if (title !== 'Vertretungsplan GH') {
@@ -51,6 +39,16 @@ export class AppBarService {
             return this.getPageTitleOpts(routeSnapshot.firstChild) || opts;
         }
         return opts;
+    }
+
+    public onRouterNavigationEnd() {
+        const titleOpts = this.getPageTitleOpts(this.router.routerState.snapshot.root);
+        if (titleOpts) {
+            this.setTitle(Observable_of(titleOpts.title));
+            if (!titleOpts.dontSetSubtitle) {
+                this.setSubTitle(Observable_of(undefined));
+            }
+        }
     }
 
     public setTitle(obs: Observable<string>) {

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import {  } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 import { from as Observable_from } from 'rxjs/observable/from';
@@ -39,6 +39,7 @@ export class MainComponent implements OnInit {
 
     constructor(
         public media: ObservableMedia,
+        private router: Router,
         private appBarService: AppBarService
     ) {
         // hack to make rxjs belive its an real Observabke
@@ -67,10 +68,17 @@ export class MainComponent implements OnInit {
         });
 
         const scrollSubject = new Subject();
-        this.scrollpane.nativeElement.addEventListener('scroll', (e) => {
-            const curScroll: number = e.target.scrollTop;
+        const emitScrollSubject = () => {
+            const curScroll: number = this.scrollpane.nativeElement.scrollTop;
             scrollSubject.next(curScroll);
-        }, { passive: true });
+        }
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.appBarService.onRouterNavigationEnd();
+                setTimeout(() => emitScrollSubject(), 100);
+            }
+        });
+        this.scrollpane.nativeElement.addEventListener('scroll', emitScrollSubject, { passive: true });
         this.toolbarVisible = new BehaviorSubject(true);
         this.toolbarOffset = new BehaviorSubject(0);
         //stickyHeaderOffset = new BehaviorSubject(0);
