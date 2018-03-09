@@ -141,7 +141,7 @@ async function getControlledWindowClient(): Promise<WindowClient> {
 function openUrl(relativeUrl: string, client?: WindowClient) {
     const url = location.origin + relativeUrl;
     if (client) {
-        const focusPromise = client.focused ? client.focus() : undefined
+        const focusPromise = client.focused ? undefined : client.focus()
         return Promise.all([focusPromise, client.navigate(url)])
     }
     return self.clients.openWindow(url);
