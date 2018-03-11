@@ -7,6 +7,8 @@ import { combineLatest } from 'rxjs/observable/combineLatest';
 import { SELECTABLE_FILTERS } from '../../model/filter';
 import { FilterService } from '../../shared/services/filter.service';
 import { MatSelect } from '@angular/material/select';
+import { ChangeIndicatorService } from 'app/shared/services/change-indicator.service';
+import { VERSION } from 'app/app.constants';
 
 @Component({
     selector: 'app-settings',
@@ -26,8 +28,11 @@ export class SettingsComponent {
     readonly SELECTABLE_FILTERS = SELECTABLE_FILTERS;
     readonly selectedFilters: BehaviorSubject<string[]>;
 
+    readonly APP_VERSION = VERSION;
+
     constructor(public pushService: PushService,
-        private filterService: FilterService) {
+        private filterService: FilterService,
+        private changeIndicatorService: ChangeIndicatorService) {
         this.pushStatusObs = this.pushService.pushStatus;
         this.pushHasErrored = this.pushService.hasErrored;
 
@@ -58,11 +63,15 @@ export class SettingsComponent {
         if (select.empty) {
             return;
         }
-        this.filterService.addFilter(select.value);
+        this.filterService.addFilter(select.value).then(() => {
+            this.changeIndicatorService.reset();
+        });
         select.writeValue(null);
     }
 
     removeFilter(filter: string) {
-        this.filterService.removeFilter(filter);
+        this.filterService.removeFilter(filter).then(() => {
+            this.changeIndicatorService.reset();
+        });
     }
 }
