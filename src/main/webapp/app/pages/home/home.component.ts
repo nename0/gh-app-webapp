@@ -33,8 +33,6 @@ export class HomeComponent {
     readonly changed: { [wd: string]: Observable<boolean> } = {};
     readonly blink: { [wd: string]: Observable<boolean> } = {};
 
-    readonly loading: Observable<boolean>;
-
     constructor(
         private router: Router,
         private changeDetectorRef: ChangeDetectorRef,
@@ -57,7 +55,6 @@ export class HomeComponent {
                 return Observable_of(true).pipe(concat(delayed));
             }));
         }
-        this.loading = this.connectivityService.loading;
         const lastUpdate = this.modificationChecker.lastUpdate
             .pipe(switchMap((date) => getDateTimeString(date)), startWith('Keine'));
         const subtitleObs = combineLatest(this.connectivityService.isOnline, lastUpdate)
@@ -65,17 +62,13 @@ export class HomeComponent {
                 if (isOnline) {
                     return undefined;
                 }
-                return 'Offline - Letzte Verbindung: ' + lastUpdateStr;
+                return 'Offline seit: ' + lastUpdateStr;
             }));
         this.appBarService.setSubTitle(subtitleObs);
     }
 
     trackBy(index, weekDay) {
         return weekDay;
-    }
-
-    forceUpdate() {
-        this.modificationChecker.forceUpdate();
     }
 
     onclick(weekday: string) {

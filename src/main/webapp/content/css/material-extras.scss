@@ -33,5 +33,9 @@ div.changed-indicator-dot {
     background-color: mat-color(map-get($my-theme, primary), "default");
 }
 
+div.wifi-cross2 > div {
+    border-bottom: 2px solid mat-color(map-get($my-theme, primary), "default");
+}
+
 // Command to compile: 
 // .\node_modules\.bin\node-sass .\src\main\webapp\content\css\ --include-path .\node_modules\ -o .\src\main\webapp\content\css

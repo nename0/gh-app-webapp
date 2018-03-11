@@ -11,15 +11,33 @@
 }
 }
 
+mat-toolbar.appbar {
+    z-index:2;
+    padding: 0px 4px;
+}
+
+mat-toolbar.appbar > button, div.appbar-spinner {
+    flex: 48px 0 0;
+    height: 48px;
+    width: 48px;
+}
+
+div.appbar-spinner > mat-spinner {
+    margin: 9px;
+}
+
 .appbar-text-div {
-    width: calc(100% - 96px);
+    margin-left: 12px;
+
+    flex-grow: 1;
+    flex-shrink: 1;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .appbar-title {
     margin-bottom: -3px;
-
-    text-overflow: ellipsis;
-    overflow: hidden;
 }
 
 .appbar-subtitle {
@@ -27,4 +45,28 @@
 
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+.wifi-cross1 {
+    transform: translateY(16px);
+    height: 0px;
+}
+
+.wifi-cross1 > div {
+    width: 30px;
+    margin: auto;
+    border-bottom: 2px solid  rgb(140, 151, 211);
+    transform: rotate(45deg);
+}
+
+.wifi-cross2 {
+    transform: translateY(19px);
+    height: 0px;
+}
+
+/* border-bottom is set by material extras*/
+.wifi-cross2 > div {
+    width: 30px;
+    margin: auto;
+    transform: rotate(45deg);
 }

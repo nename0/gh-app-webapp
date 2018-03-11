@@ -5,16 +5,33 @@
 
     <div style="overflow:hidden;height: 100%;display:flex">
         <div #scrollpane style="overflow-y:auto;overflow-x:hidden;flex: 1 1 100%;background-color:white">
-            <mat-toolbar color="primary" class="mat-elevation-z4" style="z-index:2" [style.top]="(toolbarOffset | async) + 'px'" [style.position]="(overSmallBreakpoint | async) ? 'static' : 'sticky'"
+            <mat-toolbar color="primary" class="mat-elevation-z4 appbar" [style.top]="(toolbarOffset | async) + 'px'" [style.position]="(overSmallBreakpoint | async) ? 'static' : 'sticky'"
                 [style.visibility]="(toolbarVisible | async) ? '' : 'hidden'">
-                <button mat-icon-button style="margin-left:-12px;margin-right:20px" (click)="sidenav.open()" *ngIf="(overSmallBreakpoint | async) ? false : true">
+                <button mat-icon-button style="margin-right: 8px" (click)="sidenav.open()" *ngIf="(overSmallBreakpoint | async) ? false : true">
                     <mat-icon class="fa fa-fw fa-bars" aria-label="Navigation"></mat-icon>
                 </button>
                 <div class="appbar-text-div">
-                    <div class="appbar-title">{{ (titleObs |async) }}</div>
+                    <span class="appbar-title">{{ (titleObs |async) }}</span>
                     <div *ngIf="(hasSubtitleObs | async)" class="mat-subheading-1 appbar-subtitle">{{ (subtitleObs |async) }}</div>
                 </div>
-                <button mat-icon-button style="right: 4px; position: absolute" [matMenuTriggerFor]="appMenu">
+                <div class="appbar-spinner" *ngIf="(loadingObs | async); else update_button">
+                    <mat-spinner color="accent" diameter="30"></mat-spinner>
+                </div>
+                <ng-template #update_button>
+                    <button mat-icon-button (click)="forceUpdate()">
+                        <mat-icon *ngIf="(onlineObs | async); else offline" class="fa fa-fw fa-refresh" aria-label="Update"></mat-icon>
+                        <ng-template #offline>
+                            <div class="wifi-cross1">
+                                <div></div>
+                            </div>
+                            <div class="wifi-cross2">
+                                <div></div>
+                            </div>
+                            <mat-icon class="fa fa-fw fa-wifi" style="color: rgb(140, 151, 211)" aria-label="Update"></mat-icon>
+                        </ng-template>
+                    </button>
+                </ng-template>
+                <button mat-icon-button [matMenuTriggerFor]="appMenu">
                     <mat-icon class="fa fa-fw fa-ellipsis-v" aria-label="Navigation"></mat-icon>
                 </button>
                 <mat-menu #appMenu="matMenu">

@@ -1,7 +1,3 @@
-<mat-card>
-    Ladevorgang: {{ (loading | async) }}
-    <button mat-raised-button color="primary" [disabled]="(loading | async)" (click)="forceUpdate()">Update</button>
-</mat-card>
 <div class="row">
     <mat-nav-list>
         <mat-list-item [ngClass]="{'blink': (blink[wd] | async), 'outdated': (outdated[wd] | async), 'changed-indicator': (changed[wd] | async)}"

@@ -13,6 +13,8 @@ import { combineLatest } from 'rxjs/operators/combineLatest';
 import { Subject } from 'rxjs/Subject';
 import { observable } from 'rxjs/symbol/observable';
 import { AppBarService } from './appbar.service';
+import { ConnectivityService } from 'app/net/connectivity';
+import { ModificationCheckerService } from 'app/net/modification-checker';
 
 export let stickyHeaderOffset: BehaviorSubject<number>;
 
@@ -37,10 +39,15 @@ export class MainComponent implements OnInit {
     subtitleObs: Observable<string>;
     hasSubtitleObs: Observable<boolean>;
 
+    loadingObs: Observable<boolean>;
+    onlineObs: Observable<boolean>;
+
     constructor(
         public media: ObservableMedia,
         private router: Router,
-        private appBarService: AppBarService
+        private appBarService: AppBarService,
+        private modificationChecker: ModificationCheckerService,
+        private connectivityService: ConnectivityService
     ) {
         // hack to make rxjs belive its an real Observabke
         this.media[observable] = function() { return this; }
@@ -48,6 +55,9 @@ export class MainComponent implements OnInit {
         this.titleObs = this.appBarService.titleObs;
         this.subtitleObs = this.appBarService.subtitleObs;
         this.hasSubtitleObs = this.subtitleObs.pipe(map((title) => !!title));
+
+        this.loadingObs = this.connectivityService.loading;
+        this.onlineObs = this.connectivityService.isOnline;
     }
 
     ngOnInit() {
@@ -124,6 +134,10 @@ export class MainComponent implements OnInit {
                         break;
                 }
             });
+    }
+
+    forceUpdate() {
+        this.modificationChecker.forceUpdate();
     }
 
     private updateSidenav() {
