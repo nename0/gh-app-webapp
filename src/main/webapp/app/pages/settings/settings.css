@@ -9,3 +9,11 @@ mat-list.selected-filter-list {
     padding-top: 0;
 }
 
+mat-slide-toggle.notification-toggle {
+    margin: 14px 0;
+}
+
+mat-slide-toggle.notification-toggle span {
+    font-size: 16px;
+}
+

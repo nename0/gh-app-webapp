@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { PushService, PushStatus } from '../../net/push';
 import { Observable } from 'rxjs/Observable';
@@ -9,6 +9,7 @@ import { FilterService } from '../../shared/services/filter.service';
 import { MatSelect } from '@angular/material/select';
 import { ChangeIndicatorService } from 'app/shared/services/change-indicator.service';
 import { VERSION } from 'app/app.constants';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 @Component({
     selector: 'app-settings',
@@ -20,6 +21,9 @@ import { VERSION } from 'app/app.constants';
 })
 export class SettingsComponent {
     readonly PushStatus = PushStatus;
+    @ViewChild('pushslidetoggle')
+    pushSlideToggle: MatSlideToggle;
+    readonly pushEnabled: Observable<boolean>;
     readonly pushButtonLoading: BehaviorSubject<boolean>;
     readonly pushButtonDisable: Observable<boolean>;
     readonly pushStatusObs: BehaviorSubject<PushStatus>;
@@ -40,6 +44,15 @@ export class SettingsComponent {
         this.pushButtonDisable = combineLatest(this.pushButtonLoading, this.pushStatusObs)
             .pipe(map(([loading, status]) => {
                 return loading || status === PushStatus.DENIED || status === PushStatus.NOT_AVALABLE;
+            }));
+        this.pushEnabled = combineLatest(this.pushStatusObs, this.pushHasErrored, this.pushButtonLoading)
+            .pipe(map(() => {
+                const value = this.pushStatusObs.getValue() === PushStatus.ENABLED;
+                if (this.pushSlideToggle && value !== this.pushSlideToggle.checked) {
+                    // manually toggle because slideToggle will not listen to this Observable, if user toggled
+                    this.pushSlideToggle.toggle();
+                }
+                return value;
             }));
 
         this.selectedFilters = this.filterService.selectedFilters;

@@ -3,13 +3,15 @@
     <mat-list-item>
         <div style="flex-direction: column" [ngSwitch]="(pushStatusObs | async)">
             <div>Wenn aktiviert bekommst du Benachrichtigungen, wenn sich der Vertretungsplan bezüglich deiner Filter ändert.</div>
-            <button mat-raised-button color="primary" [disabled]="(pushButtonDisable | async)" (click)="pushToggle()">
+            <mat-slide-toggle class="notification-toggle" color="primary" [checked]="(pushEnabled | async)" 
+            [disabled]="(pushButtonDisable | async)" (change)="pushToggle()" #pushslidetoggle>
+                <mat-spinner *ngIf="(pushButtonLoading | async)" diameter="20" style="display: inline-block"></mat-spinner>
                 <span *ngSwitchCase="PushStatus.NOT_AVALABLE">Benachrichtigungen nicht verfügbar</span>
-                <span *ngSwitchCase="PushStatus.ENABLED">Benachrichtigungen deaktivieren</span>
-                <span *ngSwitchCase="PushStatus.DISABLED">Benachrichtigungen aktivieren</span>
+                <span *ngSwitchCase="PushStatus.ENABLED">Benachrichtigungen aktiviert</span>
+                <span *ngSwitchCase="PushStatus.DISABLED">Benachrichtigungen deaktiviert</span>
                 <span *ngSwitchCase="PushStatus.DENIED">Benachrichtigungen blockiert</span>
-            </button>
-            <div style="padding-top: 4px">
+            </mat-slide-toggle>
+            <div>
                 <span class="settings-warn-text" *ngSwitchCase="PushStatus.DISABLED">
                     <ng-container *ngIf="(pushHasErrored | async) > 0" [ngSwitch]="(pushHasErrored | async)">
                         <span *ngSwitchCase="1">Fehler beim Verbinden mit dem Server</span>
