@@ -35,7 +35,11 @@ export async function handlePushMessage(pushData: any) {
     const data = mergeNotificationData(notificationData, pushData);
 
     let body: string;
-    let weekDays: string[];
+    let weekDays: string[] = data.days.sort((a, b) => WEEK_DAYS.indexOf(a) - WEEK_DAYS.indexOf(b));
+    let title = 'Vertretungsplan ' + weekDays.map((wd) => getWeekDayShortStr(wd)).join(', ') + ' geändert';
+    if (!notification) {
+        await showNotification(title, 'Lade Pläne...', data);
+    }
     try {
         await planFetcher.fetchAll();
         const planCache = planFetcher.cache;
@@ -45,6 +49,7 @@ export async function handlePushMessage(pushData: any) {
             weekDays = data.days.slice(-1);
         }
         data.days = weekDays;
+        title = 'Vertretungsplan ' + weekDays.map((wd) => getWeekDayShortStr(wd)).join(', ') + ' geändert';
 
         const selectedFilters = await getSelectedFilters();
         const lines: string[] = [];
@@ -70,15 +75,15 @@ export async function handlePushMessage(pushData: any) {
             }
         }
         body = lines.join('\r\n');
-        idbKeyVal.set(KEY_LAST_UPDATE, now.toUTCString());
+        await idbKeyVal.set(KEY_LAST_UPDATE, now.toUTCString());
     } catch (err) {
         console.log('error while fetching plans in service worker onpush', err);
         body = 'Fehler beim Laden der Pläne';
-        weekDays = data.days.sort((a, b) => WEEK_DAYS.indexOf(a) - WEEK_DAYS.indexOf(b));
     }
-    const title = 'Vertretungsplan ' + weekDays.map((wd) => getWeekDayShortStr(wd)).join(', ') + ' geändert';
-
-    return showNotification(title, body, data);
+    // only show if notification is not closed
+    if ((await self.registration.getNotifications({ tag: NOTIFICATION_TAG })).length) {
+        return showNotification(title, body, data);
+    }
 }
 
 function mergeNotificationData(notificationData: NotificationData, pushData: any): NotificationData {
