@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { idbKeyVal, KEY_SELECTED_FILTERS } from '../idbKeyVal';
 import { SELECTABLE_FILTERS } from '../../model/filter';
+import { filter as filter_operator } from 'rxjs/operators';
 
 @Injectable()
 export class FilterService {
-    public readonly selectedFilters: BehaviorSubject<string[]> = new BehaviorSubject([]);
+    private readonly selectedFilters: BehaviorSubject<string[]> = new BehaviorSubject(null);
 
     constructor() {
         this.syncKeyValue();
@@ -15,6 +16,7 @@ export class FilterService {
         return idbKeyVal.get(KEY_SELECTED_FILTERS)
             .then((result) => {
                 if (!result) {
+                    this.selectedFilters.next([]);
                     return idbKeyVal.set(KEY_SELECTED_FILTERS, JSON.stringify([]));
                 }
                 const value = this.normalizeFilters(JSON.parse(result));
@@ -22,9 +24,17 @@ export class FilterService {
             });
     }
 
+    public getSelectedFilters() {
+        return this.selectedFilters.pipe(filter_operator((x) => !!x));
+    }
+
     public async addFilter(filter: string) {
         while (true) {
             const expected = this.selectedFilters.getValue();
+            if (!expected) {
+                await this.syncKeyValue();
+                continue;
+            }
             const newValue = this.normalizeFilters(expected, filter);
             const expectedStr = JSON.stringify(expected);
             const newStr = JSON.stringify(newValue);
@@ -43,6 +53,10 @@ export class FilterService {
     public async removeFilter(filter: string) {
         while (true) {
             const expected = this.selectedFilters.getValue();
+            if (!expected) {
+                await this.syncKeyValue();
+                continue;
+            }
             const newValue = expected.filter((f) => f !== filter);
             const expectedStr = JSON.stringify(expected);
             const newStr = JSON.stringify(newValue);

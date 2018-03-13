@@ -30,7 +30,7 @@ export class SettingsComponent {
     readonly pushHasErrored: BehaviorSubject<number>;
 
     readonly SELECTABLE_FILTERS = SELECTABLE_FILTERS;
-    readonly selectedFilters: BehaviorSubject<string[]>;
+    readonly selectedFilters: Observable<string[]>;
 
     readonly APP_VERSION = VERSION;
 
@@ -55,7 +55,7 @@ export class SettingsComponent {
                 return value;
             }));
 
-        this.selectedFilters = this.filterService.selectedFilters;
+        this.selectedFilters = this.filterService.getSelectedFilters();
     }
 
     trackBy(index, filter) {

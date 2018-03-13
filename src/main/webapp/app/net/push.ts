@@ -4,7 +4,7 @@ import { hasWebsocketSupport, WebsocketHandlerService } from './websocket';
 import { idbKeyVal } from '../shared/idbKeyVal';
 import { RENEW_PERIOD_MILLIS } from '../shared/auth/auth-provider.service';
 import { ConnectivityService } from './connectivity';
-import { filter as rxFilter } from 'rxjs/operators';
+import { filter as rxFilter, take } from 'rxjs/operators';
 import { FilterService } from '../shared/services/filter.service';
 
 declare const navigator: Navigator;
@@ -66,7 +66,7 @@ export class PushService {
         }
         await this.syncKeyValue();
         await this.update();
-        this.filterService.selectedFilters.subscribe(this.update);
+        this.filterService.getSelectedFilters().subscribe(this.update);
     }
 
     private syncKeyValue() {
@@ -174,7 +174,7 @@ export class PushService {
         if (!subscription) {
             value = JSON.stringify(null);
         } else {
-            const filter = this.filterService.selectedFilters.getValue();
+            const filter = await this.filterService.getSelectedFilters().pipe(take(1)).toPromise();
             // we cannot add a property on PushSubscription directly because it has a toJSON function
             subscription = JSON.parse(JSON.stringify(subscription));
             subscription['filter'] = filter.length ? filter : null;

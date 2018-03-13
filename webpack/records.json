@@ -783,7 +783,9 @@
       "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts a314a4b2afcae6e396edca796b80fdf9": "bu6N",
       "node_modules/css-loader/index.js!src/main/webapp/content/css/material-theming.css": "ob5G",
       "node_modules/css-loader/index.js!src/main/webapp/content/css/material-extras.css": "vv8R",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/progress-spinner/typings/index.ngfactory.js": "NvT6"
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/progress-spinner/typings/index.ngfactory.js": "NvT6",
+      "node_modules/@angular/material/esm5/slide-toggle.es5.js": "kWGw",
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/slide-toggle/typings/index.ngfactory.js": "oJZn"
     },
     "usedIds": {
       "+OQX": "+OQX",
@@ -1219,7 +1221,9 @@
       "n5Vj": "n5Vj",
       "ob5G": "ob5G",
       "vv8R": "vv8R",
-      "NvT6": "NvT6"
+      "NvT6": "NvT6",
+      "kWGw": "kWGw",
+      "oJZn": "oJZn"
     }
   },
   "chunks": {

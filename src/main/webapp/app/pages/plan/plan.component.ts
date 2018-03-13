@@ -45,7 +45,7 @@ export class PlanComponent {
             });
             return obs;
         }), publishReplay(1), refCount());
-        this.substitutesObs = combineLatest(this.planObs, this.filterService.selectedFilters).pipe(
+        this.substitutesObs = combineLatest(this.planObs, this.filterService.getSelectedFilters()).pipe(
             map(([plan, selectedFilters]) => {
                 // filter substitites
                 const filteredSubstitutes = plan.filtered.filteredSubstitutes;

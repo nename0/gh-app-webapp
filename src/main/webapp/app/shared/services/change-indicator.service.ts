@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { ParsedPlan } from 'app/model/plan';
 import { FilterService } from 'app/shared/services/filter.service';
 import { ALL_FILTER, isFilterHashFromDate } from 'app/model/filter';
-import { combineLatest, map } from 'rxjs/operators';
+import { combineLatest, map, take } from 'rxjs/operators';
 
 function KEY_SEEN_FILTER_HASH(wd: string) {
     return 'seenFilterHash-' + wd;
@@ -45,7 +45,7 @@ export class ChangeIndicatorService {
 
     public isChanged(plan: ParsedPlan): Observable<boolean> {
         return this.seenFilterHashes[plan.weekDay].pipe(
-            combineLatest(this.filterService.selectedFilters),
+            combineLatest(this.filterService.getSelectedFilters()),
             map(([seenFilterHashesOfWeekDay, selectedFilters]) => {
                 if (!seenFilterHashesOfWeekDay) {
                     // no value in db; happens for new users or after reset in both cases we don't want to show the changed indicator
@@ -71,7 +71,7 @@ export class ChangeIndicatorService {
     }
 
     public async openedPlan(plan: ParsedPlan) {
-        let selectedFilters = this.filterService.selectedFilters.getValue();
+        let selectedFilters = await this.filterService.getSelectedFilters().pipe(take(1)).toPromise();
         if (!selectedFilters.length) {
             selectedFilters = [ALL_FILTER];
         }
