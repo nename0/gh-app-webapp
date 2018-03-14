@@ -37,16 +37,13 @@ export class PlanComponent {
         private appBarService: AppBarService,
         private changeIndicatorService: ChangeIndicatorService) {
 
-        this.planObs = this.route.params.pipe(switchMap((params) => {
-            // remove changeIndicator
-            const obs = this.planFetcher.getPlanObservable(params.wd);
-            obs.pipe(take(1)).toPromise().then((plan) => {
-                this.changeIndicatorService.openedPlan(plan);
-            });
-            return obs;
-        }), publishReplay(1), refCount());
+        this.planObs = this.route.params.pipe(switchMap((params) =>
+            this.planFetcher.getPlanObservable(params.wd)),
+            publishReplay(1), refCount());
         this.substitutesObs = combineLatest(this.planObs, this.filterService.getSelectedFilters()).pipe(
             map(([plan, selectedFilters]) => {
+                // remove changeIndicator
+                this.changeIndicatorService.openedPlan(plan)
                 // filter substitites
                 const filteredSubstitutes = plan.filtered.filteredSubstitutes;
                 if (selectedFilters.length) {

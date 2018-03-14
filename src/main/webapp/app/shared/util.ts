@@ -53,6 +53,9 @@ export function getDateTimeString(date: Date): Observable<string> {
 }
 
 export function checkResponseStatus(res: Response) {
+    if (res.status === 401) {
+        alert('Du benutzt eine alte Version. Bitte Seite schließen und wieder öffnen');
+    }
     if (res.status >= 200 && res.status < 300) {
         return res;
     } else {

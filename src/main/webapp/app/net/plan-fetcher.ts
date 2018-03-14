@@ -47,6 +47,9 @@ export abstract class PlanFetcher {
         const res = await fetch(location.origin + '/api/v1/plans/plan?wd=' + weekDay, {
             credentials: 'same-origin'
         });
+        if (typeof window === 'object' && res.status === 401) {
+            alert('Du benutzt eine alte Version. Bitte Seite schließen und wieder öffnen');
+        }
         if (res.status < 200 || res.status >= 300) {
             throw new Error(res.url + ' ' + res.statusText);
         }

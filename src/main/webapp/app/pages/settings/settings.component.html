@@ -31,7 +31,7 @@
     <h3 matSubheader>Filter</h3>
     <mat-list-item>
         <div style="width: 100%">
-            <mat-list class="selected-filter-list" *ngIf="(selectedFilters | async).length > 0">
+            <mat-list class="selected-filter-list" *ngIf="(selectedFilters | async)?.length > 0">
                 <ng-container *ngFor="let filter of (selectedFilters | async); trackBy: trackBy">
                     <mat-list-item>
                         <div style="flex:1 1">{{ filter }}</div>
@@ -45,7 +45,7 @@
             <div style="text-align: center">
                 <mat-form-field>
                     <mat-select #select placeholder="Filter hinzufügen..." (selectionChange)="addFilter(select)">
-                        <mat-option *ngFor="let filter of SELECTABLE_FILTERS; trackBy: trackBy" value="{{ filter }}" [disabled]="(selectedFilters | async).includes(filter)">
+                        <mat-option *ngFor="let filter of SELECTABLE_FILTERS; trackBy: trackBy" value="{{ filter }}" [disabled]="(selectedFilters | async)?.includes(filter)">
                             {{ filter }}
                         </mat-option>
                     </mat-select>
