@@ -69,7 +69,7 @@ export async function handlePushMessage(pushData: any) {
                         break outer;
                     }
                     lines.push(lineBeginning +
-                        '| ' + substitute.classText + ' | ' + substitute.classText + ' | ' + substitute.substitute + ' |');
+                        '| ' + substitute.classText + ' | ' + substitute.lesson + ' | ' + substitute.substitute + ' |');
                     lineBeginning = '';
                 }
             }
@@ -108,7 +108,7 @@ async function getSelectedFilters(): Promise<string[]> {
 function showNotification(title: string, body: string, data: NotificationData) {
     return self.registration.showNotification(title, <NotificationOptions>{
         body,
-        tag: 'update-notification',
+        tag: NOTIFICATION_TAG,
         badge: require('../../content/images/notification-badge.png').substr(1),
         data
     })
