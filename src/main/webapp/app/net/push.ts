@@ -117,7 +117,6 @@ export class PushService {
             this.pushStatus.next(PushStatus.DISABLED);
         }
         try {
-            //TODO set correct filter
             await this.updateSubscriptionOnServer(subscription);
             if (subscription) {
                 this.hasErrored.next(0);

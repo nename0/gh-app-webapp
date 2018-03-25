@@ -1,10 +1,10 @@
 <form (ngSubmit)="login()">
 
-    <h2 mat-dialog-title>Sign in</h2>
+    <h2 mat-dialog-title>Anmeldung</h2>
 
     <mat-dialog-content style="overflow: hidden" fxLayout="column">
         <mat-input-container>
-            <mat-placeholder>Login</mat-placeholder>
+            <mat-placeholder>Username</mat-placeholder>
             <input matInput name="username" id="username" [(ngModel)]="username">
         </mat-input-container>
         <mat-input-container>
@@ -13,12 +13,13 @@
         </mat-input-container>
 
         <span class="mat-body-2" style="color: red" *ngIf="authenticationError">
-            <strong>Failed to sign in!</strong> Please check your credentials and try again.
+            <strong>Anmeldung fehlgeschlagen!</strong>
+            <div>Überprüfen bitte deine Internetverbindung und deine Eingabe und versuch es erneut.</div>
         </span>
 
     </mat-dialog-content>
 
     <mat-dialog-actions>
-        <button mat-raised-button type="submit" color="primary"><span>Sign in</span></button>
+        <button mat-raised-button type="submit" color="primary"><span>Anmelden</span></button>
     </mat-dialog-actions>
 </form>

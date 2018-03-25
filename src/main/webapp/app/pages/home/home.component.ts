@@ -56,7 +56,7 @@ export class HomeComponent {
             }));
         }
         const lastUpdate = this.modificationChecker.lastUpdate
-            .pipe(switchMap((date) => getDateTimeString(date)), startWith('Keine'));
+            .pipe(switchMap((date) => getDateTimeString(date)), startWith('??'));
         const subtitleObs = combineLatest(this.connectivityService.isOnline, lastUpdate)
             .pipe(map(([isOnline, lastUpdateStr]) => {
                 if (isOnline) {

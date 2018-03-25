@@ -18,6 +18,8 @@ export abstract class PlanFetcher {
         return fun.apply(this, args);
     }
 
+    protected on401() { }
+
     protected createParsedPlan(obj: any): ParsedPlan {
         return new ParsedPlan(obj);
     }
@@ -48,7 +50,7 @@ export abstract class PlanFetcher {
             credentials: 'same-origin'
         });
         if (typeof window === 'object' && res.status === 401) {
-            alert('Du benutzt eine alte Version. Bitte Seite schließen und wieder öffnen');
+            this.on401();
         }
         if (res.status < 200 || res.status >= 300) {
             throw new Error(res.url + ' ' + res.statusText);

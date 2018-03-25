@@ -1,11 +1,12 @@
 import { hasWebsocketSupport, WebsocketHandlerService } from './websocket';
 import { idbKeyVal, KEY_LATEST_MODIFICATION_HASH, KEY_LAST_UPDATE } from '../shared/idbKeyVal';
-import { checkResponseStatus, getRandomArbitrary } from '../shared/util';
+import { getRandomArbitrary } from '../shared/util';
 import { Injectable } from '@angular/core';
 import { ConnectivityService } from './connectivity';
 import { WEEK_DAYS } from '../model/weekdays';
 import { PlanFetcherService } from '../shared/services/plan-fetcher.service';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { AuthenticationProviderService } from 'app/shared/auth/auth-provider.service';
 
 @Injectable()
 export class ModificationCheckerService {
@@ -17,6 +18,7 @@ export class ModificationCheckerService {
 
     constructor(
         private connectivityService: ConnectivityService,
+        private authenticationProvider: AuthenticationProviderService,
         private planFetcher: PlanFetcherService,
         private websocketHandler: WebsocketHandlerService) {
         this.setup();
@@ -50,7 +52,13 @@ export class ModificationCheckerService {
     private async checkModificationRequest() {
         const res = await fetch(window.location.origin + '/api/v1/plans/getModificationHash', {
             credentials: 'same-origin'
-        }).then(checkResponseStatus);
+        });
+        if (res.status === 401) {
+            this.authenticationProvider.gotUnauthorized();
+        }
+        if (res.status < 200 || res.status >= 300) {
+            throw new Error(res.url + ' ' + res.statusText);
+        }
         const modificationHash = res.headers.get('etag');
         if (!modificationHash) {
             throw new Error('no etag header');

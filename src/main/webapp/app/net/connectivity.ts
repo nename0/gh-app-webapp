@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { combineLatest, pairwise, map, filter, take } from 'rxjs/operators';
 import { Subscription } from 'rxjs/Subscription';
+import { AuthenticationProviderService } from 'app/shared/auth/auth-provider.service';
 
 @Injectable()
 export class ConnectivityService {
@@ -14,7 +15,7 @@ export class ConnectivityService {
     public readonly loading: Observable<boolean>;
     private readonly loadingTasks = new BehaviorSubject(0);
 
-    constructor() {
+    constructor(private authenticationProvider: AuthenticationProviderService) {
         const hasNavigatorOnline = typeof navigator.onLine === 'boolean';
         if (hasNavigatorOnline) {
             window.addEventListener('online', this.navigatorOnlineChange)
@@ -75,7 +76,8 @@ export class ConnectivityService {
     }
 
     public scheduleRetryTask(fun: (...args: any[]) => any) {
-        if (this.navigatorOnline.getValue()) {
+        const isAuthenticated = this.authenticationProvider.isAuthenticated.getValue();
+        if (isAuthenticated && this.navigatorOnline.getValue()) {
             const handle = setTimeout(fun, getRandomArbitrary(1000, 4000));
             return function() {
                 clearTimeout(handle);
@@ -87,12 +89,14 @@ export class ConnectivityService {
             fun();
         }, getRandomArbitrary(59000, 61000));
         onOnline = this.navigatorOnline
-            .pipe(filter((isOnline) => isOnline), take(1))
+            .pipe(combineLatest(this.authenticationProvider.isAuthenticated),
+                filter(([isOnline, isAuthenticated2]) => isOnline && isAuthenticated2),
+                take(1))
             .subscribe(() => {
                 clearTimeout(timeout);
                 fun();
             });
-        return function () {
+        return function() {
             clearTimeout(timeout);
             onOnline.unsubscribe();
         }

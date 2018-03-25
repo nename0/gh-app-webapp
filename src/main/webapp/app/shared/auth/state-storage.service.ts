@@ -1,16 +1,17 @@
 import {Injectable} from '@angular/core';
 
+const PREVIOUS_URL_KEY = 'previousUrl';
+
 @Injectable()
 export class StateStorageService {
     constructor() {}
 
     storeUrl(url: string) {
-        window.sessionStorage.setItem('previousUrl', JSON.stringify(url));
+        window.sessionStorage.setItem(PREVIOUS_URL_KEY, JSON.stringify(url));
     }
 
     getUrl() {
-        console.log('getUrl', window.sessionStorage.getItem('previousUrl'));
         return JSON.parse(
-            window.sessionStorage.getItem('previousUrl'));
+            window.sessionStorage.getItem(PREVIOUS_URL_KEY));
     }
 }

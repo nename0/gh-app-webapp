@@ -52,17 +52,6 @@ export function getDateTimeString(date: Date): Observable<string> {
         distinctUntilChanged());
 }
 
-export function checkResponseStatus(res: Response) {
-    if (res.status === 401) {
-        alert('Du benutzt eine alte Version. Bitte Seite schließen und wieder öffnen');
-    }
-    if (res.status >= 200 && res.status < 300) {
-        return res;
-    } else {
-        throw new Error(res.url + ' ' + res.statusText);
-    }
-}
-
 const onDayChangeBehavior = new BehaviorSubject(new Date());
 export const onDayChange = onDayChangeBehavior.pipe(
     distinctUntilChanged((a, b) => a.getDate() === b.getDate()))

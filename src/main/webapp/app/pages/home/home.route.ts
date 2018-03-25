@@ -2,6 +2,7 @@ import { Route, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } f
 import { HomeComponent } from './home.component';
 import { UserRouteAccessService } from '../../shared/index';
 import { Injectable } from '@angular/core';
+import { ROLE_PUPIL } from 'app/shared/auth/roles';
 
 @Injectable()
 export class HomeResolver implements Resolve<any> {
@@ -20,7 +21,7 @@ export const HOME_ROUTE: Route = {
     path: '',
     component: HomeComponent,
     data: {
-        authorities: [],
+        authorities: [ROLE_PUPIL],
         pageTitle: 'Vertretungsplan GH',
         dontSetSubtitle: true
     },
