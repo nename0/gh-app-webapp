@@ -1,5 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { LoginModalService } from 'app/shared';
 
 @Component({
     selector: 'app-error',
@@ -10,9 +11,9 @@ export class ErrorComponent implements OnInit {
     error403: boolean;
 
     constructor(
-        private route: ActivatedRoute
-    ) {
-    }
+        private route: ActivatedRoute,
+        private loginModalService: LoginModalService
+    ) { }
 
     ngOnInit() {
         this.route.data.subscribe((routeData) => {
@@ -23,5 +24,9 @@ export class ErrorComponent implements OnInit {
                 this.errorMessage = routeData.errorMessage;
             }
         });
+    }
+
+    login() {
+        this.loginModalService.open();
     }
 }

@@ -7,6 +7,7 @@ import { LoginModalService } from 'app/shared';
 import { ROLE_PUPIL } from 'app/shared/auth/roles';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { StateStorageService } from 'app/shared/auth/state-storage.service';
 
 export const RENEW_PERIOD_WEEKS = 2;
 export const EXPIRE_PERIOD_WEEKS = 8;
@@ -18,7 +19,8 @@ export class AuthenticationProviderService {
 
     constructor(private loginModalService: LoginModalService,
         private snackBar: MatSnackBar,
-        private router: Router) {
+        private router: Router,
+        private stateStorage: StateStorageService) {
         this.isAuthenticated = new BehaviorSubject(true);
     }
 
@@ -47,7 +49,7 @@ export class AuthenticationProviderService {
                 throw new Error('error while loging out');
             }
             this.isAuthenticated.next(false);
-            this.router.navigate(['']);
+            this.navigateAccessDenied(this.router.url);
         } catch (err) {
             this.snackBar.open('Zum Abmelden muss du online sein', null, { duration: 3000 });
             throw err;
@@ -56,7 +58,19 @@ export class AuthenticationProviderService {
 
     gotUnauthorized() {
         this.isAuthenticated.next(false);
-        this.loginModalService.open();
+        this.navigateAccessDenied(this.router.url);
+    }
+
+    public navigateAccessDenied(previousUrl: string) {
+        if (!previousUrl.startsWith('/accessdenied')) {
+            this.stateStorage.storeUrl(previousUrl);
+        }
+        this.router.navigate(['accessdenied']).then(() => {
+            // only show the login dialog, if the user hasn't logged in yet
+            if (!this.isAuthenticated.getValue()) {
+                this.loginModalService.open();
+            }
+        });
     }
 
     hasAnyAuthority(authorities: string[]): Observable<boolean> {

@@ -1,19 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { LoginModalService } from '../login/login-modal.service';
+import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
 import { AuthenticationProviderService } from './auth-provider.service';
 import { take } from 'rxjs/operators';
-import { StateStorageService } from './state-storage.service';
 
 @Injectable()
 export class UserRouteAccessService implements CanActivate {
 
-    constructor(private authenticationProvider: AuthenticationProviderService,
-        private loginModalService: LoginModalService,
-        private router: Router,
-        private stateStorage: StateStorageService
-    ) {
-     }
+    constructor(private authenticationProvider: AuthenticationProviderService) { }
 
     async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
         const authorities = route.data['authorities'] || [];
@@ -21,13 +14,7 @@ export class UserRouteAccessService implements CanActivate {
         const result = await this.authenticationProvider.hasAnyAuthority(authorities)
             .pipe(take(1)).toPromise();
         if (!result) {
-            this.stateStorage.storeUrl(state.url);
-            this.router.navigate(['accessdenied']).then(() => {
-                // only show the login dialog, if the user hasn't logged in yet
-                if (!this.authenticationProvider.isAuthenticated.getValue()) {
-                    this.loginModalService.open();
-                }
-            });
+            this.authenticationProvider.navigateAccessDenied(state.url);
         }
         return result;
     }

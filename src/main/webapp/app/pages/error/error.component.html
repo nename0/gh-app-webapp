@@ -1,8 +1,10 @@
 <div class="row">
-    <h1>Fehlerseite!</h1>
-    <div [hidden]="!errorMessage">
-         <div class="alert alert-danger">{{ errorMessage }}
+    <h1 *ngIf="!error403">Fehlerseite!</h1>
+    <h1 *ngIf="error403">Zugriff verweigert!</h1>
+    <div *ngIf="errorMessage">
+        <div class="alert alert-danger">{{ errorMessage }}
         </div>
     </div>
-    <div [hidden]="!error403" class="alert alert-danger">Du bist nicht angemeldet.</div>
+    <div *ngIf="error403" class="alert alert-danger">Du must angemeldet sein um diese Seite zu sehen.</div>
+    <button *ngIf="error403" style="margin: 6px" mat-raised-button color="primary" (click)="login()">Anmelden</button>
 </div>

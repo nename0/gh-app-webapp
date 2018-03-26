@@ -16,7 +16,7 @@ export const ERROR_ROUTE: Routes = [
         component: ErrorComponent,
         data: {
             authorities: [],
-            pageTitle: 'Fehlerseite!',
+            pageTitle: 'Zugriff verweigert!',
             error403: true
         },
     }
