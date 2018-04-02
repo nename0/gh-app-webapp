@@ -184,7 +184,7 @@ export class PushService {
             this.syncKeyValue();
             const cacheValue = await this.lastPushSubscriptionValue;
             const cacheDate = await this.lastPushSubscriptionDate;
-            if (cacheValue === value && (+cacheDate + RENEW_PERIOD_MILLIS) > Date.now()) {
+            if (cacheValue === value && (+cacheDate + RENEW_PERIOD_MILLIS) > date.getTime()) {
                 console.log('subscribtion unchanged', JSON.stringify(subscription));
                 return;
             }

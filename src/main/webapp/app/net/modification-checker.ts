@@ -7,6 +7,7 @@ import { WEEK_DAYS } from '../model/weekdays';
 import { PlanFetcherService } from '../shared/services/plan-fetcher.service';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { AuthenticationProviderService } from 'app/shared/auth/auth-provider.service';
+import { AuthStorageService } from 'app/shared/auth/auth-storage.service';
 
 @Injectable()
 export class ModificationCheckerService {
@@ -20,6 +21,7 @@ export class ModificationCheckerService {
         private connectivityService: ConnectivityService,
         private authenticationProvider: AuthenticationProviderService,
         private planFetcher: PlanFetcherService,
+        private authStorageService: AuthStorageService,
         private websocketHandler: WebsocketHandlerService) {
         this.setup();
     }
@@ -51,7 +53,8 @@ export class ModificationCheckerService {
 
     private async checkModificationRequest() {
         const res = await fetch(window.location.origin + '/api/v1/plans/getModificationHash', {
-            credentials: 'same-origin'
+            credentials: 'same-origin',
+            headers: await this.authStorageService.addAuthHeader()
         });
         if (res.status === 401) {
             this.authenticationProvider.gotUnauthorized();

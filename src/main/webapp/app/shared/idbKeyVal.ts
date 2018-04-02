@@ -17,6 +17,7 @@
 export const KEY_LATEST_MODIFICATION_HASH = 'latestModificationHash';
 export const KEY_LAST_UPDATE = 'lastUpdate';
 export const KEY_SELECTED_FILTERS = 'selectedFilters';
+export const KEY_AUTH_SESSION = 'authSession';
 
 function handleErrror(req: IDBRequest | IDBTransaction, reject: (reason?: any) => void) {
     req.onerror = function() {

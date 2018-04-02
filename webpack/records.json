@@ -28,6 +28,29 @@
       }
     }
   ],
+  "serviceworker-plugin": [
+    {
+      "modules": {
+        "byIdentifier": {
+          "node_modules/file-loader/dist/cjs.js??ref--7!src/main/webapp/content/images/notification-badge.png": "9ZtO",
+          "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/swImpl.ts f36c8633bdf11b59ae0324a88440240e": "TpyR"
+        },
+        "usedIds": {
+          "9ZtO": "9ZtO",
+          "TpyR": "TpyR"
+        }
+      },
+      "chunks": {
+        "byName": {
+          "sw-entry": 0
+        },
+        "bySource": {},
+        "usedIds": [
+          0
+        ]
+      }
+    }
+  ],
   "src\\main\\webapp\\app\\layouts\\main\\main.component.html": [
     {
       "modules": {
@@ -186,29 +209,6 @@
       }
     }
   ],
-  "src\\main\\webapp\\app\\pages\\plan\\plan.css": [
-    {
-      "modules": {
-        "byIdentifier": {
-          "node_modules/css-loader/index.js!src/main/webapp/app/pages/plan/plan.css": "DSJ4",
-          "node_modules/css-loader/lib/css-base.js": "I1BE",
-          "node_modules/to-string-loader/src/to-string.js!node_modules/css-loader/index.js!src/main/webapp/app/pages/plan/plan.css": "LX+l"
-        },
-        "usedIds": {
-          "DSJ4": "DSJ4",
-          "I1BE": "I1BE",
-          "LX+l": "LX+l"
-        }
-      },
-      "chunks": {
-        "byName": {},
-        "bySource": {},
-        "usedIds": [
-          0
-        ]
-      }
-    }
-  ],
   "src\\main\\webapp\\app\\pages\\home\\home.css": [
     {
       "modules": {
@@ -221,6 +221,29 @@
           "I1BE": "I1BE",
           "KWo4": "KWo4",
           "bXXE": "bXXE"
+        }
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          0
+        ]
+      }
+    }
+  ],
+  "src\\main\\webapp\\app\\pages\\plan\\plan.css": [
+    {
+      "modules": {
+        "byIdentifier": {
+          "node_modules/css-loader/index.js!src/main/webapp/app/pages/plan/plan.css": "DSJ4",
+          "node_modules/css-loader/lib/css-base.js": "I1BE",
+          "node_modules/to-string-loader/src/to-string.js!node_modules/css-loader/index.js!src/main/webapp/app/pages/plan/plan.css": "LX+l"
+        },
+        "usedIds": {
+          "DSJ4": "DSJ4",
+          "I1BE": "I1BE",
+          "LX+l": "LX+l"
         }
       },
       "chunks": {
@@ -290,10 +313,9 @@
           "node_modules/file-loader/dist/cjs.js??ref--7!node_modules/font-awesome/fonts/fontawesome-webfont.woff?v=4.7.0": "W/R5",
           "node_modules/css-loader/index.js!src/main/webapp/content/css/vendor.css": "ZMKd",
           "node_modules/file-loader/dist/cjs.js??ref--7!node_modules/font-awesome/fonts/fontawesome-webfont.ttf?v=4.7.0": "im7S",
-          "node_modules/css-loader/index.js!src/main/webapp/content/css/material-theme.css": "jnYq",
+          "node_modules/css-loader/index.js!src/main/webapp/content/css/material-theming.css": "ob5G",
           "node_modules/css-loader/lib/url/escape.js": "sEG9",
-          "node_modules/file-loader/dist/cjs.js??ref--7!node_modules/font-awesome/fonts/fontawesome-webfont.eot": "xYL2",
-          "node_modules/css-loader/index.js!src/main/webapp/content/css/material-theming.css": "ob5G"
+          "node_modules/file-loader/dist/cjs.js??ref--7!node_modules/font-awesome/fonts/fontawesome-webfont.eot": "xYL2"
         },
         "usedIds": {
           "/MSg": "/MSg",
@@ -304,10 +326,9 @@
           "W/R5": "W/R5",
           "ZMKd": "ZMKd",
           "im7S": "im7S",
-          "jnYq": "jnYq",
+          "ob5G": "ob5G",
           "sEG9": "sEG9",
-          "xYL2": "xYL2",
-          "ob5G": "ob5G"
+          "xYL2": "xYL2"
         }
       },
       "chunks": {
@@ -396,6 +417,7 @@
       "node_modules/core-js/modules/es6.object.get-prototype-of.js": "5Pf0",
       "node_modules/rxjs/_esm5/operators/catchError.js": "5TT/",
       "node_modules/rxjs/_esm5/observable/fromPromise.js": "5ZT5",
+      "node_modules/rxjs/_esm5/operator/mergeAll.js": "5nVl",
       "node_modules/rxjs/_esm5/symbol/rxSubscriber.js": "6/as",
       "node_modules/core-js/modules/es6.reflect.get-own-property-descriptor.js": "694e",
       "node_modules/core-js/modules/es6.array.of.js": "6AQ9",
@@ -458,6 +480,7 @@
       "node_modules/@angular/cdk/esm5/bidi.es5.js": "Fzqc",
       "node_modules/@angular/animations/esm5/browser.js": "G5ek",
       "node_modules/core-js/modules/es6.parse-int.js": "GNAe",
+      "node_modules/rxjs/_esm5/operator/every.js": "GgZj",
       "node_modules/rxjs/_esm5/operators/audit.js": "GkyG",
       "node_modules/rxjs/_esm5/ReplaySubject.js 76da3dbc6b47b5269867983dc5302f40": "GwIT",
       "node_modules/core-js/modules/_iter-call.js": "H6hf",
@@ -482,6 +505,7 @@
       "node_modules/rxjs/_esm5/observable/FromObservable.js 3bf817abfeed3d2f804de0f0623cf992": "JnzD",
       "node_modules/core-js/modules/_wks.js": "K0xU",
       "node_modules/core-js/modules/es6.regexp.split.js": "KKXr",
+      "node_modules/rxjs/_esm5/observable/fromEventPattern.js 223a284460d2f4698366c7b70af32432": "Kacy",
       "node_modules/core-js/modules/_redefine.js": "KroJ",
       "node_modules/core-js/modules/_object-create.js": "Kuth",
       "node_modules/core-js/modules/es6.string.includes.js": "L9s1",
@@ -513,6 +537,7 @@
       "node_modules/core-js/modules/_array-fill.js": "Nr18",
       "node_modules/@angular/material/esm5/sidenav.es5.js": "Nsh5",
       "node_modules/rxjs/_esm5/util/identity.js": "NueC",
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/progress-spinner/typings/index.ngfactory.js": "NvT6",
       "node_modules/core-js/modules/es6.array.join.js": "Nz9U",
       "node_modules/core-js/modules/es6.regexp.flags.js": "OEbY",
       "node_modules/core-js/modules/es6.regexp.search.js": "OG14",
@@ -534,13 +559,15 @@
       "node_modules/core-js/modules/_property-desc.js": "RjD/",
       "node_modules/core-js/modules/_to-object.js": "S/j/",
       "node_modules/core-js/modules/es6.string.bold.js": "SMB2",
-      "node_modules/@angular/material/esm5/icon.es5.js 0e83ef86aacc6385358453a0dab2269c": "SMsm",
+      "node_modules/@angular/material/esm5/icon.es5.js": "SMsm",
       "node_modules/core-js/modules/es6.array.reduce-right.js": "SPin",
       "node_modules/core-js/modules/es6.regexp.match.js": "SRfc",
       "node_modules/core-js/modules/_for-of.js": "SlkY",
       "node_modules/core-js/modules/es6.set.js": "T39b",
       "node_modules/rxjs/_esm5/operators/concatMap.js": "TP3J",
+      "node_modules/rxjs/_esm5/operator/concatAll.js": "TSyl",
       "node_modules/rxjs/_esm5/operators/mergeMap.js": "TgNg",
+      "node_modules/rxjs/_esm5/operator/first.js": "TnRr",
       "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/divider/typings/index.ngfactory.js": "TtEo",
       "node_modules/core-js/modules/es6.string.trim.js": "Tze0",
       "node_modules/core-js/modules/es6.math.asinh.js": "U2t9",
@@ -553,6 +580,7 @@
       "node_modules/core-js/es6/string.js": "V5/Y",
       "node_modules/@angular/flex-layout/esm5/flex-layout.es5.js": "V9q+",
       "node_modules/core-js/modules/es6.number.to-precision.js": "VKir",
+      "node_modules/rxjs/_esm5/operator/last.js": "VN87",
       "node_modules/core-js/modules/_shared.js": "VTer",
       "node_modules/core-js/es6/set.js": "VXxg",
       "node_modules/core-js/es6/reflect.js": "VbrY",
@@ -596,9 +624,10 @@
       "node_modules/core-js/modules/es6.array.fill.js": "bHtr",
       "node_modules/core-js/modules/es6.array.map.js": "bWfx",
       "node_modules/whatwg-fetch/fetch.js": "bZMm",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts 0dc096d47079057e575c04ebc3b5a1a0": "bu6N",
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts 7abd515aae4b9441f49d154bab02be8a": "bu6N",
       "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/button/typings/index.ngfactory.js": "bujt",
       "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/sidenav/typings/index.ngfactory.js": "c4Wm",
+      "node_modules/rxjs/_esm5/observable/throw.js b064d216858159622ab86c9cb4ac3ca3": "cKTz",
       "node_modules/core-js/modules/es7.array.flatten.js": "cfFb",
       "node_modules/core-js/modules/_object-assign.js": "czNK",
       "node_modules/core-js/modules/_to-absolute-index.js": "d/Gc",
@@ -608,7 +637,6 @@
       "node_modules/core-js/modules/es6.array.find.js": "dRSK",
       "node_modules/@angular/cdk/esm5/platform.es5.js": "dWZg",
       "node_modules/core-js/modules/es6.array.some.js": "dZ+Y",
-      "node_modules/@angular/material/esm5/checkbox.es5.js": "de3e",
       "node_modules/core-js/modules/_global.js": "dyZX",
       "node_modules/core-js/modules/_object-gopn-ext.js": "e7yV",
       "node_modules/@angular/cdk/esm5/overlay.es5.js": "eDkP",
@@ -630,7 +658,6 @@
       "node_modules/core-js/modules/_core.js": "g3g5",
       "node_modules/core-js/modules/_date-to-primitive.js": "g4EE",
       "node_modules/core-js/modules/_same-value.js": "g6HL",
-      "node_modules/rxjs/_esm5/observable/never.js 2fcacc35a71a6171c546641376142c47": "g7zg",
       "node_modules/@angular/platform-browser/esm5/animations.js": "gRSg",
       "node_modules/rxjs/_esm5/operators/auditTime.js 82e5a7ab76e373e9f3d3370b985cba17": "gRZ4",
       "node_modules/rxjs/_esm5/util/errorObject.js": "gnFf",
@@ -655,12 +682,12 @@
       "node_modules/file-loader/dist/cjs.js??ref--7!node_modules/font-awesome/fonts/fontawesome-webfont.ttf?v=4.7.0": "im7S",
       "node_modules/core-js/modules/es6.symbol.js": "ioFf",
       "node_modules/rxjs/_esm5/operators/filter.js": "jboT",
-      "node_modules/css-loader/index.js!src/main/webapp/content/css/material-theme.css": "jnYq",
       "node_modules/core-js/modules/es6.date.to-iso-string.js": "jqX0",
       "node_modules/core-js/modules/_date-to-iso-string.js": "jtBr",
       "node_modules/rxjs/_esm5/util/isPromise.js": "jteq",
       "node_modules/rxjs/_esm5/util/isObject.js": "k+wr",
       "node_modules/core-js/modules/_object-gopn.js": "kJMx",
+      "node_modules/@angular/material/esm5/slide-toggle.es5.js": "kWGw",
       "node_modules/core-js/modules/_math-fround.js": "kcoS",
       "node_modules/core-js/modules/es6.reflect.set.js": "klPD",
       "node_modules/core-js/modules/es6.reflect.set-prototype-of.js": "knU9",
@@ -670,20 +697,22 @@
       "node_modules/rxjs/_esm5/scheduler/AsyncScheduler.js 96df691d664e5defd369d1872267b88e": "lVhe",
       "node_modules/rxjs/_esm5/util/noop.js": "lnPg",
       "node_modules/core-js/modules/_math-sign.js": "lvtm",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/card/typings/index.ngfactory.js": "lzlj",
+      "node_modules/rxjs/_esm5/operator/reduce.js": "m/ds",
       "node_modules/core-js/modules/_ctx.js": "m0Pp",
       "node_modules/core-js/modules/es6.array.last-index-of.js": "mGWK",
       "node_modules/core-js/modules/_own-keys.js": "mQtv",
       "node_modules/@angular/material/esm5/menu.es5.js": "mVsa",
       "node_modules/core-js/modules/es6.object.get-own-property-descriptor.js": "mYba",
-      "node_modules/@angular/router/esm5/router.js 7c92fb66e07bd35b6f699f32e5147b18": "mhOz",
+      "node_modules/@angular/router/esm5/router.js": "mhOz",
       "node_modules/rxjs/_esm5/Subject.js": "miYR",
       "node_modules/tslib/tslib.es6.js": "mrSG",
       "node_modules/core-js/modules/es6.object.prevent-extensions.js": "mura",
       "node_modules/@angular/forms/esm5/forms.js": "n2nD",
+      "node_modules/serviceworker-webpack-plugin/lib/runtime.js": "n5Vj",
       "node_modules/@angular/cdk/esm5/coercion.es5.js": "n6gG",
       "node_modules/core-js/modules/_is-integer.js": "nBIS",
       "node_modules/core-js/modules/_add-to-unscopables.js": "nGyu",
+      "node_modules/rxjs/_esm5/operator/mergeMap.js": "nHYp",
       "node_modules/core-js/modules/es6.string.big.js": "nIY7",
       "node_modules/core-js/modules/_to-length.js": "ne8i",
       "node_modules/rxjs/_esm5/observable/ArrayObservable.js": "ngS1",
@@ -695,7 +724,9 @@
       "node_modules/@angular/material/esm5/dialog.es5.js": "o3x0",
       "node_modules/rxjs/_esm5/operators/switchMap.js": "o90U",
       "node_modules/core-js/modules/es6.string.code-point-at.js": "oDIu",
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/slide-toggle/typings/index.ngfactory.js": "oJZn",
       "node_modules/core-js/modules/es6.reflect.prevent-extensions.js": "oZ/O",
+      "node_modules/css-loader/index.js!src/main/webapp/content/css/material-theming.css": "ob5G",
       "node_modules/core-js/es6/parse-int.js": "oka+",
       "node_modules/core-js/modules/_user-agent.js": "ol8x",
       "node_modules/rxjs/_esm5/Subscription.js afd83f2ce808c191d629aa4a8a5feb4a": "ozt7",
@@ -722,6 +753,7 @@
       "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/dialog/typings/index.ngfactory.js": "t68o",
       "node_modules/rxjs/_esm5/operators/defaultIfEmpty.js": "tSd+",
       "node_modules/core-js/modules/es6.string.link.js": "tUrg",
+      "node_modules/rxjs/_esm5/operator/catch.js": "tbI4",
       "node_modules/rxjs/_esm5/util/isNumeric.js": "tmDP",
       "node_modules/core-js/modules/es6.parse-float.js": "tyy+",
       "node_modules/core-js/modules/es7.reflect.get-metadata-keys.js": "uAtd",
@@ -731,9 +763,10 @@
       "node_modules/rxjs/_esm5/BehaviorSubject.js": "unWw",
       "node_modules/core-js/modules/_array-copy-within.js": "upKx",
       "node_modules/@angular/material/esm5/snack-bar.es5.js": "vARd",
-      "node_modules/@angular/cdk/esm5/layout.es5.js bf7572762e2a8e0e9dee9c5e60d53427": "vGXY",
+      "node_modules/@angular/cdk/esm5/layout.es5.js": "vGXY",
       "node_modules/core-js/modules/_defined.js": "vhPU",
       "node_modules/core-js/es6/symbol.js": "vqGA",
+      "node_modules/css-loader/index.js!src/main/webapp/content/css/material-extras.css": "vv8R",
       "node_modules/core-js/modules/_a-number-value.js": "vvmO",
       "node_modules/core-js/modules/_array-includes.js": "w2a5",
       "node_modules/rxjs/_esm5/OuterSubscriber.js": "wH4Z",
@@ -762,32 +795,7 @@
       "node_modules/core-js/modules/_object-keys-internal.js": "zhAb",
       "node_modules/rxjs/_esm5/observable/fromEvent.js afe72f5e81c39319141cec6ea8ab2dd7": "ziNH",
       "$$_lazy_route_resource lazy namespace object": "zn8P",
-      "node_modules/core-js/modules/es7.reflect.delete-metadata.js": "zq+C",
-      "../../../Java Projects\\Forks\\serviceworker-webpack-plugin\\lib\\runtime.js": "V4e1",
-      "node_modules/rxjs/_esm5/operator/mergeAll.js": "5nVl",
-      "node_modules/rxjs/_esm5/operator/every.js": "GgZj",
-      "node_modules/rxjs/_esm5/observable/fromEventPattern.js 223a284460d2f4698366c7b70af32432": "Kacy",
-      "node_modules/@angular/material/esm5/icon.es5.js": "SMsm",
-      "node_modules/rxjs/_esm5/operator/concatAll.js": "TSyl",
-      "node_modules/rxjs/_esm5/operator/first.js": "TnRr",
-      "node_modules/rxjs/_esm5/operator/last.js": "VN87",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts ae45ed839f02a2272a8762342ff42119": "bu6N",
-      "node_modules/rxjs/_esm5/observable/throw.js b064d216858159622ab86c9cb4ac3ca3": "cKTz",
-      "node_modules/rxjs/_esm5/operator/reduce.js": "m/ds",
-      "node_modules/@angular/router/esm5/router.js": "mhOz",
-      "node_modules/rxjs/_esm5/operator/mergeMap.js": "nHYp",
-      "node_modules/rxjs/_esm5/operator/catch.js": "tbI4",
-      "node_modules/@angular/cdk/esm5/layout.es5.js": "vGXY",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts 02b9950a990fd5d4d59baa9b11848abc": "bu6N",
-      "node_modules/serviceworker-webpack-plugin/lib/runtime.js": "n5Vj",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts a314a4b2afcae6e396edca796b80fdf9": "bu6N",
-      "node_modules/css-loader/index.js!src/main/webapp/content/css/material-theming.css": "ob5G",
-      "node_modules/css-loader/index.js!src/main/webapp/content/css/material-extras.css": "vv8R",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/progress-spinner/typings/index.ngfactory.js": "NvT6",
-      "node_modules/@angular/material/esm5/slide-toggle.es5.js": "kWGw",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!node_modules/@angular/material/slide-toggle/typings/index.ngfactory.js": "oJZn",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts 04a038ad4500a97435b2e4a3588fab9b": "bu6N",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts f1afae5c2e419db8ba1d1673df71c845": "bu6N"
+      "node_modules/core-js/modules/es7.reflect.delete-metadata.js": "zq+C"
     },
     "usedIds": {
       "+OQX": "+OQX",
@@ -842,6 +850,7 @@
       "5Pf0": "5Pf0",
       "5TT/": "5TT/",
       "5ZT5": "5ZT5",
+      "5nVl": "5nVl",
       "6/as": "6/as",
       "694e": "694e",
       "6AQ9": "6AQ9",
@@ -904,6 +913,7 @@
       "Fzqc": "Fzqc",
       "G5ek": "G5ek",
       "GNAe": "GNAe",
+      "GgZj": "GgZj",
       "GkyG": "GkyG",
       "GwIT": "GwIT",
       "H6hf": "H6hf",
@@ -928,6 +938,7 @@
       "JnzD": "JnzD",
       "K0xU": "K0xU",
       "KKXr": "KKXr",
+      "Kacy": "Kacy",
       "KroJ": "KroJ",
       "Kuth": "Kuth",
       "L9s1": "L9s1",
@@ -959,6 +970,7 @@
       "Nr18": "Nr18",
       "Nsh5": "Nsh5",
       "NueC": "NueC",
+      "NvT6": "NvT6",
       "Nz9U": "Nz9U",
       "OEbY": "OEbY",
       "OG14": "OG14",
@@ -986,7 +998,9 @@
       "SlkY": "SlkY",
       "T39b": "T39b",
       "TP3J": "TP3J",
+      "TSyl": "TSyl",
       "TgNg": "TgNg",
+      "TnRr": "TnRr",
       "TtEo": "TtEo",
       "Tze0": "Tze0",
       "U2t9": "U2t9",
@@ -999,6 +1013,7 @@
       "V5/Y": "V5/Y",
       "V9q+": "V9q+",
       "VKir": "VKir",
+      "VN87": "VN87",
       "VTer": "VTer",
       "VXxg": "VXxg",
       "VbrY": "VbrY",
@@ -1045,6 +1060,7 @@
       "bu6N": "bu6N",
       "bujt": "bujt",
       "c4Wm": "c4Wm",
+      "cKTz": "cKTz",
       "cfFb": "cfFb",
       "czNK": "czNK",
       "d/Gc": "d/Gc",
@@ -1054,7 +1070,6 @@
       "dRSK": "dRSK",
       "dWZg": "dWZg",
       "dZ+Y": "dZ+Y",
-      "de3e": "de3e",
       "dyZX": "dyZX",
       "e7yV": "e7yV",
       "eDkP": "eDkP",
@@ -1076,7 +1091,6 @@
       "g3g5": "g3g5",
       "g4EE": "g4EE",
       "g6HL": "g6HL",
-      "g7zg": "g7zg",
       "gRSg": "gRSg",
       "gRZ4": "gRZ4",
       "gnFf": "gnFf",
@@ -1101,12 +1115,12 @@
       "im7S": "im7S",
       "ioFf": "ioFf",
       "jboT": "jboT",
-      "jnYq": "jnYq",
       "jqX0": "jqX0",
       "jtBr": "jtBr",
       "jteq": "jteq",
       "k+wr": "k+wr",
       "kJMx": "kJMx",
+      "kWGw": "kWGw",
       "kcoS": "kcoS",
       "klPD": "klPD",
       "knU9": "knU9",
@@ -1116,7 +1130,7 @@
       "lVhe": "lVhe",
       "lnPg": "lnPg",
       "lvtm": "lvtm",
-      "lzlj": "lzlj",
+      "m/ds": "m/ds",
       "m0Pp": "m0Pp",
       "mGWK": "mGWK",
       "mQtv": "mQtv",
@@ -1127,9 +1141,11 @@
       "mrSG": "mrSG",
       "mura": "mura",
       "n2nD": "n2nD",
+      "n5Vj": "n5Vj",
       "n6gG": "n6gG",
       "nBIS": "nBIS",
       "nGyu": "nGyu",
+      "nHYp": "nHYp",
       "nIY7": "nIY7",
       "ne8i": "ne8i",
       "ngS1": "ngS1",
@@ -1141,7 +1157,9 @@
       "o3x0": "o3x0",
       "o90U": "o90U",
       "oDIu": "oDIu",
+      "oJZn": "oJZn",
       "oZ/O": "oZ/O",
+      "ob5G": "ob5G",
       "oka+": "oka+",
       "ol8x": "ol8x",
       "ozt7": "ozt7",
@@ -1168,6 +1186,7 @@
       "t68o": "t68o",
       "tSd+": "tSd+",
       "tUrg": "tUrg",
+      "tbI4": "tbI4",
       "tmDP": "tmDP",
       "tyy+": "tyy+",
       "uAtd": "uAtd",
@@ -1180,6 +1199,7 @@
       "vGXY": "vGXY",
       "vhPU": "vhPU",
       "vqGA": "vqGA",
+      "vv8R": "vv8R",
       "vvmO": "vvmO",
       "w2a5": "w2a5",
       "wH4Z": "wH4Z",
@@ -1208,32 +1228,15 @@
       "zhAb": "zhAb",
       "ziNH": "ziNH",
       "zn8P": "zn8P",
-      "zq+C": "zq+C",
-      "V4e1": "V4e1",
-      "5nVl": "5nVl",
-      "GgZj": "GgZj",
-      "Kacy": "Kacy",
-      "TSyl": "TSyl",
-      "TnRr": "TnRr",
-      "VN87": "VN87",
-      "cKTz": "cKTz",
-      "m/ds": "m/ds",
-      "nHYp": "nHYp",
-      "tbI4": "tbI4",
-      "n5Vj": "n5Vj",
-      "ob5G": "ob5G",
-      "vv8R": "vv8R",
-      "NvT6": "NvT6",
-      "kWGw": "kWGw",
-      "oJZn": "oJZn"
+      "zq+C": "zq+C"
     }
   },
   "chunks": {
     "byName": {
       "vendors~main": 0,
-      "main": 1,
-      "polyfills": 2,
-      "angular~main": 3
+      "angular~main": 1,
+      "main": 2,
+      "polyfills": 3
     },
     "bySource": {},
     "usedIds": [
@@ -1242,28 +1245,5 @@
       2,
       3
     ]
-  },
-  "serviceworker-plugin": [
-    {
-      "modules": {
-        "byIdentifier": {
-          "node_modules/file-loader/dist/cjs.js??ref--7!src/main/webapp/content/images/notification-badge.png": "9ZtO",
-          "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/swImpl.ts 688216ae2ce2a083c3d19693f04777b0": "TpyR"
-        },
-        "usedIds": {
-          "9ZtO": "9ZtO",
-          "TpyR": "TpyR"
-        }
-      },
-      "chunks": {
-        "byName": {
-          "sw-entry": 0
-        },
-        "bySource": {},
-        "usedIds": [
-          0
-        ]
-      }
-    }
-  ]
+  }
 }

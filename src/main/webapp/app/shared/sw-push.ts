@@ -3,6 +3,7 @@ import { ParsedPlan } from '../model/plan';
 import { getWeekDayIndex, WEEK_DAYS, getWeekDayShortStr } from '../model/weekdays';
 import { idbKeyVal, KEY_LATEST_MODIFICATION_HASH, KEY_LAST_UPDATE, KEY_SELECTED_FILTERS } from './idbKeyVal';
 import { ALL_FILTER } from '../model/filter';
+import { AuthStorage } from 'app/shared/auth/auth-storage';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -19,7 +20,7 @@ class SWPlanFetcher extends PlanFetcher {
     }
 }
 
-const planFetcher = new SWPlanFetcher();
+const planFetcher = new SWPlanFetcher(new AuthStorage());
 
 export async function handlePushMessage(pushData: any) {
     if (!pushData.days || !pushData.days.length || !pushData.mh) {

@@ -2,13 +2,14 @@ import { ParsedPlan } from '../model/plan';
 import { idbKeyVal } from '../shared/idbKeyVal';
 import { WEEK_DAYS, getWeekDayIndex } from '../model/weekdays';
 import { ConnectivityService } from './connectivity';
+import { AuthStorage } from 'app/shared/auth/auth-storage';
 
 function KEY_PLAN(wd: string) {
     return 'plan-' + wd;
 }
 
 export abstract class PlanFetcher {
-    constructor() {
+    constructor(private authStorage: AuthStorage) {
     }
 
     protected abstract setCacheValue(wd: string, plan: ParsedPlan);
@@ -47,7 +48,8 @@ export abstract class PlanFetcher {
 
     private async fetchPlanRequest(weekDay: string) {
         const res = await fetch(location.origin + '/api/v1/plans/plan?wd=' + weekDay, {
-            credentials: 'same-origin'
+            credentials: 'same-origin',
+            headers: await this.authStorage.addAuthHeader()
         });
         if (typeof window === 'object' && res.status === 401) {
             this.on401();

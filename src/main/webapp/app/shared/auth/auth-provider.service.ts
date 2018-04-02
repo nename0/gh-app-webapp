@@ -8,6 +8,7 @@ import { ROLE_PUPIL } from 'app/shared/auth/roles';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { StateStorageService } from 'app/shared/auth/state-storage.service';
+import { AuthStorageService } from 'app/shared/auth/auth-storage.service';
 
 export const RENEW_PERIOD_WEEKS = 2;
 export const EXPIRE_PERIOD_WEEKS = 8;
@@ -20,8 +21,11 @@ export class AuthenticationProviderService {
     constructor(private loginModalService: LoginModalService,
         private snackBar: MatSnackBar,
         private router: Router,
+        private authStorageService: AuthStorageService,
         private stateStorage: StateStorageService) {
         this.isAuthenticated = new BehaviorSubject(true);
+        this.updateFromCookie();
+        setInterval(this.updateFromCookie, 10000);
     }
 
     async login(credentials: Credentials): Promise<void> {
@@ -36,7 +40,10 @@ export class AuthenticationProviderService {
         if (!response.ok) {
             throw new Error('invalid credentials');
         }
-        this.isAuthenticated.next(true);
+        this.updateFromCookie();
+        if (!this.isAuthenticated.getValue()) {
+            throw new Error('did not return cookie');
+        }
     }
 
     async logout(): Promise<void> {
@@ -48,12 +55,17 @@ export class AuthenticationProviderService {
             if (!response.ok) {
                 throw new Error('error while loging out');
             }
-            this.isAuthenticated.next(false);
+            this.updateFromCookie();
             this.navigateAccessDenied(this.router.url);
         } catch (err) {
             this.snackBar.open('Zum Abmelden muss du online sein', null, { duration: 3000 });
             throw err;
         }
+    }
+
+    updateFromCookie = () => {
+        const session = this.authStorageService.updateFromCookie();
+        this.isAuthenticated.next(Boolean(session));
     }
 
     gotUnauthorized() {
