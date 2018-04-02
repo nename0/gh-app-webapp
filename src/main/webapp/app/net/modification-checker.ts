@@ -7,13 +7,14 @@ import { WEEK_DAYS } from '../model/weekdays';
 import { PlanFetcherService } from '../shared/services/plan-fetcher.service';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { AuthenticationProviderService } from 'app/shared/auth/auth-provider.service';
-import { AuthStorageService } from 'app/shared/auth/auth-storage.service';
 
 @Injectable()
 export class ModificationCheckerService {
     public latestModificationHash: Promise<string>;
-    private planFetchedDate: Date = new Date(0);
     public lastUpdate = new ReplaySubject<Date>(1);
+
+    private lastPlanFetchedDate: Date = new Date(0);
+    private checking = false;
 
     private unscheduleCheckModification = () => null;
 
@@ -21,7 +22,6 @@ export class ModificationCheckerService {
         private connectivityService: ConnectivityService,
         private authenticationProvider: AuthenticationProviderService,
         private planFetcher: PlanFetcherService,
-        private authStorageService: AuthStorageService,
         private websocketHandler: WebsocketHandlerService) {
         this.setup();
     }
@@ -52,9 +52,9 @@ export class ModificationCheckerService {
     }
 
     private async checkModificationRequest() {
-        const res = await fetch(window.location.origin + '/api/v1/plans/getModificationHash', {
-            credentials: 'same-origin',
-            headers: await this.authStorageService.addAuthHeader()
+        const url = window.location.origin + '/api/v1/plans/getModificationHash?' + await this.authenticationProvider.getQueryParam()
+        const res = await fetch(url, {
+            credentials: 'same-origin'
         });
         if (res.status === 401) {
             this.authenticationProvider.gotUnauthorized();
@@ -71,7 +71,11 @@ export class ModificationCheckerService {
     }
 
     private checkModification = async () => {
+        if (this.checking) {
+            return;
+        }
         this.unscheduleCheckModification();
+        this.checking = true;
         try {
             await this.connectivityService.executeLoadingTask(this.checkModificationRequest, this);
             // reschedule
@@ -86,6 +90,8 @@ export class ModificationCheckerService {
         } catch (err) {
             console.log('Error in checkModificationRequest ' + err.toString());
             this.unscheduleCheckModification = this.connectivityService.scheduleRetryTask(this.checkModification);
+        } finally {
+            this.checking = false;
         }
     }
 
@@ -124,7 +130,7 @@ export class ModificationCheckerService {
     }
 
     private async validateModificationHash() {
-        if (this.planFetchedDate.getTime() + 5 * 1000 > Date.now()) {
+        if (this.lastPlanFetchedDate.getTime() + 5 * 1000 > Date.now()) {
             console.log('validateModificationHash other fetch not timed out');
             return;
         }
@@ -173,15 +179,16 @@ export class ModificationCheckerService {
     }
 
     private async doFetchPlans(hash: string) {
-        const oldDate = this.planFetchedDate;
+        const oldDate = this.lastPlanFetchedDate;
         try {
-            this.planFetchedDate = new Date();
+            this.lastPlanFetchedDate = new Date();
+            await this.authenticationProvider.whenAuthorized();
             const changed = await this.planFetcher.fetchAll();
             if (changed) {
                 this.update();
             }
         } catch (err) {
-            this.planFetchedDate = oldDate;
+            this.lastPlanFetchedDate = oldDate;
             throw err;
         }
     }

@@ -14,7 +14,6 @@ import { setupUtil } from './util';
 import { FilterService } from './services/filter.service';
 import { PlanFetcherService } from './services/plan-fetcher.service';
 import { ChangeIndicatorService } from 'app/shared/services/change-indicator.service';
-import { AuthStorageService } from 'app/shared/auth/auth-storage.service';
 
 @NgModule({
     imports: [
@@ -28,7 +27,6 @@ import { AuthStorageService } from 'app/shared/auth/auth-storage.service';
     providers: [
         LoginModalService,
         AuthenticationProviderService,
-        AuthStorageService,
         StateStorageService,
         FilterService,
         PlanFetcherService,

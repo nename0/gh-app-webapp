@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { map, filter, take } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { of as Observable_of } from 'rxjs/observable/of';
@@ -8,7 +8,7 @@ import { ROLE_PUPIL } from 'app/shared/auth/roles';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { StateStorageService } from 'app/shared/auth/state-storage.service';
-import { AuthStorageService } from 'app/shared/auth/auth-storage.service';
+import { AuthStorage } from 'app/shared/auth/auth-storage';
 
 export const RENEW_PERIOD_WEEKS = 2;
 export const EXPIRE_PERIOD_WEEKS = 8;
@@ -21,11 +21,9 @@ export class AuthenticationProviderService {
     constructor(private loginModalService: LoginModalService,
         private snackBar: MatSnackBar,
         private router: Router,
-        private authStorageService: AuthStorageService,
         private stateStorage: StateStorageService) {
         this.isAuthenticated = new BehaviorSubject(true);
         this.updateFromCookie();
-        setInterval(this.updateFromCookie, 10000);
     }
 
     async login(credentials: Credentials): Promise<void> {
@@ -63,12 +61,26 @@ export class AuthenticationProviderService {
         }
     }
 
-    updateFromCookie = () => {
-        const session = this.authStorageService.updateFromCookie();
-        this.isAuthenticated.next(Boolean(session));
+    private updateFromCookie() {
+        const session = AuthStorage.updateFromCookie();
+        if (session) {
+            this.isAuthenticated.next(true);
+        } else {
+            this.isAuthenticated.next(false);
+            this.navigateAccessDenied(this.router.url);
+        }
     }
 
-    gotUnauthorized() {
+    public whenAuthorized() {
+        return this.isAuthenticated.pipe(filter((isAuthenticated) => isAuthenticated), take(1)).toPromise();
+    }
+
+    public async getQueryParam() {
+        await this.whenAuthorized();
+        return AuthStorage.getQueryParam();
+    }
+
+    public gotUnauthorized() {
         this.isAuthenticated.next(false);
         this.navigateAccessDenied(this.router.url);
     }

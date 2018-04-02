@@ -33,7 +33,8 @@
       "modules": {
         "byIdentifier": {
           "node_modules/file-loader/dist/cjs.js??ref--7!src/main/webapp/content/images/notification-badge.png": "9ZtO",
-          "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/swImpl.ts f36c8633bdf11b59ae0324a88440240e": "TpyR"
+          "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/swImpl.ts f36c8633bdf11b59ae0324a88440240e": "TpyR",
+          "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/swImpl.ts 8732c3d1badfca16faf937b324b75112": "TpyR"
         },
         "usedIds": {
           "9ZtO": "9ZtO",
@@ -795,7 +796,8 @@
       "node_modules/core-js/modules/_object-keys-internal.js": "zhAb",
       "node_modules/rxjs/_esm5/observable/fromEvent.js afe72f5e81c39319141cec6ea8ab2dd7": "ziNH",
       "$$_lazy_route_resource lazy namespace object": "zn8P",
-      "node_modules/core-js/modules/es7.reflect.delete-metadata.js": "zq+C"
+      "node_modules/core-js/modules/es7.reflect.delete-metadata.js": "zq+C",
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts f8bd8f483cc4af5e368fa0ba15e0dcce": "bu6N"
     },
     "usedIds": {
       "+OQX": "+OQX",

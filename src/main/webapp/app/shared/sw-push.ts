@@ -20,7 +20,7 @@ class SWPlanFetcher extends PlanFetcher {
     }
 }
 
-const planFetcher = new SWPlanFetcher(new AuthStorage());
+const planFetcher = new SWPlanFetcher();
 
 export async function handlePushMessage(pushData: any) {
     if (!pushData.days || !pushData.days.length || !pushData.mh) {

@@ -9,7 +9,7 @@ function KEY_PLAN(wd: string) {
 }
 
 export abstract class PlanFetcher {
-    constructor(private authStorage: AuthStorage) {
+    constructor() {
     }
 
     protected abstract setCacheValue(wd: string, plan: ParsedPlan);
@@ -47,9 +47,9 @@ export abstract class PlanFetcher {
     }
 
     private async fetchPlanRequest(weekDay: string) {
-        const res = await fetch(location.origin + '/api/v1/plans/plan?wd=' + weekDay, {
-            credentials: 'same-origin',
-            headers: await this.authStorage.addAuthHeader()
+        const url = location.origin + '/api/v1/plans/plan?wd=' + weekDay + '&' + AuthStorage.getQueryParam();
+        const res = await fetch(url, {
+            credentials: 'same-origin'
         });
         if (typeof window === 'object' && res.status === 401) {
             this.on401();

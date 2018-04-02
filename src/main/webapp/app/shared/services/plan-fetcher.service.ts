@@ -7,7 +7,6 @@ import { RxParsedPlan } from '../../model/rx-plan';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { filter } from 'rxjs/operators';
 import { AuthenticationProviderService } from 'app/shared/auth/auth-provider.service';
-import { AuthStorageService } from 'app/shared/auth/auth-storage.service';
 
 function KEY_PLAN(wd: string) {
     return 'plan-' + wd;
@@ -18,9 +17,8 @@ export class PlanFetcherService extends PlanFetcher {
     public readonly plansCache: { [wd: string]: BehaviorSubject<RxParsedPlan> };
 
     constructor(private connectivityService: ConnectivityService,
-        private authenticationProvider: AuthenticationProviderService,
-        authStorageService: AuthStorageService) {
-        super(authStorageService);
+        private authenticationProvider: AuthenticationProviderService) {
+        super();
         this.plansCache = {};
         for (const wd of WEEK_DAYS) {
             this.plansCache[wd] = new BehaviorSubject(undefined);

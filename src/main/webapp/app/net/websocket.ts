@@ -4,6 +4,7 @@ import { getRandomArbitrary, browserFingerprint } from '../shared/util';
 import { WSMESSAGE_PUSH_SUBSCRIPTION, WSMESSAGE_MODIFICATION_HASH_UPDATE, WSMESSAGE_MODIFICATION_HASH_QUERY } from './websocket-mesages';
 import { ModificationCheckerService } from './modification-checker';
 import { filter, take } from 'rxjs/operators';
+import { AuthenticationProviderService } from 'app/shared/auth/auth-provider.service';
 
 export const hasWebsocketSupport = typeof WebSocket === 'function';
 
@@ -26,7 +27,8 @@ export class WebsocketHandlerService {
     }
 
     constructor(private injector: Injector,
-        private connectivityService: ConnectivityService) {
+        private connectivityService: ConnectivityService,
+        private authenticationProvider: AuthenticationProviderService) {
         if (hasWebsocketSupport) {
             this.url = browserFingerprint.then((fingerprint) =>
                 location.origin.replace(/^http/, 'ws') + '/api/v1/websocket?fingerprint=' + fingerprint);
@@ -35,6 +37,7 @@ export class WebsocketHandlerService {
 
     // returns true when connecting
     public connect = async () => {
+        await this.authenticationProvider.whenAuthorized();
         const url = await this.url;
         if (this.websocket && this.websocket.readyState <= WebSocket.OPEN) {
             return this.websocket.readyState === WebSocket.CONNECTING;

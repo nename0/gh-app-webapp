@@ -2,25 +2,41 @@ import { idbKeyVal, KEY_AUTH_SESSION } from 'app/shared/idbKeyVal';
 
 const COOKIE_KEY = 'AUTH_SESSION';
 export const COOKIE_REGEX = /(?:; |^)AUTH_SESSION=([^;]+)(?:;|$)/;
-const AUTH_HEADER = 'X-AUTH';
+const AUTH_QUERY_KEY = 'auth';
 
-export class AuthStorage {
-    public authSession: Promise<string>;
+const inServiceWorker = typeof document === 'undefined';
+
+class AuthStorageClass {
+    private authSession: string;
 
     constructor() {
-        this.syncKeyValue();
+        if (inServiceWorker) {
+            this.updateFromKeyValue();
+        }
     }
 
-    private async syncKeyValue() {
-        this.authSession = idbKeyVal.get(KEY_AUTH_SESSION);
-    };
-
-    public async addAuthHeader(headers?: HeadersInit) {
-        headers = new Headers(headers);
-        const session = await this.authSession;
-        if (session) {
-            headers.set(AUTH_HEADER, session);
+    public getQueryParam() {
+        if (inServiceWorker) {
+            this.updateFromKeyValue();
+        } else {
+            this.updateFromCookie();
         }
-        return headers;
+        if (!this.authSession) {
+            return '';
+        }
+        return AUTH_QUERY_KEY + '=' + this.authSession;
+    }
+
+    public updateFromCookie() {
+        const match = document.cookie.match(COOKIE_REGEX);
+        this.authSession = match ? match[1] : undefined;
+        idbKeyVal.set(KEY_AUTH_SESSION, this.authSession);
+        return this.authSession
+    }
+
+    private async updateFromKeyValue() {
+        this.authSession = await idbKeyVal.get(KEY_AUTH_SESSION);
     }
 }
+
+export const AuthStorage = new AuthStorageClass();
