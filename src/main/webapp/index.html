@@ -21,6 +21,19 @@
               webkitRequestAnimationFrame || msRequestAnimationFrame;
         if (raf) raf(cb);
         else window.addEventListener('load', cb);
+        if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+            var s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js';
+            document.getElementsByTagName('head')[0].appendChild(s);
+            function loaded() {
+                if (typeof FastClick === 'undefined') {
+                    setTimeout(loaded, 100);
+                    return;
+                }
+                FastClick.attach(document.body);
+            }
+            loaded();
+        }
     </script>
 </head>
     <body>
