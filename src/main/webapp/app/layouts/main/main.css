@@ -14,6 +14,12 @@
 mat-toolbar.appbar {
     z-index:2;
     padding: 0px 4px;
+    position: static;
+}
+
+mat-toolbar.appbar.sticky {
+    position: -webkit-sticky;
+    position: sticky;
 }
 
 mat-toolbar.appbar > button, div.appbar-spinner {

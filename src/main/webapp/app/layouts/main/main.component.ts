@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ResolveEnd } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 import { from as Observable_from } from 'rxjs/observable/from';
@@ -15,6 +15,7 @@ import { observable } from 'rxjs/symbol/observable';
 import { AppBarService } from './appbar.service';
 import { ConnectivityService } from 'app/net/connectivity';
 import { ModificationCheckerService } from 'app/net/modification-checker';
+import { FeatureDialogService } from 'app/layouts/feature-dialog/feature-dialog.service';
 
 export let stickyHeaderOffset: BehaviorSubject<number>;
 
@@ -32,12 +33,15 @@ export class MainComponent implements OnInit {
     @ViewChild('sidenav') sidenav: MatSidenav;
     @ViewChild('scrollpane') scrollpane: ElementRef;
 
+    readonly history = window.history;
+
     overSmallBreakpoint: BehaviorSubject<boolean>;
     toolbarOffset: BehaviorSubject<number>;
     toolbarVisible: BehaviorSubject<boolean>;
     titleObs: Observable<string>;
     subtitleObs: Observable<string>;
     hasSubtitleObs: Observable<boolean>;
+    isOnHomePage: BehaviorSubject<boolean>;
 
     loadingObs: Observable<boolean>;
     onlineObs: Observable<boolean>;
@@ -46,9 +50,14 @@ export class MainComponent implements OnInit {
         public media: ObservableMedia,
         private router: Router,
         private appBarService: AppBarService,
+        private featureDialogService: FeatureDialogService,
         private modificationChecker: ModificationCheckerService,
         private connectivityService: ConnectivityService
     ) {
+        this.toolbarVisible = new BehaviorSubject(true);
+        this.toolbarOffset = new BehaviorSubject(0);
+        this.isOnHomePage = new BehaviorSubject(true);
+
         // hack to make rxjs belive its an real Observabke
         this.media[observable] = function() { return this; }
 
@@ -83,14 +92,16 @@ export class MainComponent implements OnInit {
             scrollSubject.next(curScroll);
         }
         this.router.events.subscribe((event) => {
-            if (event instanceof NavigationEnd) {
+            if (event instanceof ResolveEnd) {
+                this.featureDialogService.onRouterResolveEnd();
+            } else if (event instanceof NavigationEnd) {
                 this.appBarService.onRouterNavigationEnd();
+                this.featureDialogService.onRouterNavigationEnd();
+                this.isOnHomePage.next(this.router.url === '/');
                 setTimeout(() => emitScrollSubject(), 100);
             }
         });
         this.scrollpane.nativeElement.addEventListener('scroll', emitScrollSubject, { passive: true });
-        this.toolbarVisible = new BehaviorSubject(true);
-        this.toolbarOffset = new BehaviorSubject(0);
         //stickyHeaderOffset = new BehaviorSubject(0);
         let lastScrollPosition = 0;
         const operator = combineLatest<number, MediaChange>(this.media);

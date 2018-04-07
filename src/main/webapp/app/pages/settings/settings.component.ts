@@ -24,7 +24,7 @@ export class SettingsComponent {
     @ViewChild('pushslidetoggle')
     pushSlideToggle: MatSlideToggle;
     readonly pushEnabled: Observable<boolean>;
-    readonly pushButtonLoading: BehaviorSubject<boolean>;
+    readonly pushButtonLoading: Observable<boolean>;
     readonly pushButtonDisable: Observable<boolean>;
     readonly pushStatusObs: BehaviorSubject<PushStatus>;
     readonly pushHasErrored: BehaviorSubject<number>;
@@ -40,7 +40,7 @@ export class SettingsComponent {
         this.pushStatusObs = this.pushService.pushStatus;
         this.pushHasErrored = this.pushService.hasErrored;
 
-        this.pushButtonLoading = new BehaviorSubject(false);
+        this.pushButtonLoading = this.pushService.tasksStarted.pipe(map((tasksStarted) => tasksStarted > 0));
         this.pushButtonDisable = combineLatest(this.pushButtonLoading, this.pushStatusObs)
             .pipe(map(([loading, status]) => {
                 return loading || status === PushStatus.DENIED || status === PushStatus.NOT_AVALABLE;
@@ -63,13 +63,11 @@ export class SettingsComponent {
     }
 
     async pushToggle() {
-        this.pushButtonLoading.next(true);
         try {
             await this.pushService.toggle();
         } catch (err) {
             console.log('error in pushService toogle', err);
         }
-        this.pushButtonLoading.next(false);
     }
 
     addFilter(select: MatSelect) {

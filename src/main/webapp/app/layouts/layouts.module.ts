@@ -3,6 +3,9 @@ import { MainComponent } from './main/main.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { GHAppSharedModule } from '../shared/shared.module';
 import { AppBarService } from './main/appbar.service';
+import { FeatureDialogService } from 'app/layouts/feature-dialog/feature-dialog.service';
+import { FeatureNotificationComponent } from 'app/layouts/feature-dialog/feature-notification-dialog';
+import { FeatureFilterComponent } from 'app/layouts/feature-dialog/feature-filter-dialog';
 
 @NgModule({
     imports: [
@@ -11,9 +14,16 @@ import { AppBarService } from './main/appbar.service';
     declarations: [
         MainComponent,
         NavbarComponent,
+        FeatureNotificationComponent,
+        FeatureFilterComponent
+    ],
+    entryComponents: [
+        FeatureNotificationComponent,
+        FeatureFilterComponent
     ],
     providers: [
-        AppBarService
+        AppBarService,
+        FeatureDialogService
     ],
     exports: [
         MainComponent,
@@ -21,4 +31,4 @@ import { AppBarService } from './main/appbar.service';
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class GHAppLayoutsModule {}
+export class GHAppLayoutsModule { }

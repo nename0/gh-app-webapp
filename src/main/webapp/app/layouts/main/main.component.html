@@ -5,11 +5,18 @@
 
     <div style="overflow:hidden;height: 100%;display:flex">
         <div #scrollpane style="overflow-y:auto;overflow-x:hidden;flex: 1 1 100%;background-color:white">
-            <mat-toolbar color="primary" class="mat-elevation-z4 appbar" [style.top]="(toolbarOffset | async) + 'px'" [style.position]="(overSmallBreakpoint | async) ? 'static' : 'sticky'"
+            <mat-toolbar color="primary" class="mat-elevation-z4 appbar" [style.top]="(toolbarOffset | async) + 'px'" [ngClass]="{'sticky': (overSmallBreakpoint | async) === false}"
                 [style.visibility]="(toolbarVisible | async) ? '' : 'hidden'">
-                <button mat-icon-button style="margin-right: 8px" (click)="sidenav.open()" *ngIf="(overSmallBreakpoint | async) ? false : true">
-                    <mat-icon class="fa fa-fw fa-bars" aria-label="Navigation"></mat-icon>
-                </button>
+                <span *ngIf="(overSmallBreakpoint | async) === false">
+                    <button mat-icon-button style="margin-right: 8px" (click)="sidenav.open()" *ngIf="(isOnHomePage | async); else backbutton">
+                        <mat-icon class="fa fa-fw fa-bars" aria-label="Navigation"></mat-icon>
+                    </button>
+                    <ng-template #backbutton>
+                        <button mat-icon-button style="margin-right: 8px" (click)="history.back()">
+                            <mat-icon class="fa fa-fw fa-arrow-left" aria-label="Zurück"></mat-icon>
+                        </button>
+                    </ng-template>
+                </span>
                 <div class="appbar-text-div">
                     <span class="appbar-title">{{ (titleObs |async) }}</span>
                     <div *ngIf="(hasSubtitleObs | async)" class="mat-subheading-1 appbar-subtitle">{{ (subtitleObs |async) }}</div>
@@ -35,7 +42,7 @@
                     <mat-icon class="fa fa-fw fa-ellipsis-v" aria-label="Menü"></mat-icon>
                 </button>
                 <mat-menu #appMenu="matMenu">
-                    <a routerLink="settings" mat-menu-item>Filter & Einstellungen</a>
+                    <a routerLink="settings" mat-menu-item>Einstellungen</a>
                     <button mat-menu-item>Über</button>
                 </mat-menu>
             </mat-toolbar>

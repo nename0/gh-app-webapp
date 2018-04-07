@@ -8,7 +8,8 @@
           "node_modules/webpack/buildin/module.js": "YuTi",
           "node_modules/file-loader/dist/cjs.js??ref--7!src/main/webapp/content/images/icon-256x256.png": "h1gJ",
           "node_modules/file-loader/dist/cjs.js??ref--7!src/main/webapp/content/images/icon-64x64.png": "uCgJ",
-          "node_modules/webpack/buildin/global.js": "yLpj"
+          "node_modules/webpack/buildin/global.js": "yLpj",
+          "node_modules/lodash/lodash.js": "LvDl"
         },
         "usedIds": {
           "2HtC": "2HtC",
@@ -16,7 +17,8 @@
           "YuTi": "YuTi",
           "h1gJ": "h1gJ",
           "uCgJ": "uCgJ",
-          "yLpj": "yLpj"
+          "yLpj": "yLpj",
+          "LvDl": "LvDl"
         }
       },
       "chunks": {
@@ -797,7 +799,11 @@
       "node_modules/rxjs/_esm5/observable/fromEvent.js afe72f5e81c39319141cec6ea8ab2dd7": "ziNH",
       "$$_lazy_route_resource lazy namespace object": "zn8P",
       "node_modules/core-js/modules/es7.reflect.delete-metadata.js": "zq+C",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts f8bd8f483cc4af5e368fa0ba15e0dcce": "bu6N"
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts f8bd8f483cc4af5e368fa0ba15e0dcce": "bu6N",
+      "node_modules/@angular/flex-layout/esm5/flex.es5.js": "21Lb",
+      "node_modules/@angular/flex-layout/esm5/core.es5.js": "OzfB",
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts ebc6570b6db3b361ed2900469aabb9a3": "bu6N",
+      "node_modules/@angular/flex-layout/esm5/extended.es5.js": "hUWP"
     },
     "usedIds": {
       "+OQX": "+OQX",
@@ -1230,7 +1236,10 @@
       "zhAb": "zhAb",
       "ziNH": "ziNH",
       "zn8P": "zn8P",
-      "zq+C": "zq+C"
+      "zq+C": "zq+C",
+      "21Lb": "21Lb",
+      "OzfB": "OzfB",
+      "hUWP": "hUWP"
     }
   },
   "chunks": {
@@ -1247,5 +1256,43 @@
       2,
       3
     ]
-  }
+  },
+  "src\\main\\webapp\\app\\layouts\\feature-dialog\\feature-notification-dialog.html": [
+    {
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-loader/index.js??ref--6!src/main/webapp/app/layouts/feature-dialog/feature-notification-dialog.html": "Ll3n"
+        },
+        "usedIds": {
+          "Ll3n": "Ll3n"
+        }
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          1
+        ]
+      }
+    }
+  ],
+  "src\\main\\webapp\\app\\layouts\\feature-dialog\\feature-filter-dialog.html": [
+    {
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-loader/index.js??ref--6!src/main/webapp/app/layouts/feature-dialog/feature-filter-dialog.html": "BPeM"
+        },
+        "usedIds": {
+          "BPeM": "BPeM"
+        }
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          1
+        ]
+      }
+    }
+  ]
 }

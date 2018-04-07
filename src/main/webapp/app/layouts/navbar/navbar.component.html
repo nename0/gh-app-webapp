@@ -16,12 +16,16 @@
             <span matLine>Übersicht</span>
         </a>
         <mat-divider></mat-divider>
-        <h3 mat-subheader>Tage</h3>
+        <h3 mat-subheader>Vertretungspläne</h3>
         <a mat-list-item routerLink="{{'plan/' + wd}}" routerLinkActive="router-active" (click)="closeSidnav.emit()" *ngFor="let wd of weekDays; trackBy: trackBy">
             <mat-icon mat-list-icon class="fa fa-fw fa-calendar" aria-hidden="true"></mat-icon>
             <span matLine>{{ weekDayToDisplayString(wd) }}</span>
         </a>
         <mat-divider></mat-divider>
+        <a mat-list-item routerLink="/settings" routerLinkActive="router-active" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidnav.emit()">
+            <mat-icon mat-list-icon class="fa fa-fw fa-cog" aria-hidden="true"></mat-icon>
+            <span matLine>Einstellungen</span>
+        </a>
         <a *ngSwitchCase="true" mat-list-item (click)="closeSidnav.emit(); logout()">
             <mat-icon mat-list-icon class="fa fa-fw fa-sign-out" aria-hidden="true"></mat-icon>
             <span matLine>Abmelden</span>

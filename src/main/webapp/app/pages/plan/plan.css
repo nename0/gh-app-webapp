@@ -45,3 +45,7 @@ table {
     padding: 2px;
     border: 1pt solid;
 }
+
+.TabelleFooter {
+    margin: auto
+}

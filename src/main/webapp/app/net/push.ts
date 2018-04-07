@@ -25,6 +25,10 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 const pushAvailable = 'serviceWorker' in navigator && 'PushManager' in window && hasWebsocketSupport;
+function pushPermissionBlocked() {
+    return (<any>Notification).permission === 'denied';
+}
+
 const publicKey = 'BFnMFwGNZpptuw48WlgK1ae8k-t09c26C_Ssf04jmHKJfnMM26SLprWmnRr_z03MbYenDHlmsjsj_-0_T-O4U6M';
 const KEY_LAST_PUSH_SUBSCRIPTION_VALUE = 'lastPushSubscriptionValue';
 const KEY_LAST_PUSH_SUBSCRIPTION_DATE = 'lastPushSubscriptionDate';
@@ -33,6 +37,7 @@ const KEY_LAST_PUSH_SUBSCRIPTION_DATE = 'lastPushSubscriptionDate';
 export class PushService {
     public readonly pushStatus: BehaviorSubject<PushStatus>;
     public readonly hasErrored = new BehaviorSubject(0);
+    public readonly tasksStarted = new BehaviorSubject(0);
 
     private lastPushSubscriptionDate: Promise<Date>;
     private lastPushSubscriptionValue: Promise<string>;
@@ -104,7 +109,7 @@ export class PushService {
     }
 
     private async doUpdate() {
-        if ((<any>Notification).permission === 'denied') {
+        if (pushPermissionBlocked()) {
             this.pushStatus.next(PushStatus.DENIED);
             await this.updateSubscriptionOnServer(null);
             return;
@@ -161,10 +166,15 @@ export class PushService {
     }
 
     public async toggle() {
-        if (this.pushStatus.getValue() === PushStatus.ENABLED) {
-            await this.unsubscribeUser();
-        } else {
-            await this.subscribeUser();
+        this.tasksStarted.next(this.tasksStarted.getValue() + 1);
+        try {
+            if (this.pushStatus.getValue() === PushStatus.ENABLED) {
+                await this.unsubscribeUser();
+            } else {
+                await this.subscribeUser();
+            }
+        } finally {
+            this.tasksStarted.next(this.tasksStarted.getValue() - 1);
         }
     }
 
