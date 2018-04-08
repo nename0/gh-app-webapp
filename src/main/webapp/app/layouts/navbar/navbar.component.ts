@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialogRef } from '@angular/material/dialog';
 import { LoginModalService, JhiLoginDialogComponent } from '../../shared';
@@ -13,7 +13,8 @@ import { WEEK_DAYS, getWeekDayDisplayStr } from '../../model/weekdays';
     templateUrl: './navbar.component.html',
     styleUrls: [
         'navbar.css'
-    ]
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush // Because we only use Observables
 })
 export class NavbarComponent {
     @Output() closeSidnav: EventEmitter<any>;

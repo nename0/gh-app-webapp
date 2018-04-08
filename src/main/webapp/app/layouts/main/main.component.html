@@ -43,7 +43,7 @@
                 </button>
                 <mat-menu #appMenu="matMenu">
                     <a routerLink="settings" mat-menu-item>Einstellungen</a>
-                    <button mat-menu-item>Über</button>
+                    <button mat-menu-item (click)="openAbout()">Über</button>
                 </mat-menu>
             </mat-toolbar>
             <router-outlet></router-outlet>

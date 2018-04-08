@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { delay, distinctUntilChanged, concatMap, map } from 'rxjs/operators';
+import { delay, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { of as Observable_of } from 'rxjs/observable/of';
 import { idbKeyVal } from '../shared/idbKeyVal';
 
@@ -61,7 +61,7 @@ export let browserFingerprint: Promise<string>;
 // to get zone right
 export function setupUtil() {
     onDayChange.pipe(
-        concatMap((date) => {
+        switchMap((date) => {
             const nextDay = new Date(date);
             nextDay.setHours(24, 0, 0, 0);
             return Observable_of(undefined).pipe(
@@ -69,9 +69,9 @@ export function setupUtil() {
                 map(() => new Date()));
         }))
         .subscribe(onDayChangeBehavior);
-    window.onfocus = () => {
+    window.addEventListener('focus', () => {
         onDayChangeBehavior.next(new Date());
-    }
+    });
 
     browserFingerprint = (async () => {
         function genFinerprint() {

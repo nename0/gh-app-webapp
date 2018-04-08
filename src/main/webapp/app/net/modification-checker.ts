@@ -28,15 +28,16 @@ export class ModificationCheckerService {
 
     private async setup() {
         // fetch from storage
-        await this.update(true);
+        await this.updateHashAndValidate(true);
         try {
-            await this.checkModification();
+            await this.checkModificationHash();
         } finally {
-            setInterval(this.update, 10 * 1000)
+            setInterval(this.updateHashAndValidate, 10 * 1000);
+            window.addEventListener('focus', () => this.forceUpdate());
         }
     }
 
-    private update = (skipValidate?: boolean) => {
+    private updateHashAndValidate = (skipValidate?: boolean) => {
         this.latestModificationHash = idbKeyVal.get(KEY_LATEST_MODIFICATION_HASH);
         const promise = idbKeyVal.get(KEY_LAST_UPDATE)
             .then((result) => {
@@ -51,7 +52,7 @@ export class ModificationCheckerService {
         return Promise.all([this.latestModificationHash, promise]);
     }
 
-    private async checkModificationRequest() {
+    private async fetchModificationHash() {
         const url = window.location.origin + '/api/v1/plans/getModificationHash?' + await this.authenticationProvider.getQueryParam()
         const res = await fetch(url, {
             credentials: 'same-origin'
@@ -70,41 +71,34 @@ export class ModificationCheckerService {
         return this.gotModifiactionHash(modificationHash);
     }
 
-    private checkModification = async () => {
+    private checkModificationHash = async () => {
         if (this.checking) {
             return;
         }
         this.unscheduleCheckModification();
         this.checking = true;
         try {
-            await this.connectivityService.executeLoadingTask(this.checkModificationRequest, this);
+            await this.connectivityService.executeLoadingTask(this.fetchModificationHash, this);
             // reschedule
             const handle = setTimeout(() => {
                 if (hasWebsocketSupport) {
                     this.websocketHandler.connect();
                     return;
                 }
-                this.checkModification();
+                this.checkModificationHash();
             }, getRandomArbitrary(8000, 10000));
             this.unscheduleCheckModification = () => clearTimeout(handle);
         } catch (err) {
             console.log('Error in checkModificationRequest ' + err.toString());
-            this.unscheduleCheckModification = this.connectivityService.scheduleRetryTask(this.checkModification);
+            this.unscheduleCheckModification = this.connectivityService.scheduleRetryTask(this.checkModificationHash);
         } finally {
             this.checking = false;
         }
     }
 
     public forceUpdate() {
-        if (hasWebsocketSupport) {
-            this.websocketHandler.connect().then((connecting) => {
-                if (!connecting) {
-                    this.websocketHandler.forceUpdate();
-                }
-            });
-        } else {
-            this.checkModification();
-        }
+        this.updateHashAndValidate();
+        this.checkModificationHash();
     }
 
     public async gotModifiactionHash(hash: string) {
@@ -137,9 +131,10 @@ export class ModificationCheckerService {
         const latestModificationHash = await this.latestModificationHash;
         if (!latestModificationHash) {
             console.log('validateModificationHash no hash set');
-            this.forceUpdate();
+            this.checkModificationHash();
             return;
         }
+        await this.planFetcher.syncKeyValue();
         const dates: Date[] = []
         for (let i = 0; i < WEEK_DAYS.length; i++) {
             const cacheValue = this.planFetcher.plansCache[WEEK_DAYS[i]].getValue();
@@ -185,7 +180,7 @@ export class ModificationCheckerService {
             await this.authenticationProvider.whenAuthorized();
             const changed = await this.planFetcher.fetchAll();
             if (changed) {
-                this.update();
+                this.updateHashAndValidate();
             }
         } catch (err) {
             this.lastPlanFetchedDate = oldDate;

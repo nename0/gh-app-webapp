@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router, NavigationEnd, ResolveEnd } from '@angular/router';
 
@@ -7,6 +7,7 @@ import { from as Observable_from } from 'rxjs/observable/from';
 import { of as Observable_of } from 'rxjs/observable/of';
 import { ObservableMedia, MediaChange } from '@angular/flex-layout';
 import { MatSidenav } from '@angular/material/sidenav';
+import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs/operators/combineLatest';
@@ -16,6 +17,7 @@ import { AppBarService } from './appbar.service';
 import { ConnectivityService } from 'app/net/connectivity';
 import { ModificationCheckerService } from 'app/net/modification-checker';
 import { FeatureDialogService } from 'app/layouts/feature-dialog/feature-dialog.service';
+import { AboutDialogComponent } from 'app/layouts/about-dialog/about-dialog';
 
 export let stickyHeaderOffset: BehaviorSubject<number>;
 
@@ -26,7 +28,8 @@ export let overSmallBreakpoint: BehaviorSubject<boolean>;
     templateUrl: './main.component.html',
     styleUrls: [
         'main.css'
-    ]
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush // Because we only use Observables
 })
 export class MainComponent implements OnInit {
 
@@ -52,7 +55,8 @@ export class MainComponent implements OnInit {
         private appBarService: AppBarService,
         private featureDialogService: FeatureDialogService,
         private modificationChecker: ModificationCheckerService,
-        private connectivityService: ConnectivityService
+        private connectivityService: ConnectivityService,
+        private matDialog: MatDialog
     ) {
         this.toolbarVisible = new BehaviorSubject(true);
         this.toolbarOffset = new BehaviorSubject(0);
@@ -149,6 +153,10 @@ export class MainComponent implements OnInit {
 
     forceUpdate() {
         this.modificationChecker.forceUpdate();
+    }
+
+    openAbout() {
+        this.matDialog.open(AboutDialogComponent);
     }
 
     private updateSidenav() {

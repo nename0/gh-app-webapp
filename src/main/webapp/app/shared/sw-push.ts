@@ -42,6 +42,7 @@ export async function handlePushMessage(pushData: any) {
         await showNotification(title, 'Lade Pläne...', data);
     }
     try {
+        await AuthStorage.updateFromKeyValue();
         await planFetcher.fetchAll();
         const planCache = planFetcher.cache;
         data.days.sort((a, b) => planCache[a].planDate.getTime() - planCache[b].planDate.getTime());

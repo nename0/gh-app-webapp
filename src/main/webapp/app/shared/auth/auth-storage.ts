@@ -34,7 +34,7 @@ class AuthStorageClass {
         return this.authSession
     }
 
-    private async updateFromKeyValue() {
+    public async updateFromKeyValue() {
         this.authSession = await idbKeyVal.get(KEY_AUTH_SESSION);
     }
 }

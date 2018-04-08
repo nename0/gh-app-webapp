@@ -11,7 +11,6 @@ export class LoginModalService {
     ) {}
 
     open(): MatDialogRef<JhiLoginDialogComponent> {
-        console.log('LoginModalService open', Zone.current.name);
         if (this.isOpen) {
             return;
         }

@@ -40,7 +40,6 @@ export class FeatureDialogService {
 
     public onRouterNavigationEnd() {
         if (this.previousUrl.startsWith('/plan/') && this.router.url === '/') {
-            console.log('onCanShowDialog');
             if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
                 setTimeout(() => this.onCanShowDialog(), 700);
             } else {
@@ -63,7 +62,6 @@ export class FeatureDialogService {
         const hasShownFilterDialog = await this.shownFilterDialog;
         if (!hasShownFilterDialog) {
             const filter = await this.filterService.getSelectedFilters().pipe(take(1)).toPromise();
-            console.log('filter ', filter);
             if (filter.length > 0) {
                 idbKeyVal.set(KEY_SHOWN_FEATURE_FILTER_DIALOG, 'true');
             } else {
@@ -90,12 +88,10 @@ export class FeatureDialogService {
     }
 
     private showDialog<T>(component: ComponentType<T>) {
-        console.log('showDialog', this.dialogIsOpen, Zone.current.name);
         if (this.dialogIsOpen) {
             return;
         }
         const dialogRef = this.matDialog.open(component);
-        console.log('showDialog', dialogRef);
         this.dialogIsOpen = true;
         dialogRef.afterClosed().subscribe((result) => {
             this.dialogIsOpen = false;
