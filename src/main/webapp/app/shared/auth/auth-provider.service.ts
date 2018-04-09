@@ -86,10 +86,10 @@ export class AuthenticationProviderService {
     }
 
     public navigateAccessDenied(previousUrl: string) {
-        if (!previousUrl.startsWith('/accessdenied')) {
+        if (!previousUrl.startsWith('/access_denied')) {
             this.stateStorage.storeUrl(previousUrl);
         }
-        this.router.navigate(['accessdenied']).then(() => {
+        this.router.navigate(['access_denied'], { skipLocationChange: true }).then(() => {
             // only show the login dialog, if the user hasn't logged in yet
             if (!this.isAuthenticated.getValue()) {
                 this.loginModalService.open();
