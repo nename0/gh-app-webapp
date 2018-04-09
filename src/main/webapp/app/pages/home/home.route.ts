@@ -17,7 +17,7 @@ export class HomeResolver implements Resolve<any> {
     }
 }
 
-export const HOME_ROUTES: Route[] = [{
+export const HOME_ROUTE: Route = {
     path: '',
     component: HomeComponent,
     data: {
@@ -27,7 +27,4 @@ export const HOME_ROUTES: Route[] = [{
     },
     canActivate: [UserRouteAccessService],
     resolve: [HomeResolver]
-}, {
-    path: '**',
-    redirectTo: ''
-}];
+};

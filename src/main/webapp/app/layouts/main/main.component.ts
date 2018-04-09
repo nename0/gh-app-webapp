@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router, NavigationEnd, ResolveEnd } from '@angular/router';
+import { Router, NavigationEnd, ResolveEnd, NavigationError } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 import { from as Observable_from } from 'rxjs/observable/from';
@@ -103,6 +103,10 @@ export class MainComponent implements OnInit {
                 this.featureDialogService.onRouterNavigationEnd();
                 this.isOnHomePage.next(this.router.url === '/');
                 setTimeout(() => emitScrollSubject(), 100);
+            } else if (event instanceof NavigationError) {
+                if (event.url !== '/') {
+                    this.router.navigate(['']);
+                }
             }
         });
         this.scrollpane.nativeElement.addEventListener('scroll', emitScrollSubject, { passive: true });
