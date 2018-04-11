@@ -23,24 +23,22 @@ class SWPlanFetcher extends PlanFetcher {
 const planFetcher = new SWPlanFetcher();
 
 export async function handlePushMessage(pushData: any) {
-    if (!pushData.days || !pushData.days.length || !pushData.mh) {
+    if (!pushData.days || !pushData.days.length || !pushData.mh || !pushData.body) {
         return showNotification('Vertretungspläne geändert',
-            'Fehler: expected PushData to have days and mh: ' + JSON.stringify(pushData),
+            'Fehler: expected PushData to have days, mh and body: ' + JSON.stringify(pushData),
             null);
     }
     const now = new Date();
-    idbKeyVal.set(KEY_LATEST_MODIFICATION_HASH, pushData.mh);
+    const dbPromise = idbKeyVal.set(KEY_LATEST_MODIFICATION_HASH, pushData.mh);
 
     const notification = (await self.registration.getNotifications({ tag: NOTIFICATION_TAG }))[0];
     const notificationData = notification ? (notification['data'] || {}) : {}
     const data = mergeNotificationData(notificationData, pushData);
 
-    let body: string;
-    let weekDays: string[] = data.days.sort((a, b) => WEEK_DAYS.indexOf(a) - WEEK_DAYS.indexOf(b));
+    let body: string = pushData.body;
+    let weekDays: string[] = data.days;
     let title = 'Vertretungsplan ' + weekDays.map((wd) => getWeekDayShortStr(wd)).join(', ') + ' geändert';
-    if (!notification) {
-        await showNotification(title, 'Lade Pläne...', data);
-    }
+    showNotification(title, body, data);
     try {
         await AuthStorage.updateFromKeyValue();
         await planFetcher.fetchAll();
@@ -77,20 +75,22 @@ export async function handlePushMessage(pushData: any) {
             }
         }
         body = lines.join('\r\n');
+        // only show if notification is not closed
+        if ((await self.registration.getNotifications({ tag: NOTIFICATION_TAG })).length) {
+            await showNotification(title, body, data);
+        }
+
+        await dbPromise;
         await idbKeyVal.set(KEY_LAST_UPDATE, now.toUTCString());
     } catch (err) {
         console.log('error while fetching plans in service worker onpush', err);
-        body = 'Fehler beim Laden der Pläne';
-    }
-    // only show if notification is not closed
-    if ((await self.registration.getNotifications({ tag: NOTIFICATION_TAG })).length) {
-        return showNotification(title, body, data);
     }
 }
 
 function mergeNotificationData(notificationData: NotificationData, pushData: any): NotificationData {
-    const daysArray = (notificationData.days || []).concat(pushData.days || []);
+    const daysArray = (notificationData.days || []).concat(pushData.days);
     const days = Array.from(new Set(daysArray));
+    days.sort((a, b) => WEEK_DAYS.indexOf(a) - WEEK_DAYS.indexOf(b));
     return {
         days
     };

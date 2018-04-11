@@ -7,9 +7,12 @@ import { WEEK_DAYS } from '../model/weekdays';
 import { PlanFetcherService } from '../shared/services/plan-fetcher.service';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { AuthenticationProviderService } from 'app/shared/auth/auth-provider.service';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class ModificationCheckerService {
+    public readonly loadingPlans = new BehaviorSubject(false);
+
     public latestModificationHash: Promise<string>;
     public lastUpdate = new ReplaySubject<Date>(1);
 
@@ -124,10 +127,6 @@ export class ModificationCheckerService {
     }
 
     private async validateModificationHash() {
-        if (this.lastPlanFetchedDate.getTime() + 5 * 1000 > Date.now()) {
-            console.log('validateModificationHash other fetch not timed out');
-            return;
-        }
         const latestModificationHash = await this.latestModificationHash;
         if (!latestModificationHash) {
             console.log('validateModificationHash no hash set');
@@ -140,6 +139,7 @@ export class ModificationCheckerService {
             const cacheValue = this.planFetcher.plansCache[WEEK_DAYS[i]].getValue();
             if (!cacheValue) {
                 console.log('validateModificationHash not all plans Fetched');
+                this.loadingPlans.next(true);
                 return this.doFetchPlans(latestModificationHash);
             }
             dates[i] = cacheValue.modification;
@@ -147,9 +147,15 @@ export class ModificationCheckerService {
         const hash = this.calculateModificationHash(dates);
         if (latestModificationHash === hash) {
             //console.log('validateModificationHash unchanged', hash);
+            this.loadingPlans.next(false);
+            return;
+        }
+        if (this.lastPlanFetchedDate.getTime() + 5 * 1000 > Date.now()) {
+            console.log('validateModificationHash other fetch not timed out');
             return;
         }
         console.log('validateModificationHash changed', latestModificationHash);
+        this.loadingPlans.next(true);
         return this.doFetchPlans(latestModificationHash);
     }
 
