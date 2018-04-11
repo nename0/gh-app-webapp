@@ -13,6 +13,8 @@ export const sessionCacheName = 'sessionCache-v1';
 const staticCacheName = 'static-' + serviceWorkerOption.assetsHash;
 
 self.addEventListener('install', (event) => {
+    console.log('[ServiceWorker] Install');
+    self.skipWaiting();
     event.waitUntil(
         caches.open(staticCacheName).then(function(cache) {
             console.log('[ServiceWorker] Caching static assets');
@@ -37,7 +39,7 @@ self.addEventListener('activate', (event) => {
                 console.log('[ServiceWorker] Removing old cache', cacheName);
                 return caches.delete(cacheName);
             })));
-    event.waitUntil(deleteOldCaches);
+    event.waitUntil(Promise.all([deleteOldCaches, self.clients.claim()]));
 });
 
 self.addEventListener('fetch', (event) => {
