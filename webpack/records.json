@@ -804,7 +804,8 @@
       "node_modules/@angular/flex-layout/esm5/core.es5.js": "OzfB",
       "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts ebc6570b6db3b361ed2900469aabb9a3": "bu6N",
       "node_modules/@angular/flex-layout/esm5/extended.es5.js": "hUWP",
-      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts b5b995c72a2fcdec295e1e22d4cd8f31": "bu6N"
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts b5b995c72a2fcdec295e1e22d4cd8f31": "bu6N",
+      "node_modules/@ngtools/webpack/src/index.js??ref--4!src/main/webapp/app/app.main.ts d6ad8946eb1f8a5e24ede6f59ad48769": "bu6N"
     },
     "usedIds": {
       "+OQX": "+OQX",
@@ -1304,6 +1305,25 @@
         },
         "usedIds": {
           "1Wfh": "1Wfh"
+        }
+      },
+      "chunks": {
+        "byName": {},
+        "bySource": {},
+        "usedIds": [
+          1
+        ]
+      }
+    }
+  ],
+  "src\\main\\webapp\\app\\pages\\settings\\ios-dialog.html": [
+    {
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-loader/index.js??ref--6!src/main/webapp/app/pages/settings/ios-dialog.html": "3O65"
+        },
+        "usedIds": {
+          "3O65": "3O65"
         }
       },
       "chunks": {

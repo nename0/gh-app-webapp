@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { GHAppSharedModule } from '../../shared';
 import { SettingsComponent } from './settings.component';
 import { SETTINGS_ROUTE } from './settings.route';
+import { IOSDialogComponent } from 'app/pages/settings/ios-dialog';
 
 @NgModule({
     imports: [
@@ -12,8 +13,10 @@ import { SETTINGS_ROUTE } from './settings.route';
     ],
     declarations: [
         SettingsComponent,
+        IOSDialogComponent
     ],
     entryComponents: [
+        IOSDialogComponent
     ],
     providers: [
     ],

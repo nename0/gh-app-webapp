@@ -40,7 +40,7 @@ export class FeatureDialogService {
 
     public onRouterNavigationEnd() {
         if (this.previousUrl.startsWith('/plan/') && this.router.url === '/') {
-            if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
                 setTimeout(() => this.onCanShowDialog(), 700);
             } else {
                 this.onCanShowDialog();

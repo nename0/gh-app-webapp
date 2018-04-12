@@ -10,6 +10,8 @@ import { MatSelect } from '@angular/material/select';
 import { ChangeIndicatorService } from 'app/shared/services/change-indicator.service';
 import { VERSION } from 'app/app.constants';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatDialog } from '@angular/material/dialog';
+import { IOSDialogComponent } from 'app/pages/settings/ios-dialog';
 
 @Component({
     selector: 'app-settings',
@@ -33,10 +35,12 @@ export class SettingsComponent {
     readonly selectedFilters: Observable<string[]>;
 
     readonly APP_VERSION = VERSION;
+    readonly isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     constructor(public pushService: PushService,
         private filterService: FilterService,
-        private changeIndicatorService: ChangeIndicatorService) {
+        private changeIndicatorService: ChangeIndicatorService,
+        private matDialog: MatDialog) {
         this.pushStatusObs = this.pushService.pushStatus;
         this.pushHasErrored = this.pushService.hasErrored;
 
@@ -84,5 +88,9 @@ export class SettingsComponent {
         this.filterService.removeFilter(filter).then(() => {
             this.changeIndicatorService.reset();
         });
+    }
+
+    showIOSDialog() {
+        this.matDialog.open(IOSDialogComponent);
     }
 }

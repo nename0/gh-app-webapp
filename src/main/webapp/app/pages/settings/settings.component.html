@@ -19,7 +19,8 @@
                     </ng-container>
                 </span>
                 <span class="settings-warn-text" *ngSwitchCase="PushStatus.NOT_AVALABLE">Dein Browser unterstützt Benachrichtigungen nicht.
-                    <a target="_blank" href="https://caniuse.com/#feat=push-api">Alternativen...</a>
+                    <a *ngIf="!isIOS" target="_blank" href="https://caniuse.com/#feat=push-api">Alternativen...</a>
+                    <a *ngIf="isIOS" href="javascript:void(0)" (click)="showIOSDialog()">Warum nicht auf iOS?</a>
                 </span>
                 <span class="settings-warn-text" *ngSwitchCase="PushStatus.DENIED">
                     Um Benachrichtigungen zu aktivieren, in der Addresszeile die Website-Einstellungen öffnen und Benachrichtigungen erlauben
