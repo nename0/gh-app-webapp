@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { StateStorageService } from 'app/shared/auth/state-storage.service';
 import { AuthStorage } from 'app/shared/auth/auth-storage';
+import { browserFingerprint } from 'app/shared/util';
 
 export const RENEW_PERIOD_WEEKS = 2;
 export const EXPIRE_PERIOD_WEEKS = 8;
@@ -46,7 +47,8 @@ export class AuthenticationProviderService {
 
     async logout(): Promise<void> {
         try {
-            const response = await fetch(location.origin + '/api/v1/auth/session', {
+            const fingerprint = await browserFingerprint;
+            const response = await fetch(location.origin + '/api/v1/auth/session?fingerprint=' + fingerprint, {
                 method: 'DELETE',
                 credentials: 'same-origin'
             });

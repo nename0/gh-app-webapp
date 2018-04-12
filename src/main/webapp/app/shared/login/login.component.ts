@@ -41,6 +41,7 @@ export class JhiLoginDialogComponent implements AfterViewInit {
     }
 
     login() {
+        this.username = (this.username || '').trim();
         this.authenticationProvider.login({
             username: this.username,
             password: this.password
