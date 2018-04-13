@@ -47,5 +47,6 @@ if ('serviceWorker' in navigator) {
         //alert('service worker registering Error: ' + err.toString());
     });
 } else {
-    console.log('serviceWorker not supported')
+    console.log('serviceWorker not supported');
+    document.documentElement.setAttribute('manifest', './manifest.v2.appcache');
 }

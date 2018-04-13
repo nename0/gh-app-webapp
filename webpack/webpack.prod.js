@@ -49,13 +49,13 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
             cacheGroups: {
                 polyfills: {
                     name: 'polyfills',
-                    test: function(module) {
+                    test: function (module) {
                         return module.getChunks().filter((chunk) => chunk.name === 'polyfills').length;
                     },
                     priority: 10
                 },
                 angular: {
-                    test: function(module) {
+                    test: function (module) {
                         return /(\/|\\)node_modules(\/|\\)@angular(\/|\\)/.test(module.userRequest);
                     },
                     reuseExistingChunk: true,
@@ -100,14 +100,13 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
                     beautify: false,
                     indent_level: 2
                 }
-             }
+            }
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true,
             debug: false
         }),
         new AppCachePlugin({
-            cache: ['./'],
             exclude: [
                 /index.html$/,
                 /favicon.ico$/,
@@ -116,7 +115,8 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
                 /manifest\..+\.json$/,
                 /content\/icon_.+\.png$/,
                 /content\/.+\.(?!png$|woff$)/
-            ]
+            ],
+            output: 'manifest.v2.appcache'
         }),
         new BrotliPlugin({
             asset: '[path].br[query]',
